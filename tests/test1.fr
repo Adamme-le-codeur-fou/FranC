@@ -1,1 +1,1 @@
-Coucou devient 3 plus 3 égal (2 plus 1) multiplié par 2.
+Coucou devient (3 plus 3) multiplié par 2.
