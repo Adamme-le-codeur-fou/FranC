@@ -13,7 +13,7 @@ OUTPUT_FILE := $(OUTPUT_DIR)/output.c
 GCC_OUTPUT := $(OUTPUT_DIR)/output
 
 
-.PHONY: all clean run
+.PHONY: all clean run clear format
 
 all: $(EXE)
 
@@ -38,14 +38,20 @@ $(SRC)/parser.ml $(HEADER)/parser.mli: $(SRC)/parser.mly
 	ocamlyacc -v $<
 	mv $(SRC)/parser.mli $(HEADER)/parser.mli
 
+run: clean clear all format
+	OCAMLRUNPARAM=p $(EXE) < $(TEST_FILE) > $(OUTPUT_FILE)
+	gcc -Wall -Wextra $(OUTPUT_FILE) -o $(GCC_OUTPUT)
+	$(GCC_OUTPUT)
+
+format:
+	ocamlformat src/*.ml --inplace --enable-outside-detected-project 
+	ocamlformat headers/*.mli --inplace --enable-outside-detected-project
+
+clear:
+	clear
+
 clean:
 	-rm -f $(SRC)/lexer.ml $(SRC)/parser.ml $(HEADER)/parser.mli
 	-rm -f $(OBJ)/*.cmo $(OBJ)/*.cmi
 	-rm -f $(EXE) $(OUTPUT_FILE) $(GCC_OUTPUT)
 	-rm -f $(SRC)/parser.output
-
-run: clean all
-	clear
-	$(EXE) < $(TEST_FILE) > $(OUTPUT_FILE)
-	gcc -Wall -Wextra $(OUTPUT_FILE) -o $(GCC_OUTPUT)
-	$(GCC_OUTPUT)

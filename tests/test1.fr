@@ -1,1 +1,1 @@
-Kz devient (3 plus 3) multiplié par 2. Savi devient kz plus 57 ? Afficher savi !
+Si 11 vaut 10 alors afficher 20, sinon Si 5 vaut 5 alors afficher 10, sinon afficher 0.

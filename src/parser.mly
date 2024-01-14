@@ -4,6 +4,7 @@
 %token Assigne Afficher
 %token Plus Egal Fois
 %token Parenthese_Gauche Parenthese_Droite
+%token Si Alors Sinon
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
 
@@ -19,7 +20,9 @@
 %%
 
 main:
-    | declarations EOF { Paragraphe($1) }
+  | conditionnelle EOF { $1 }
+  | expression Ponctuation_fin_phrase EOF { Paragraphe([Expression $1]) }
+  | paragraphe EOF { Paragraphe(List.rev $1) }
 
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
@@ -43,8 +46,14 @@ declaration:
     | maj_mot Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
     | Afficher expression Ponctuation_fin_phrase { Afficher($2) }
 
-declarations:
-    declaration { [$1] } | declaration declarations { $1::$2 }
+conditionnelle:
+  | Si expression Alors paragraphe { Condition($2, $4, None) }
+  | Si expression Alors paragraphe Sinon paragraphe { Condition($2, $4, Some $6) }
 
-/* paragraphe: declarations { Paragraphe($2) } */
+paragraphe:
+  | declaration { [$1] }
+  | declaration paragraphe { $1::$2 }
+  | conditionnelle { [$1] }
+
+
 

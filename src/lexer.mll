@@ -21,6 +21,9 @@ rule decoupe =
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
+    | "Si" { Si }
+    | "alors" { Alors }
+    | "sinon" { Sinon }
     | nombre as d { Nombre d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
