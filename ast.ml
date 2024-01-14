@@ -9,6 +9,7 @@ type ast =
   | Egal of ast * ast
   | Fois of ast * ast
   | Assigne of ast * ast
+  | Afficher of ast
   | Paragraphe of ast list
 
 
@@ -17,6 +18,18 @@ let rec print_mot_liste l =
   | [] -> ()
   | Mot(m)::q -> Printf.printf "mot(%s)%s" m (if q = [] then "" else ", "); print_mot_liste q
   | _ -> raise PhraseInvalide
+
+
+let rec contient_afficher a =
+  match a with
+  | Afficher(_) -> true
+  | Mot(_) | Nombre(_) -> false
+  | Plus(ast1, ast2)
+  | Egal(ast1, ast2)
+  | Fois(ast1, ast2)
+  | Assigne(ast1, ast2) -> (contient_afficher ast1) || (contient_afficher ast2)
+  | Paragraphe(ast_list) -> List.fold_left (fun acc elt -> acc || (contient_afficher elt)) false ast_list
+  | _ -> false
 
 
 let affiche a =
@@ -47,20 +60,24 @@ let affiche a =
       affiche_aux p2;
       print_string ")"
     | Nombre(d) -> print_string d
-    | Mot(m) -> print_string "int "; print_string (String.lowercase_ascii m)
+    | Mot(m) -> print_string (String.lowercase_ascii m)
     | Assigne(m, e) ->
+      print_string "int ";
       affiche_aux m;
       print_string " = ";
       affiche_aux e;
-      print_string ";"
+      print_string ";\n"
     | Paragraphe(l) -> 
-      print_string "Paragraphe(";
       List.iter affiche_aux l;
-      print_string ")"
+    | Afficher(s) ->
+      print_string "printf(\"%d\\n\", ";
+      affiche_aux s;
+      print_string ");\n"
+
     | _ -> raise TokenInvalide
 
     in 
-
-    print_string "#include <stdio.h>\n\nint main(){\n";
+    if (contient_afficher a) then print_endline "#include <stdio.h>\n";
+    print_string "\nint main(){\n";
     affiche_aux a;
-    print_string "\nprintf(\"%d\\n\", coucou);\nreturn 0;\n}"
+    print_string "\nreturn 0;\n}"

@@ -1,1 +1,1 @@
-Coucou devient (3 plus 3) multiplié par 2.
+Kz devient (3 plus 3) multiplié par 2. Savi devient kz plus 57 ? Afficher savi !

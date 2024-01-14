@@ -9,6 +9,7 @@ type ast =
     | Egal of ast * ast
     | Fois of ast * ast
     | Assigne of ast * ast
+    | Afficher of ast
     | Paragraphe of ast list
 
 val affiche : ast -> unit

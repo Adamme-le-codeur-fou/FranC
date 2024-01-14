@@ -18,6 +18,7 @@ rule decoupe =
     | "fois" | "multiplié par" { Fois }
     | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal" { Egal }
+    | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
     | nombre as d { Nombre d }
