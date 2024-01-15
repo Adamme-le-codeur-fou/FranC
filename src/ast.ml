@@ -54,6 +54,11 @@ let rec contient_afficher a =
       || List.fold_left
            (fun acc elt -> acc || contient_afficher elt)
            false ast_list
+  | ForInclus (_, ast1, ast2, ast_list) | ForExclus (_, ast1, ast2, ast_list) ->
+      contient_afficher ast1 || contient_afficher ast2
+      || List.fold_left
+           (fun acc elt -> acc || contient_afficher elt)
+           false ast_list
   | _ -> false
 
 type portee = (string * string) list
