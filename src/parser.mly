@@ -6,17 +6,18 @@
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
-%token RESTE_DIVISION_EUCLIDIENNE_DEBUT PAR
+%token Reste_division_euclidienne_debut Par
+%token Iterer Sur Allant_de A Compri Non_compri Termine_sequence Agir
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
 
 %nonassoc Assigne
 %nonassoc Egal Different
 %nonassoc Plus
-%nonassoc RESTE_DIVISION_EUCLIDIENNE_DEBUT PAR
+%nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois
 %left Parenthese_Gauche
-%left Si Alors Tant_que
+%left Si Alors Tant_que  AGIR
 %right Sinon
 
 %start main
@@ -37,7 +38,7 @@ maj_mot: Mot_majuscule { Mot($1) }
 /* mot: Mot { Mot($1) } */
 
 expression:
-    | RESTE_DIVISION_EUCLIDIENNE_DEBUT expression PAR expression { Modulo($2, $4) }
+    | Reste_division_euclidienne_debut expression Par expression { Modulo($2, $4) }
     | Parenthese_Gauche expression Parenthese_Droite { $2 }
     | expression Plus expression { Plus($1, $3) }
     | expression Fois expression { Fois($1, $3) }
@@ -54,12 +55,22 @@ conditionnelle:
   | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }
   | Si expression Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, Some $6) }
 
-boucle : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  { BoucleTantQue($2, $4) }
+boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  { BoucleTantQue($2, $4) }
+
+boucle_pour:
+    | Iterer Mot Allant_de expression A expression Compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForInclus($2, $4, $6, $9) }
+    | Iterer Mot Allant_de expression A expression Non_compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForExclus($2, $4, $6, $9) }
+    | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForExclus($2, $4, $6, $8) }
+
 
 instruction:
   | declaration { $1 }
   | conditionnelle { $1 }
-  | boucle { $1 }
+  | boucle_tant_que { $1 }
+  | boucle_pour { $1 }
 
 paragraphe:
     | instruction paragraphe { $1 :: $2 }

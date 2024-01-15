@@ -17,5 +17,7 @@ type ast =
   | Expression of ast
   | BoucleTantQue of ast * ast list
   | Different of ast * ast
+  | ForInclus of string * ast * ast * ast list
+  | ForExclus of string * ast * ast * ast list
 
 val affiche : ast -> unit

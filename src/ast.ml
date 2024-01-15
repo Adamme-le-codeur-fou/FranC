@@ -17,6 +17,8 @@ type ast =
   | Expression of ast
   | BoucleTantQue of ast * ast list
   | Different of ast * ast
+  | ForInclus of string * ast * ast * ast list
+  | ForExclus of string * ast * ast * ast list
 
 let rec print_mot_liste l =
   match l with
@@ -124,6 +126,10 @@ let afficher_printf portee e =
 
 let rec afficher_ast portee ast =
   match ast with
+  | ForInclus (var, start_expr, end_expr, paragraphe) ->
+      afficher_for portee var start_expr end_expr true paragraphe
+  | ForExclus (var, start_expr, end_expr, paragraphe) ->
+      afficher_for portee var start_expr end_expr false paragraphe
   | Paragraphe l -> List.fold_left afficher_ast portee l
   | Assigne (Mot m, e) -> afficher_assignation portee (m, e)
   | Afficher e ->
@@ -161,6 +167,19 @@ and afficher_boucle portee cond paragraphe =
   let portee_apres_boucle = List.fold_left afficher_ast portee paragraphe in
   Printf.printf "}\n";
   portee_apres_boucle
+
+(* Fonction pour afficher une boucle 'for' *)
+and afficher_for portee var start_expr end_expr inclusive paragraphe =
+  Printf.printf "for (int %s = " (String.lowercase_ascii var);
+  afficher_expression portee start_expr;
+  Printf.printf "; %s " (String.lowercase_ascii var);
+  Printf.printf (if inclusive then "<= " else "< ");
+  afficher_expression portee end_expr;
+  Printf.printf "; %s++) {\n" (String.lowercase_ascii var);
+  let portee_apres_for = (String.lowercase_ascii var, "int") :: portee in
+  let _ = List.fold_left afficher_ast portee_apres_for paragraphe in
+  Printf.printf "}\n";
+  portee_apres_for
 
 let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
