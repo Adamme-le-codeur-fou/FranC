@@ -1,1 +1,1 @@
-Tant que 1 alors afficher 10.
+X devient 0. Tant que x est différent de 10 alors X devient x plus 1, afficher 5.
