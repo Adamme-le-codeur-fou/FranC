@@ -9,6 +9,7 @@ type ast =
   | Plus of ast * ast
   | Egal of ast * ast
   | Fois of ast * ast
+  | Modulo of ast * ast
   | Assigne of ast * ast
   | Afficher of ast
   | Paragraphe of ast list

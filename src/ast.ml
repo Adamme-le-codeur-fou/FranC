@@ -9,6 +9,7 @@ type ast =
   | Plus of ast * ast
   | Egal of ast * ast
   | Fois of ast * ast
+  | Modulo of ast * ast
   | Assigne of ast * ast
   | Afficher of ast
   | Paragraphe of ast list
@@ -89,6 +90,12 @@ let rec afficher_expression portee expr =
       Printf.printf "(";
       afficher_expression portee p1;
       Printf.printf " != ";
+      afficher_expression portee p2;
+      Printf.printf ")"
+  | Modulo (p1, p2) ->
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " %% ";
       afficher_expression portee p2;
       Printf.printf ")"
   | _ -> raise PhraseInvalide

@@ -16,7 +16,9 @@ rule decoupe =
     | [' ''\n''\t']+ { decoupe lexbuf }
     | "plus" { Plus }
     | "fois" | "multiplié par" { Fois }
-    | "prend la valeur" | "devient" { Assigne }
+    | "le reste de la division euclidienne de" { RESTE_DIVISION_EUCLIDIENNE_DEBUT }
+    | "par" { PAR }
+    | "prend la valeur" | "devient" | "prend la valeur" { Assigne }
     | "vaut" | "égal" { Egal }
     | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }
