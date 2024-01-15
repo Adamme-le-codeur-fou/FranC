@@ -27,6 +27,7 @@ rule decoupe =
     | "sinon" { Sinon }
     | "Tant que" { Tant_que }
     | "Ce qui conclut la boucle" { Fin_boucle }
+    | "Ce qui correspond à la fin de notre condition" { Fin_condition }
     | nombre as d { Nombre d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 

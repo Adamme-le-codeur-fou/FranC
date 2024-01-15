@@ -1,1 +1,1 @@
-X devient 0. Tant que x est différent de 10 alors X devient x plus 1, afficher x. Ce qui conclut la boucle. Afficher 5.
+X devient 0. Tant que x est différent de 10 alors X devient x plus 1, afficher x. Ce qui conclut la boucle. Afficher 5. Si x vaut 5 alors afficher 5, afficher 6. Ce qui correspond à la fin de notre condition. Afficher 66.
