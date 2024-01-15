@@ -13,5 +13,7 @@ type ast =
   | Paragraphe of ast list
   | Condition of ast * ast list * ast list option
   | Expression of ast
+  | BoucleTantQue of ast * ast list
+  | Different of ast * ast
 
 val affiche : ast -> unit

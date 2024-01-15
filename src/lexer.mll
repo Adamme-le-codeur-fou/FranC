@@ -18,12 +18,14 @@ rule decoupe =
     | "fois" | "multiplié par" { Fois }
     | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal" { Egal }
+    | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
-    | "Si" { Si }
+    | ['s''S']"i" { Si }
     | "alors" { Alors }
     | "sinon" { Sinon }
+    | "Tant que" { Tant_que }
     | nombre as d { Nombre d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 

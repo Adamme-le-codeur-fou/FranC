@@ -13,6 +13,8 @@ type ast =
   | Paragraphe of ast list
   | Condition of ast * ast list * ast list option
   | Expression of ast
+  | BoucleTantQue of ast * ast list
+  | Different of ast * ast
 
 let rec print_mot_liste l =
   match l with
@@ -35,17 +37,19 @@ let rec contient_afficher a =
       List.fold_left
         (fun acc elt -> acc || contient_afficher elt)
         false ast_list
-  | Condition (ast1, ast_list1, ast_list2_opt) -> (
-      List.fold_left
-        (fun acc elt -> acc || contient_afficher elt)
-        (contient_afficher ast1) ast_list1
+  | Condition (ast1, p1, p2_opt) -> (
+      contient_afficher ast1
+      || List.fold_left (fun acc elt -> acc || contient_afficher elt) false p1
       ||
-      match ast_list2_opt with
-      | Some ast_list2 ->
-          List.fold_left
-            (fun acc elt -> acc || contient_afficher elt)
-            false ast_list2
+      match p2_opt with
+      | Some p2 ->
+          List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
       | None -> false)
+  | BoucleTantQue (ast1, ast_list) ->
+      contient_afficher ast1
+      || List.fold_left
+           (fun acc elt -> acc || contient_afficher elt)
+           false ast_list
   | _ -> false
 
 let affiche a =
@@ -100,6 +104,18 @@ let affiche a =
             Printf.printf "}\n"
         | None -> ())
     | Expression expr -> affiche_aux expr
+    | BoucleTantQue (cond, paragraphe) ->
+        Printf.printf "while (";
+        affiche_aux cond;
+        Printf.printf ") {\n";
+        List.iter affiche_aux paragraphe;
+        Printf.printf "}\n"
+    | Different (p1, p2) ->
+        print_string "(";
+        affiche_aux p1;
+        print_string " != ";
+        affiche_aux p2;
+        print_string ")"
     | _ -> raise TokenInvalide
   in
 

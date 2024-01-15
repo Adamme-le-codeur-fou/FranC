@@ -2,18 +2,19 @@
     open Ast
 %}
 %token Assigne Afficher
-%token Plus Egal Fois
+%token Plus Egal Fois Different
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon
+%token Tant_que   
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
 
 %nonassoc Assigne
-%nonassoc Egal
+%nonassoc Egal Different
 %nonassoc Plus
 %nonassoc Fois
 %left Parenthese_Gauche
-%left Si Alors
+%left Si Alors Tant_que
 %right Sinon
 
 %start main
@@ -49,10 +50,14 @@ conditionnelle:
   | Si expression Alors paragraphe { Condition($2, $4, None) }
   | Si expression Alors paragraphe Sinon paragraphe { Condition($2, $4, Some $6) }
 
+boucle : Tant_que expression Alors paragraphe { BoucleTantQue($2, $4) }
+
+instruction:
+  | declaration { $1 }
+  | conditionnelle { $1 }
+  | boucle { $1 }
+
 paragraphe:
-  | declaration { [$1] }
-  | declaration paragraphe { $1::$2 }
-  | conditionnelle { [$1] }
-
-
+    | instruction paragraphe { $1 :: $2 }
+    | instruction { [$1] }
 
