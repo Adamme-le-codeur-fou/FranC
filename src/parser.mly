@@ -5,9 +5,10 @@
 %token Plus Egal Fois Different
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon
-%token Tant_que   
+%token Tant_que Fin_boucle
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
+
 
 %nonassoc Assigne
 %nonassoc Egal Different
@@ -49,9 +50,9 @@ declaration:
 
 conditionnelle:
   | Si expression Alors paragraphe { Condition($2, $4, None) }
-  | Si expression Alors paragraphe Sinon paragraphe { Condition($2, $4, Some $6) }
+  | Si expression Alors paragraphe Sinon paragraphe  { Condition($2, $4, Some $6) }
 
-boucle : Tant_que expression Alors paragraphe { BoucleTantQue($2, $4) }
+boucle : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  { BoucleTantQue($2, $4) }
 
 instruction:
   | declaration { $1 }

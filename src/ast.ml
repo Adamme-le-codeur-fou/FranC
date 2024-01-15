@@ -115,7 +115,6 @@ let afficher_printf portee e =
       afficher_expression portee e;
       Printf.printf ");"
 
-(* Refactorisation pour réduire la duplication du code *)
 let rec afficher_ast portee ast =
   match ast with
   | Paragraphe l -> List.fold_left afficher_ast portee l
