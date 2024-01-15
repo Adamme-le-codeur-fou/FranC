@@ -20,8 +20,8 @@ let rec print_mot_liste l =
   match l with
   | [] -> ()
   | Mot m :: q ->
-      Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
-      print_mot_liste q
+    Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
+    print_mot_liste q
   | _ -> raise PhraseInvalide
 
 let rec contient_afficher a =
@@ -32,117 +32,117 @@ let rec contient_afficher a =
   | Egal (ast1, ast2)
   | Fois (ast1, ast2)
   | Assigne (ast1, ast2) ->
-      contient_afficher ast1 || contient_afficher ast2
+    contient_afficher ast1 || contient_afficher ast2
   | Paragraphe ast_list ->
-      List.fold_left
-        (fun acc elt -> acc || contient_afficher elt)
-        false ast_list
+    List.fold_left
+      (fun acc elt -> acc || contient_afficher elt)
+      false ast_list
   | Condition (ast1, p1, p2_opt) -> (
       contient_afficher ast1
       || List.fold_left (fun acc elt -> acc || contient_afficher elt) false p1
       ||
       match p2_opt with
       | Some p2 ->
-          List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
+        List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
       | None -> false)
   | BoucleTantQue (ast1, ast_list) ->
-      contient_afficher ast1
-      || List.fold_left
-           (fun acc elt -> acc || contient_afficher elt)
-           false ast_list
+    contient_afficher ast1
+    || List.fold_left
+      (fun acc elt -> acc || contient_afficher elt)
+      false ast_list
   | _ -> false
 
-type scope = (string * string) list
+type portee = (string * string) list
 
-let variable_est_declaree scope var_name =
-  List.exists (fun (name, _) -> name = var_name) scope
+let variable_est_declaree portee var_name =
+  List.exists (fun (name, _) -> name = var_name) portee
 
-let rec affiche_aux scope a =
+let rec affiche_aux portee a =
   match a with
   | Phrase (l, p) ->
-      print_string "Phrase(";
-      print_string ")\n";
-      scope
+    print_string "Phrase(";
+    print_string ")\n";
+    portee
   | Plus (p1, p2) ->
-      print_string "(";
-      affiche_aux scope p1;
-      print_string " + ";
-      affiche_aux scope p2;
-      print_string ")";
-      scope
+    print_string "(";
+    let _ = affiche_aux portee p1 in
+    print_string " + ";
+    let _ = affiche_aux portee p2 in
+    print_string ")";
+    portee
   | Fois (p1, p2) ->
-      print_string "(";
-      affiche_aux scope p1;
-      print_string " * ";
-      affiche_aux scope p2;
-      print_string ")";
-      scope
+    print_string "(";
+    let _ = affiche_aux portee p1 in
+    print_string " * ";
+    let _ = affiche_aux portee p2 in
+    print_string ")";
+    portee
   | Egal (p1, p2) ->
-      print_string "(";
-      affiche_aux scope p1;
-      print_string " == ";
-      affiche_aux scope p2;
-      print_string ")";
-      scope
+    print_string "(";
+    let _ = affiche_aux portee p1 in
+    print_string " == ";
+    let _ = affiche_aux portee p2 in
+    print_string ")";
+    portee
   | Nombre d ->
-      print_string d;
-      scope
+    print_string d;
+    portee
   | Mot m ->
-      print_string (String.lowercase_ascii m);
-      scope
+    print_string (String.lowercase_ascii m);
+    portee
   | Assigne (Mot m, e) ->
-      let doit_declarer = not (variable_est_declaree scope m) in
-      let new_scope = if doit_declarer then (m, "int") :: scope else scope in
-      if doit_declarer then print_string "int ";
-      let _ = affiche_aux new_scope (Mot m) in
-      print_string " = ";
-      let _ = affiche_aux new_scope e in
-      print_string ";\n";
-      new_scope
+    let doit_declarer = not (variable_est_declaree portee m) in
+    let new_portee = if doit_declarer then (m, "int") :: portee else portee in
+    if doit_declarer then print_string "int ";
+    let _ = affiche_aux new_portee (Mot m) in
+    print_string " = ";
+    let _ = affiche_aux new_portee e in
+    print_string ";\n";
+    new_portee
   | Paragraphe l ->
-      List.fold_left (fun acc_scope expr -> affiche_aux acc_scope expr) scope l
+    List.fold_left (fun acc_portee expr -> affiche_aux acc_portee expr) portee l
   | Afficher s ->
-      print_string "printf(\"%d\\n\", ";
-      let _ = affiche_aux scope s in
-      print_string ");\n";
-      scope
+    print_string "printf(\"%d\\n\", ";
+    let _ = affiche_aux portee s in
+    print_string ");\n";
+    portee
   | Condition (cond, alors_list, sinon_paragraphe_opt) -> (
       Printf.printf "if (";
-      let _ = affiche_aux scope cond in
+      let _ = affiche_aux portee cond in
       Printf.printf ") {\n";
-      let new_scope = List.fold_left affiche_aux scope alors_list in
+      let new_portee = List.fold_left affiche_aux portee alors_list in
       Printf.printf "}\n";
       match sinon_paragraphe_opt with
       | Some sinon_list ->
-          Printf.printf "else {\n";
-          let new_scope = List.fold_left affiche_aux new_scope sinon_list in
-          Printf.printf "}\n";
-          new_scope
-      | None -> new_scope)
+        Printf.printf "else {\n";
+        let new_portee = List.fold_left affiche_aux new_portee sinon_list in
+        Printf.printf "}\n";
+        new_portee
+      | None -> new_portee)
   | BoucleTantQue (cond, paragraphe) ->
-      Printf.printf "while (";
-      affiche_aux scope cond;
-      Printf.printf ") {\n";
-      let new_scope = List.fold_left affiche_aux scope paragraphe in
-      Printf.printf "}\n";
-      new_scope
+    Printf.printf "while (";
+    let _ = affiche_aux portee cond in
+    Printf.printf ") {\n";
+    let new_portee = List.fold_left affiche_aux portee paragraphe in
+    Printf.printf "}\n";
+    new_portee
   | Different (p1, p2) ->
-      print_string "(";
-      affiche_aux scope p1;
-      print_string " != ";
-      affiche_aux scope p2;
-      print_string ")";
-      scope
-  | _ -> scope (* pour les autres cas *)
+    print_string "(";
+    let _ = affiche_aux portee p1 in
+    print_string " != ";
+    let _ = affiche_aux portee p2 in
+    print_string ")";
+    portee
+  | _ -> portee (* pour les autres cas *)
 
 let affiche a =
-  let rec affiche_main scope a =
+  let rec affiche_main portee a =
     match a with
     | Paragraphe l ->
-        List.fold_left
-          (fun acc_scope expr -> affiche_main acc_scope expr)
-          scope l
-    | _ -> affiche_aux scope a
+      List.fold_left
+        (fun acc_portee expr -> affiche_main acc_portee expr)
+        portee l
+    | _ -> affiche_aux portee a
   in
   if contient_afficher a then print_endline "#include <stdio.h>\n";
   print_string "\nint main(){\n";
