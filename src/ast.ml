@@ -109,12 +109,9 @@ let afficher_assignation portee (var, expr) =
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Nombre n ->
-      Printf.printf "printf(\"%s\\n\", %s);" n
-        n (* Afficher un nombre directement *)
+  | Nombre n -> Printf.printf "printf(\"%%d\\n\", %s);" n
   | _ ->
-      (* Pour les autres expressions *)
-      Printf.printf "printf(\"%d\\n\", ";
+      Printf.printf "printf(\"%%d\\n\", ";
       afficher_expression portee e;
       Printf.printf ");"
 
