@@ -1,1 +1,1 @@
-Si 11 vaut 10 alors afficher 20, sinon Si 5 vaut 5 alors afficher 10, sinon afficher 0.
+Si 11 vaut 10 alors afficher 20,afficher 21, sinon Si 3 plus 3 vaut 6 alors afficher 10,afficher 11, sinon afficher 0,afficher 1.

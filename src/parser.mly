@@ -13,16 +13,15 @@
 %nonassoc Plus
 %nonassoc Fois
 %left Parenthese_Gauche
+%left Si Alors
+%right Sinon
 
 %start main
 %type <Ast.ast> main
 
 %%
 
-main:
-  | conditionnelle EOF { $1 }
-  | expression Ponctuation_fin_phrase EOF { Paragraphe([Expression $1]) }
-  | paragraphe EOF { Paragraphe(List.rev $1) }
+main: paragraphe EOF { Paragraphe(List.rev $1) }
 
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
