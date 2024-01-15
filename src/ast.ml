@@ -1,5 +1,6 @@
 exception PhraseInvalide
 exception TokenInvalide
+exception IncompatibiliteDeType
 
 type ast =
   | Mot of string
@@ -20,8 +21,8 @@ let rec print_mot_liste l =
   match l with
   | [] -> ()
   | Mot m :: q ->
-    Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
-    print_mot_liste q
+      Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
+      print_mot_liste q
   | _ -> raise PhraseInvalide
 
 let rec contient_afficher a =
@@ -32,24 +33,24 @@ let rec contient_afficher a =
   | Egal (ast1, ast2)
   | Fois (ast1, ast2)
   | Assigne (ast1, ast2) ->
-    contient_afficher ast1 || contient_afficher ast2
+      contient_afficher ast1 || contient_afficher ast2
   | Paragraphe ast_list ->
-    List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
+      List.fold_left
+        (fun acc elt -> acc || contient_afficher elt)
+        false ast_list
   | Condition (ast1, p1, p2_opt) -> (
       contient_afficher ast1
       || List.fold_left (fun acc elt -> acc || contient_afficher elt) false p1
       ||
       match p2_opt with
       | Some p2 ->
-        List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
+          List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
       | None -> false)
   | BoucleTantQue (ast1, ast_list) ->
-    contient_afficher ast1
-    || List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
+      contient_afficher ast1
+      || List.fold_left
+           (fun acc elt -> acc || contient_afficher elt)
+           false ast_list
   | _ -> false
 
 type portee = (string * string) list
@@ -57,94 +58,113 @@ type portee = (string * string) list
 let variable_est_declaree portee var_name =
   List.exists (fun (name, _) -> name = var_name) portee
 
-let rec affiche_aux portee a =
-  match a with
-  | Phrase (l, p) ->
-    print_string "Phrase(";
-    print_string ")\n";
-    portee
-  | Plus (p1, p2) ->
-    print_string "(";
-    let _ = affiche_aux portee p1 in
-    print_string " + ";
-    let _ = affiche_aux portee p2 in
-    print_string ")";
-    portee
-  | Fois (p1, p2) ->
-    print_string "(";
-    let _ = affiche_aux portee p1 in
-    print_string " * ";
-    let _ = affiche_aux portee p2 in
-    print_string ")";
-    portee
-  | Egal (p1, p2) ->
-    print_string "(";
-    let _ = affiche_aux portee p1 in
-    print_string " == ";
-    let _ = affiche_aux portee p2 in
-    print_string ")";
-    portee
-  | Nombre d ->
-    print_string d;
-    portee
+(* Fonction pour afficher une expression *)
+let rec afficher_expression portee expr =
+  match expr with
+  | Nombre n -> Printf.printf "%s" n
   | Mot m ->
-    print_string (String.lowercase_ascii m);
-    portee
-  | Assigne (Mot m, e) ->
-    let doit_declarer = not (variable_est_declaree portee m) in
-    let new_portee = if doit_declarer then (m, "int") :: portee else portee in
-    if doit_declarer then print_string "int ";
-    let _ = affiche_aux new_portee (Mot m) in
-    print_string " = ";
-    let _ = affiche_aux new_portee e in
-    print_string ";\n";
-    new_portee
-  | Paragraphe l ->
-    List.fold_left (fun acc_portee expr -> affiche_aux acc_portee expr) portee l
-  | Afficher s ->
-    print_string "printf(\"%d\\n\", ";
-    let _ = affiche_aux portee s in
-    print_string ");\n";
-    portee
-  | Condition (cond, alors_list, sinon_paragraphe_opt) -> (
-      Printf.printf "if (";
-      let _ = affiche_aux portee cond in
-      Printf.printf ") {\n";
-      let new_portee = List.fold_left affiche_aux portee alors_list in
-      Printf.printf "}\n";
-      match sinon_paragraphe_opt with
-      | Some sinon_list ->
-        Printf.printf "else {\n";
-        let new_portee = List.fold_left affiche_aux new_portee sinon_list in
-        Printf.printf "}\n";
-        new_portee
-      | None -> new_portee)
-  | BoucleTantQue (cond, paragraphe) ->
-    Printf.printf "while (";
-    let _ = affiche_aux portee cond in
-    Printf.printf ") {\n";
-    let new_portee = List.fold_left affiche_aux portee paragraphe in
-    Printf.printf "}\n";
-    new_portee
+      let m_minuscule = String.lowercase_ascii m in
+      Printf.printf "%s"
+        (if variable_est_declaree portee m_minuscule then m_minuscule
+         else raise TokenInvalide)
+  | Plus (e1, e2) ->
+      Printf.printf "(";
+      afficher_expression portee e1;
+      Printf.printf " + ";
+      afficher_expression portee e2;
+      Printf.printf ")"
+  | Fois (p1, p2) ->
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " * ";
+      afficher_expression portee p2;
+      Printf.printf ")"
+  | Egal (p1, p2) ->
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " == ";
+      afficher_expression portee p2;
+      Printf.printf ")"
   | Different (p1, p2) ->
-    print_string "(";
-    let _ = affiche_aux portee p1 in
-    print_string " != ";
-    let _ = affiche_aux portee p2 in
-    print_string ")";
-    portee
-  | _ -> portee (* pour les autres cas *)
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " != ";
+      afficher_expression portee p2;
+      Printf.printf ")"
+  | _ -> raise PhraseInvalide
 
-let affiche a =
-  let rec affiche_main portee a =
-    match a with
-    | Paragraphe l ->
-      List.fold_left
-        (fun acc_portee expr -> affiche_main acc_portee expr)
-        portee l
-    | _ -> affiche_aux portee a
+(* Fonction pour afficher une assignation *)
+let afficher_assignation portee (var, expr) =
+  let var_minuscule = String.lowercase_ascii var in
+  let portee_maj =
+    if variable_est_declaree portee var_minuscule then portee
+    else (var_minuscule, "int") :: portee
   in
+  if not (variable_est_declaree portee var_minuscule) then Printf.printf "int ";
+  Printf.printf "%s = " var_minuscule;
+  afficher_expression portee_maj expr;
+  Printf.printf ";\n";
+  portee_maj
+
+(* Fonction pour afficher un appel à printf avec la valeur correcte *)
+let afficher_printf portee e =
+  match e with
+  | Nombre n ->
+      Printf.printf "printf(\"%s\\n\", %s);" n
+        n (* Afficher un nombre directement *)
+  | _ ->
+      (* Pour les autres expressions *)
+      Printf.printf "printf(\"%d\\n\", ";
+      afficher_expression portee e;
+      Printf.printf ");"
+
+(* Refactorisation pour réduire la duplication du code *)
+let rec afficher_ast portee ast =
+  match ast with
+  | Paragraphe l -> List.fold_left afficher_ast portee l
+  | Assigne (Mot m, e) -> afficher_assignation portee (m, e)
+  | Afficher e ->
+      afficher_printf portee e;
+      portee
+  | Condition (cond, alors_list, sinon_opt) ->
+      afficher_condition portee cond alors_list sinon_opt
+  | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
+  | _ ->
+      afficher_expression portee ast;
+      portee
+
+(* Fonction pour afficher une condition *)
+and afficher_condition portee cond alors_list sinon_opt =
+  Printf.printf "if (";
+  afficher_expression portee cond;
+  Printf.printf ") {\n";
+  let portee_apres_alors = List.fold_left afficher_ast portee alors_list in
+  Printf.printf "}\n";
+  match sinon_opt with
+  | Some sinon_list ->
+      Printf.printf "else {\n";
+      let portee_apres_sinon =
+        List.fold_left afficher_ast portee_apres_alors sinon_list
+      in
+      Printf.printf "}\n";
+      portee_apres_sinon
+  | None -> portee_apres_alors
+
+(* Fonction pour afficher une boucle 'tant que' *)
+and afficher_boucle portee cond paragraphe =
+  Printf.printf "while (";
+  afficher_expression portee cond;
+  Printf.printf ") {\n";
+  let portee_apres_boucle = List.fold_left afficher_ast portee paragraphe in
+  Printf.printf "}\n";
+  portee_apres_boucle
+
+let verifier_type attendu obtenu =
+  if attendu <> obtenu then raise IncompatibiliteDeType
+
+(* Fonction principale pour afficher le code C *)
+let affiche a =
   if contient_afficher a then print_endline "#include <stdio.h>\n";
   print_string "\nint main(){\n";
-  let _ = affiche_main [] a in
+  let _ = afficher_ast [] a in
   print_string "\nreturn 0;\n}"

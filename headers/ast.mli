@@ -1,5 +1,6 @@
 exception PhraseInvalide
 exception TokenInvalide
+exception TypeMismatch
 
 type ast =
   | Mot of string
