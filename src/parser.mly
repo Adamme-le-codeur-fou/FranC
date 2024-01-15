@@ -22,7 +22,7 @@
 
 %%
 
-main: paragraphe EOF { Paragraphe(List.rev $1) }
+main: paragraphe EOF { Paragraphe($1) }
 
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
@@ -39,6 +39,7 @@ expression:
     | expression Plus expression { Plus($1, $3) }
     | expression Fois expression { Fois($1, $3) }
     | expression Egal expression { Egal($1, $3) }
+    | expression Different expression { Different($1, $3) }
     | Nombre { Nombre($1) }
     | Mot { Mot($1) }
 
