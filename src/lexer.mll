@@ -33,10 +33,12 @@ rule decoupe =
     | "En itérant sur" { Iterer }
     | "allant de" { Allant_de }
     | "à" { A }
-    | "compris" { Compri }
-    | "non compris" { Non_compri }
+    | "compris" { Compris }
+    | "non compris" { Non_compris }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
+    | "On incrémente" { Incrementer }
+    | "de" { De }
     | nombre as d { Nombre d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 

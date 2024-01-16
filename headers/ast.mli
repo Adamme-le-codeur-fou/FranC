@@ -19,5 +19,6 @@ type ast =
   | Different of ast * ast
   | ForInclus of string * ast * ast * ast list
   | ForExclus of string * ast * ast * ast list
+  | Increment of string * ast option
 
 val affiche : ast -> unit
