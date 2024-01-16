@@ -8,7 +8,7 @@
 %token Tant_que Fin_boucle 
 %token Reste_division_euclidienne_debut Par
 %token Iterer Sur Allant_de A Compris Non_compris Termine_sequence Agir
-%token Incrementer De
+%token Incrementer De Decrementer
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase
 %token <string> Entier Reel
@@ -75,6 +75,8 @@ instruction:
   | boucle_pour { $1 }
   | Incrementer Mot Ponctuation_fin_phrase { Increment($2, None) }
   | Incrementer Mot De expression Ponctuation_fin_phrase { Increment($2, Some $4) }
+  | Decrementer Mot Ponctuation_fin_phrase { Decrement($2, None) }
+  | Decrementer Mot De expression Ponctuation_fin_phrase { Decrement($2, Some $4) }
 
 paragraphe:
     | instruction paragraphe { $1 :: $2 }

@@ -23,6 +23,7 @@ type ast =
   | ForInclus of string * ast * ast * ast list
   | ForExclus of string * ast * ast * ast list
   | Increment of string * ast option
+  | Decrement of string * ast option
 
 let rec type_de_expression expr =
   match expr with
@@ -181,6 +182,14 @@ let rec afficher_ast portee ast =
       portee
   | Increment (var, Some expr) ->
       Printf.printf "%s += " (String.lowercase_ascii var);
+      afficher_expression portee expr;
+      Printf.printf ";\n";
+      portee
+  | Decrement (var, None) ->
+      Printf.printf "%s--;\n" (String.lowercase_ascii var);
+      portee
+  | Decrement (var, Some expr) ->
+      Printf.printf "%s -= " (String.lowercase_ascii var);
       afficher_expression portee expr;
       Printf.printf ";\n";
       portee

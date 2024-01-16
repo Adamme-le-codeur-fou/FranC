@@ -39,6 +39,7 @@ rule decoupe =
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
     | "On incrémente" { Incrementer }
+    | "On décrémente" { Decrementer }
     | "de" { De }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }

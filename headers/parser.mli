@@ -25,6 +25,7 @@ type token =
   | Agir
   | Incrementer
   | De
+  | Decrementer
   | EOF
   | Tabulation
   | Mot of string
