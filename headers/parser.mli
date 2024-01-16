@@ -19,10 +19,12 @@ type token =
   | Sur
   | Allant_de
   | A
-  | Compri
-  | Non_compri
+  | Compris
+  | Non_compris
   | Termine_sequence
   | Agir
+  | Incrementer
+  | De
   | EOF
   | Tabulation
   | Mot of string

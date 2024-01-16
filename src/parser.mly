@@ -7,7 +7,8 @@
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
 %token Reste_division_euclidienne_debut Par
-%token Iterer Sur Allant_de A Compri Non_compri Termine_sequence Agir
+%token Iterer Sur Allant_de A Compris Non_compris Termine_sequence Agir
+%token Incrementer De
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase
 %token <string> Entier Reel
@@ -18,7 +19,7 @@
 %nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois
 %left Parenthese_Gauche
-%left Si Alors Tant_que  AGIR
+%left Si Alors Tant_que Agir
 %right Sinon
 
 %start main
@@ -60,19 +61,20 @@ conditionnelle:
 boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  { BoucleTantQue($2, $4) }
 
 boucle_pour:
-    | Iterer Mot Allant_de expression A expression Compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+    | Iterer Mot Allant_de expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForInclus($2, $4, $6, $9) }
-    | Iterer Mot Allant_de expression A expression Non_compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+    | Iterer Mot Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForExclus($2, $4, $6, $9) }
     | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForExclus($2, $4, $6, $8) }
-
 
 instruction:
   | declaration { $1 }
   | conditionnelle { $1 }
   | boucle_tant_que { $1 }
   | boucle_pour { $1 }
+  | Incrementer Mot Ponctuation_fin_phrase { Increment($2, None) }
+  | Incrementer Mot De expression Ponctuation_fin_phrase { Increment($2, Some $4) }
 
 paragraphe:
     | instruction paragraphe { $1 :: $2 }

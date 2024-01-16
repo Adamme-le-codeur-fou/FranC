@@ -19,7 +19,7 @@ rule decoupe =
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
     | "par" { Par }
-    | "prend la valeur" | "devient" | "prend la valeur" { Assigne }
+    | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal" { Egal }
     | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }
@@ -34,10 +34,12 @@ rule decoupe =
     | "En itérant sur" { Iterer }
     | "allant de" { Allant_de }
     | "à" { A }
-    | "compris" { Compri }
-    | "non compris" { Non_compri }
+    | "compris" { Compris }
+    | "non compris" { Non_compris }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
+    | "On incrémente" { Incrementer }
+    | "de" { De }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 

@@ -22,6 +22,7 @@ type ast =
   | Different of ast * ast
   | ForInclus of string * ast * ast * ast list
   | ForExclus of string * ast * ast * ast list
+  | Increment of string * ast option
 
 let rec type_de_expression expr =
   match expr with
@@ -175,6 +176,14 @@ let rec afficher_ast portee ast =
   | Condition (cond, alors_list, sinon_opt) ->
       afficher_condition portee cond alors_list sinon_opt
   | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
+  | Increment (var, None) ->
+      Printf.printf "%s++;\n" (String.lowercase_ascii var);
+      portee
+  | Increment (var, Some expr) ->
+      Printf.printf "%s += " (String.lowercase_ascii var);
+      afficher_expression portee expr;
+      Printf.printf ";\n";
+      portee
   | _ ->
       afficher_expression portee ast;
       portee
