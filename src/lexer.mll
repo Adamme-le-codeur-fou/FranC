@@ -40,6 +40,7 @@ rule decoupe =
     | "Ce qui termine la séquence" { Termine_sequence }
     | "On incrémente" { Incrementer }
     | "de" { De }
+    | "puis" { Puis }
     | "«" { chaine_de_caracteres "" lexbuf}
     | nombre as d { Entier d }
     | mot as mot { Mot mot }

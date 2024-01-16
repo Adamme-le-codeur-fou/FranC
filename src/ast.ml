@@ -21,6 +21,7 @@ type ast =
   | Modulo of ast * ast
   | Assigne of ast * ast
   | Afficher of ast
+  | Afficher_puis of ast list
   | Paragraphe of ast list
   | Condition of ast * ast list * ast list option
   | Expression of ast
@@ -67,6 +68,7 @@ let rec print_mot_liste l =
 let rec contient_afficher a =
   match a with
   | Afficher _ -> true
+  | Afficher_puis _ -> true
   | Mot _ | Entier _ | Reel _ -> false
   | Plus (ast1, ast2)
   | Egal (ast1, ast2)
@@ -165,14 +167,24 @@ let afficher_assignation portee (var, expr) =
   portee_maj
 
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
-let afficher_printf portee e =
+let afficher_printf portee ?(saut_de_ligne = true) e =
   match e with
-  | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
+  | Entier n ->
+      Printf.printf "printf(\"%%d%s\", %s);"
+        (if saut_de_ligne then "\\n" else "")
+        n
   | Reel r ->
-      Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
-  | ChaineDeCaracteres c -> Printf.printf "printf(\"%s\\n\");" c
+      Printf.printf "printf(\"%%f%s\", %s);"
+        (if saut_de_ligne then "\\n" else "")
+        (ramplacer_caractere ',' '.' r)
+  | ChaineDeCaracteres c ->
+      Printf.printf "printf(\"%s%s\");" c (if saut_de_ligne then "\\n" else "")
+  | Mot c ->
+      Printf.printf "printf(\"%%s%s\", %s);"
+        (if saut_de_ligne then "\n" else "")
+        c (* TODO *)
   | _ ->
-      Printf.printf "printf(\"%%d\\n\", ";
+      Printf.printf "printf(\"%%d%s\", " (if saut_de_ligne then "\\n" else "");
       afficher_expression portee e;
       Printf.printf ");"
 
@@ -187,6 +199,12 @@ let rec afficher_ast portee ast =
   | Afficher e ->
       afficher_printf portee e;
       portee
+  | Afficher_puis l -> (
+      match l with
+      | [] -> portee
+      | e :: q ->
+          afficher_printf portee ~saut_de_ligne:(q = []) e;
+          afficher_ast portee (Afficher_puis q))
   | Condition (cond, alors_list, sinon_opt) ->
       afficher_condition portee cond alors_list sinon_opt
   | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
@@ -247,6 +265,6 @@ let verifier_type attendu obtenu =
 (* Fonction principale pour afficher le code C *)
 let affiche a =
   if contient_afficher a then print_endline "#include <stdio.h>\n";
-  print_string "\nint main(){\n";
+  print_string "#include <string.h>\nint main(){\n";
   let _ = afficher_ast [] a in
   print_string "\nreturn 0;\n}"
