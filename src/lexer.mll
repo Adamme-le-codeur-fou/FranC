@@ -14,6 +14,7 @@ let mot = alphabet_min+
 rule decoupe =
     parse
     | [' ''\n''\t']+ { decoupe lexbuf }
+    | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
@@ -37,7 +38,7 @@ rule decoupe =
     | "non compris" { Non_compri }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
-    | nombre as d { Nombre d }
+    | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
     | ponctuation as ponct { Ponctuation_fin_phrase ponct } 

@@ -2,9 +2,12 @@ exception PhraseInvalide
 exception TokenInvalide
 exception IncompatibiliteDeType
 
+type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeNeant
+
 type ast =
   | Mot of string
-  | Nombre of string
+  | Entier of string
+  | Reel of string
   | Phrase of ast list * string
   | Plus of ast * ast
   | Egal of ast * ast
@@ -20,6 +23,27 @@ type ast =
   | ForInclus of string * ast * ast * ast list
   | ForExclus of string * ast * ast * ast list
 
+let rec type_de_expression expr =
+  match expr with
+  | Entier _ -> TypeEntier
+  | Reel _ -> TypeReel
+  | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) ->
+      if
+        type_de_expression expr_gauche = TypeReel
+        || type_de_expression expr_droite = TypeReel
+      then TypeReel
+      else TypeEntier
+  | Egal _ | Different _ -> TypeBooleen
+  | Modulo _ -> TypeEntier
+  | _ -> TypeNeant
+
+let ramplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
+  String.map
+    (fun caractere_courrant ->
+      if caractere_courrant = ancien_caractere then nouveau_caractere
+      else caractere_courrant)
+    chaine_caractere
+
 let rec print_mot_liste l =
   match l with
   | [] -> ()
@@ -31,7 +55,7 @@ let rec print_mot_liste l =
 let rec contient_afficher a =
   match a with
   | Afficher _ -> true
-  | Mot _ | Nombre _ -> false
+  | Mot _ | Entier _ | Reel _ -> false
   | Plus (ast1, ast2)
   | Egal (ast1, ast2)
   | Fois (ast1, ast2)
@@ -69,7 +93,8 @@ let variable_est_declaree portee var_name =
 (* Fonction pour afficher une expression *)
 let rec afficher_expression portee expr =
   match expr with
-  | Nombre n -> Printf.printf "%s" n
+  | Entier n -> Printf.printf "%s" n
+  | Reel r -> Printf.printf "%s" (ramplacer_caractere ',' '.' r)
   | Mot m ->
       let m_minuscule = String.lowercase_ascii m in
       Printf.printf "%s"
@@ -114,7 +139,12 @@ let afficher_assignation portee (var, expr) =
     if variable_est_declaree portee var_minuscule then portee
     else (var_minuscule, "int") :: portee
   in
-  if not (variable_est_declaree portee var_minuscule) then Printf.printf "int ";
+  (if not (variable_est_declaree portee var_minuscule) then
+     match type_de_expression expr with
+     | TypeEntier | TypeBooleen -> Printf.printf "int "
+     | TypeNeant -> Printf.printf "void "
+     | TypeReel -> Printf.printf "float "
+     | _ -> Printf.printf "int ");
   Printf.printf "%s = " var_minuscule;
   afficher_expression portee_maj expr;
   Printf.printf ";\n";
@@ -123,7 +153,9 @@ let afficher_assignation portee (var, expr) =
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Nombre n -> Printf.printf "printf(\"%%d\\n\", %s);" n
+  | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
+  | Reel r ->
+      Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
   | _ ->
       Printf.printf "printf(\"%%d\\n\", ";
       afficher_expression portee e;

@@ -9,7 +9,8 @@
 %token Reste_division_euclidienne_debut Par
 %token Iterer Sur Allant_de A Compri Non_compri Termine_sequence Agir
 %token EOF Tabulation
-%token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
+%token <string> Mot Mot_majuscule Ponctuation_fin_phrase
+%token <string> Entier Reel
 
 %nonassoc Assigne
 %nonassoc Egal Different
@@ -44,7 +45,8 @@ expression:
     | expression Fois expression { Fois($1, $3) }
     | expression Egal expression { Egal($1, $3) }
     | expression Different expression { Different($1, $3) }
-    | Nombre { Nombre($1) }
+    | Entier { Entier($1) }
+    | Reel { Reel($1) }
     | Mot { Mot($1) }
 
 declaration:

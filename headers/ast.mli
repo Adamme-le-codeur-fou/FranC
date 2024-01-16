@@ -4,7 +4,8 @@ exception TypeMismatch
 
 type ast =
   | Mot of string
-  | Nombre of string
+  | Entier of string
+  | Reel of string
   | Phrase of ast list * string
   | Plus of ast * ast
   | Egal of ast * ast

@@ -1,1 +1,1 @@
-I prend la valeur 5. En itérant sur i allant de 0 à 10 non compris on agit selon la séquence suivante : Afficher i. Ce qui termine la séquence. Afficher i.
+I prend la valeur 6 vaut 2. En itérant sur i allant de 0 à 10 non compris on agit selon la séquence suivante : Afficher i. Ce qui termine la séquence. Afficher 3,0.
