@@ -1,4 +1,3 @@
-    A devient 48. B devient 18. Tant que b est différent 
-de 0 alors Temporaire devient b. B devient le reste de la 
-division euclidienne de a par b. A devient temporaire. Ce 
-qui conclut la boucle. Afficher a.
+    A devient 48. B devient 18. Tant que b est différent de 0 alors
+Temporaire devient b. B devient le reste de la division euclidienne de 
+a par b. A devient temporaire. Ce qui conclut la boucle. Afficher a.

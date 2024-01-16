@@ -18,7 +18,7 @@ rule decoupe =
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
     | "par" { Par }
-    | "prend la valeur" | "devient" | "prend la valeur" { Assigne }
+    | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal" { Egal }
     | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }

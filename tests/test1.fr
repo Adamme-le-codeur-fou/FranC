@@ -1,1 +1,1 @@
-I prend la valeur 5. En itérant sur i allant de 0 à 10 non compris on agit selon la séquence suivante : Afficher i. Ce qui termine la séquence. Afficher i.
+En itérant sur i allant de 0 à 10 compris on agit selon la séquence suivante : afficher i. Ce qui termine la séquence.
