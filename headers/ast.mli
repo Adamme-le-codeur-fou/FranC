@@ -22,5 +22,6 @@ type ast =
   | ForExclus of string * ast * ast * ast list
   | Increment of string * ast option
   | Decrement of string * ast option
+  | Fonction of string * string list * ast list
 
 val affiche : ast -> unit

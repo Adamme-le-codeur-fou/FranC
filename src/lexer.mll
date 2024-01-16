@@ -41,6 +41,11 @@ rule decoupe =
     | "On incrémente" { Incrementer }
     | "On décrémente" { Decrementer }
     | "de" { De }
+    | "On commence par faire un moule" { Commence }
+    | "Dedans on rajoute des ingrédients :" { Dedans }
+    | "Le moule va procéder selon la séquence suivante :" { Proceder }
+    | "Ce qui termine la préparation du moule" { Termine_fonction }
+    | "," { Virgule }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 

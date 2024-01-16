@@ -24,17 +24,18 @@ type ast =
   | ForExclus of string * ast * ast * ast list
   | Increment of string * ast option
   | Decrement of string * ast option
+  | Fonction of string * string list * ast list
 
 let rec type_de_expression expr =
   match expr with
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
   | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) ->
-    if
-      type_de_expression expr_gauche = TypeReel
-      || type_de_expression expr_droite = TypeReel
-    then TypeReel
-    else TypeEntier
+      if
+        type_de_expression expr_gauche = TypeReel
+        || type_de_expression expr_droite = TypeReel
+      then TypeReel
+      else TypeEntier
   | Egal _ | Different _ -> TypeBooleen
   | Modulo _ -> TypeEntier
   | _ -> TypeNeant
@@ -42,16 +43,16 @@ let rec type_de_expression expr =
 let ramplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
   String.map
     (fun caractere_courrant ->
-       if caractere_courrant = ancien_caractere then nouveau_caractere
-       else caractere_courrant)
+      if caractere_courrant = ancien_caractere then nouveau_caractere
+      else caractere_courrant)
     chaine_caractere
 
 let rec print_mot_liste l =
   match l with
   | [] -> ()
   | Mot m :: q ->
-    Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
-    print_mot_liste q
+      Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
+      print_mot_liste q
   | _ -> raise PhraseInvalide
 
 let rec contient_afficher a =
@@ -62,29 +63,33 @@ let rec contient_afficher a =
   | Egal (ast1, ast2)
   | Fois (ast1, ast2)
   | Assigne (ast1, ast2) ->
-    contient_afficher ast1 || contient_afficher ast2
+      contient_afficher ast1 || contient_afficher ast2
   | Paragraphe ast_list ->
-    List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
+      List.fold_left
+        (fun acc elt -> acc || contient_afficher elt)
+        false ast_list
   | Condition (ast1, p1, p2_opt) -> (
       contient_afficher ast1
       || List.fold_left (fun acc elt -> acc || contient_afficher elt) false p1
       ||
       match p2_opt with
       | Some p2 ->
-        List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
+          List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
       | None -> false)
   | BoucleTantQue (ast1, ast_list) ->
-    contient_afficher ast1
-    || List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
+      contient_afficher ast1
+      || List.fold_left
+           (fun acc elt -> acc || contient_afficher elt)
+           false ast_list
   | ForInclus (_, ast1, ast2, ast_list) | ForExclus (_, ast1, ast2, ast_list) ->
-    contient_afficher ast1 || contient_afficher ast2
-    || List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
+      contient_afficher ast1 || contient_afficher ast2
+      || List.fold_left
+           (fun acc elt -> acc || contient_afficher elt)
+           false ast_list
+  | Fonction (_, _, ast_list) ->
+      List.fold_left
+        (fun acc elt -> acc || contient_afficher elt)
+        false ast_list
   | _ -> false
 
 type portee = (string * string) list
@@ -98,40 +103,40 @@ let rec afficher_expression portee expr =
   | Entier n -> Printf.printf "%s" n
   | Reel r -> Printf.printf "%s" (ramplacer_caractere ',' '.' r)
   | Mot m ->
-    let m_minuscule = String.lowercase_ascii m in
-    Printf.printf "%s"
-      (if variable_est_declaree portee m_minuscule then m_minuscule
-       else raise TokenInvalide)
+      let m_minuscule = String.lowercase_ascii m in
+      Printf.printf "%s"
+        (if variable_est_declaree portee m_minuscule then m_minuscule
+         else raise TokenInvalide)
   | Plus (e1, e2) ->
-    Printf.printf "(";
-    afficher_expression portee e1;
-    Printf.printf " + ";
-    afficher_expression portee e2;
-    Printf.printf ")"
+      Printf.printf "(";
+      afficher_expression portee e1;
+      Printf.printf " + ";
+      afficher_expression portee e2;
+      Printf.printf ")"
   | Fois (p1, p2) ->
-    Printf.printf "(";
-    afficher_expression portee p1;
-    Printf.printf " * ";
-    afficher_expression portee p2;
-    Printf.printf ")"
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " * ";
+      afficher_expression portee p2;
+      Printf.printf ")"
   | Egal (p1, p2) ->
-    Printf.printf "(";
-    afficher_expression portee p1;
-    Printf.printf " == ";
-    afficher_expression portee p2;
-    Printf.printf ")"
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " == ";
+      afficher_expression portee p2;
+      Printf.printf ")"
   | Different (p1, p2) ->
-    Printf.printf "(";
-    afficher_expression portee p1;
-    Printf.printf " != ";
-    afficher_expression portee p2;
-    Printf.printf ")"
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " != ";
+      afficher_expression portee p2;
+      Printf.printf ")"
   | Modulo (p1, p2) ->
-    Printf.printf "(";
-    afficher_expression portee p1;
-    Printf.printf " %% ";
-    afficher_expression portee p2;
-    Printf.printf ")"
+      Printf.printf "(";
+      afficher_expression portee p1;
+      Printf.printf " %% ";
+      afficher_expression portee p2;
+      Printf.printf ")"
   | _ -> raise PhraseInvalide
 
 (* Fonction pour afficher une assignation *)
@@ -157,45 +162,46 @@ let afficher_printf portee e =
   match e with
   | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
   | Reel r ->
-    Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
+      Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
   | _ ->
-    Printf.printf "printf(\"%%d\\n\", ";
-    afficher_expression portee e;
-    Printf.printf ");"
+      Printf.printf "printf(\"%%d\\n\", ";
+      afficher_expression portee e;
+      Printf.printf ");"
 
 let rec afficher_ast portee ast =
   match ast with
   | ForInclus (var, start_expr, end_expr, paragraphe) ->
-    afficher_for portee var start_expr end_expr true paragraphe
+      afficher_for portee var start_expr end_expr true paragraphe
   | ForExclus (var, start_expr, end_expr, paragraphe) ->
-    afficher_for portee var start_expr end_expr false paragraphe
+      afficher_for portee var start_expr end_expr false paragraphe
   | Paragraphe l -> List.fold_left afficher_ast portee l
   | Assigne (Mot m, e) -> afficher_assignation portee (m, e)
   | Afficher e ->
-    afficher_printf portee e;
-    portee
+      afficher_printf portee e;
+      portee
   | Condition (cond, alors_list, sinon_opt) ->
-    afficher_condition portee cond alors_list sinon_opt
+      afficher_condition portee cond alors_list sinon_opt
   | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
   | Increment (var, None) ->
-    Printf.printf "%s++;\n" (String.lowercase_ascii var);
-    portee
+      Printf.printf "%s++;\n" (String.lowercase_ascii var);
+      portee
   | Increment (var, Some expr) ->
-    Printf.printf "%s += " (String.lowercase_ascii var);
-    afficher_expression portee expr;
-    Printf.printf ";\n";
-    portee
+      Printf.printf "%s += " (String.lowercase_ascii var);
+      afficher_expression portee expr;
+      Printf.printf ";\n";
+      portee
   | Decrement (var, None) ->
-    Printf.printf "%s--;\n" (String.lowercase_ascii var);
-    portee
+      Printf.printf "%s--;\n" (String.lowercase_ascii var);
+      portee
   | Decrement (var, Some expr) ->
-    Printf.printf "%s -= " (String.lowercase_ascii var);
-    afficher_expression portee expr;
-    Printf.printf ";\n";
-    portee
+      Printf.printf "%s -= " (String.lowercase_ascii var);
+      afficher_expression portee expr;
+      Printf.printf ";\n";
+      portee
+  | Fonction (nom, params, corps) -> portee
   | _ ->
-    afficher_expression portee ast;
-    portee
+      afficher_expression portee ast;
+      portee
 
 (* Fonction pour afficher une condition *)
 and afficher_condition portee cond alors_list sinon_opt =
@@ -206,12 +212,12 @@ and afficher_condition portee cond alors_list sinon_opt =
   Printf.printf "}\n";
   match sinon_opt with
   | Some sinon_list ->
-    Printf.printf "else {\n";
-    let portee_apres_sinon =
-      List.fold_left afficher_ast portee_apres_alors sinon_list
-    in
-    Printf.printf "}\n";
-    portee_apres_sinon
+      Printf.printf "else {\n";
+      let portee_apres_sinon =
+        List.fold_left afficher_ast portee_apres_alors sinon_list
+      in
+      Printf.printf "}\n";
+      portee_apres_sinon
   | None -> portee_apres_alors
 
 (* Fonction pour afficher une boucle 'tant que' *)
@@ -236,12 +242,44 @@ and afficher_for portee var start_expr end_expr inclusive paragraphe =
   Printf.printf "}\n";
   portee_apres_for
 
-let verifier_type attendu obtenu =
-  if attendu <> obtenu then raise IncompatibiliteDeType
+let rec affiche_fonctions portee ast =
+  match ast with
+  | Fonction (nom, params, corps) ->
+      afficher_fonction nom params corps;
+      portee
+  | Paragraphe l -> List.fold_left affiche_fonctions portee l
+  | _ -> portee
+
+(* Fonction pour afficher les paramètres d'une fonction en C *)
+and afficher_parametres params =
+  let rec aux params_list =
+    match params_list with
+    | [] -> ()
+    | [ nom_param ] -> Printf.printf "%s %s" "int" nom_param
+    | nom_param :: rest ->
+        Printf.printf "%s %s" "int" nom_param;
+        Printf.printf ", ";
+        aux rest
+  in
+
+  aux params
+
+(* Fonction pour afficher une fonction en C *)
+and afficher_fonction nom_fonction params corps =
+  Printf.printf "void %s(" nom_fonction;
+  afficher_parametres params;
+  Printf.printf ") {\n";
+  List.iter
+    (fun instr ->
+      let _ = afficher_ast [] instr in
+      ())
+    corps;
+  Printf.printf "}\n\n"
 
 (* Fonction principale pour afficher le code C *)
 let affiche a =
   if contient_afficher a then print_endline "#include <stdio.h>\n";
+  let _ = affiche_fonctions [] a in
   print_string "\nint main(){\n";
   let _ = afficher_ast [] a in
   print_string "\nreturn 0;\n}"

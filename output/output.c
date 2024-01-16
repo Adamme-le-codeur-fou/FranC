@@ -1,9 +1,18 @@
 #include <stdio.h>
 
+void oui(int tomate)
+{
+    printf("%d\n", 5);
+}
 
-int main(){
-float x = (3 + 3.5);
-x -= 5;
-printf("%d\n", x);
-return 0;
+void non(int salade, int tomate, int oignon)
+{
+    printf("%d\n", 66);
+}
+
+int main()
+{
+    printf("%d\n", 66);
+    printf("%d\n", 67);
+    return 0;
 }

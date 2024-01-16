@@ -27,18 +27,24 @@
   19              | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
 
   20  instruction : declaration
-  21              | conditionnelle
-  22              | boucle_tant_que
-  23              | boucle_pour
-  24              | Incrementer Mot Ponctuation_fin_phrase
-  25              | Incrementer Mot De expression Ponctuation_fin_phrase
-  26              | Decrementer Mot Ponctuation_fin_phrase
-  27              | Decrementer Mot De expression Ponctuation_fin_phrase
+  21              | fonction
+  22              | conditionnelle
+  23              | boucle_tant_que
+  24              | boucle_pour
+  25              | Incrementer Mot Ponctuation_fin_phrase
+  26              | Incrementer Mot De expression Ponctuation_fin_phrase
+  27              | Decrementer Mot Ponctuation_fin_phrase
+  28              | Decrementer Mot De expression Ponctuation_fin_phrase
 
-  28  paragraphe : instruction paragraphe
-  29             | instruction
+  29  paragraphe : instruction paragraphe
+  30             | instruction
 
-  30  %entry% : '\001' main
+  31  parametres : Mot Virgule parametres
+  32             | Mot
+
+  33  fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase
+
+  34  %entry% : '\001' main
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -50,7 +56,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . main  (30)
+	%entry% : '\001' . main  (34)
 
 	Afficher  shift 3
 	Si  shift 4
@@ -58,17 +64,19 @@ state 1
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	main  goto 10
-	paragraphe  goto 11
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	main  goto 11
+	paragraphe  goto 12
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
 state 2
@@ -80,41 +88,41 @@ state 2
 state 3
 	declaration : Afficher . expression Ponctuation_fin_phrase  (13)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 23
+	expression  goto 25
 
 
 state 4
 	conditionnelle : Si . expression Alors paragraphe Fin_condition Ponctuation_fin_phrase  (14)
 	conditionnelle : Si . expression Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase  (15)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 24
+	expression  goto 26
 
 
 state 5
 	boucle_tant_que : Tant_que . expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  (16)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 25
+	expression  goto 27
 
 
 state 6
@@ -122,79 +130,86 @@ state 6
 	boucle_pour : Iterer . Mot Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 	boucle_pour : Iterer . Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
-	Mot  shift 26
-	.  error
-
-
-state 7
-	instruction : Incrementer . Mot Ponctuation_fin_phrase  (24)
-	instruction : Incrementer . Mot De expression Ponctuation_fin_phrase  (25)
-
-	Mot  shift 27
-	.  error
-
-
-state 8
-	instruction : Decrementer . Mot Ponctuation_fin_phrase  (26)
-	instruction : Decrementer . Mot De expression Ponctuation_fin_phrase  (27)
-
 	Mot  shift 28
 	.  error
 
 
+state 7
+	instruction : Incrementer . Mot Ponctuation_fin_phrase  (25)
+	instruction : Incrementer . Mot De expression Ponctuation_fin_phrase  (26)
+
+	Mot  shift 29
+	.  error
+
+
+state 8
+	instruction : Decrementer . Mot Ponctuation_fin_phrase  (27)
+	instruction : Decrementer . Mot De expression Ponctuation_fin_phrase  (28)
+
+	Mot  shift 30
+	.  error
+
+
 state 9
+	fonction : Commence . Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Mot  shift 31
+	.  error
+
+
+state 10
 	maj_mot : Mot_majuscule .  (2)
 
 	.  reduce 2
 
 
-state 10
-	%entry% : '\001' main .  (30)
-
-	.  reduce 30
-
-
 state 11
-	main : paragraphe . EOF  (1)
+	%entry% : '\001' main .  (34)
 
-	EOF  shift 29
-	.  error
+	.  reduce 34
 
 
 state 12
-	declaration : maj_mot . Assigne expression Ponctuation_fin_phrase  (12)
+	main : paragraphe . EOF  (1)
 
-	Assigne  shift 30
+	EOF  shift 32
 	.  error
 
 
 state 13
+	declaration : maj_mot . Assigne expression Ponctuation_fin_phrase  (12)
+
+	Assigne  shift 33
+	.  error
+
+
+state 14
 	instruction : declaration .  (20)
 
 	.  reduce 20
 
 
-state 14
-	instruction : conditionnelle .  (21)
-
-	.  reduce 21
-
-
 state 15
-	instruction : boucle_tant_que .  (22)
+	instruction : conditionnelle .  (22)
 
 	.  reduce 22
 
 
 state 16
-	instruction : boucle_pour .  (23)
+	instruction : boucle_tant_que .  (23)
 
 	.  reduce 23
 
 
 state 17
-	paragraphe : instruction . paragraphe  (28)
-	paragraphe : instruction .  (29)
+	instruction : boucle_pour .  (24)
+
+	.  reduce 24
+
+
+state 18
+	paragraphe : instruction . paragraphe  (29)
+	paragraphe : instruction .  (30)
 
 	Afficher  shift 3
 	Si  shift 4
@@ -202,95 +217,73 @@ state 17
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
-	Sinon  reduce 29
-	Fin_condition  reduce 29
-	Fin_boucle  reduce 29
-	Termine_sequence  reduce 29
-	EOF  reduce 29
+	Commence  shift 9
+	Mot_majuscule  shift 10
+	Sinon  reduce 30
+	Fin_condition  reduce 30
+	Fin_boucle  reduce 30
+	Termine_sequence  reduce 30
+	Termine_fonction  reduce 30
+	EOF  reduce 30
 
-	paragraphe  goto 31
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
-
-
-state 18
-	expression : Parenthese_Gauche . expression Parenthese_Droite  (4)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 32
+	paragraphe  goto 34
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
 state 19
-	expression : Reste_division_euclidienne_debut . expression Par expression  (3)
+	instruction : fonction .  (21)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 33
+	.  reduce 21
 
 
 state 20
+	expression : Parenthese_Gauche . expression Parenthese_Droite  (4)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 35
+
+
+state 21
+	expression : Reste_division_euclidienne_debut . expression Par expression  (3)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 36
+
+
+state 22
 	expression : Mot .  (11)
 
 	.  reduce 11
 
 
-state 21
+state 23
 	expression : Entier .  (9)
 
 	.  reduce 9
 
 
-state 22
+state 24
 	expression : Reel .  (10)
 
 	.  reduce 10
-
-
-state 23
-	expression : expression . Plus expression  (5)
-	expression : expression . Fois expression  (6)
-	expression : expression . Egal expression  (7)
-	expression : expression . Different expression  (8)
-	declaration : Afficher expression . Ponctuation_fin_phrase  (13)
-
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Ponctuation_fin_phrase  shift 38
-	.  error
-
-
-state 24
-	expression : expression . Plus expression  (5)
-	expression : expression . Fois expression  (6)
-	expression : expression . Egal expression  (7)
-	expression : expression . Different expression  (8)
-	conditionnelle : Si expression . Alors paragraphe Fin_condition Ponctuation_fin_phrase  (14)
-	conditionnelle : Si expression . Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase  (15)
-
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Alors  shift 39
-	.  error
 
 
 state 25
@@ -298,157 +291,195 @@ state 25
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
-	boucle_tant_que : Tant_que expression . Alors paragraphe Fin_boucle Ponctuation_fin_phrase  (16)
+	declaration : Afficher expression . Ponctuation_fin_phrase  (13)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Alors  shift 40
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Ponctuation_fin_phrase  shift 41
 	.  error
 
 
 state 26
-	boucle_pour : Iterer Mot . Allant_de expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
-	boucle_pour : Iterer Mot . Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
-	boucle_pour : Iterer Mot . Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
+	expression : expression . Plus expression  (5)
+	expression : expression . Fois expression  (6)
+	expression : expression . Egal expression  (7)
+	expression : expression . Different expression  (8)
+	conditionnelle : Si expression . Alors paragraphe Fin_condition Ponctuation_fin_phrase  (14)
+	conditionnelle : Si expression . Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase  (15)
 
-	Allant_de  shift 41
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Alors  shift 42
 	.  error
 
 
 state 27
-	instruction : Incrementer Mot . Ponctuation_fin_phrase  (24)
-	instruction : Incrementer Mot . De expression Ponctuation_fin_phrase  (25)
+	expression : expression . Plus expression  (5)
+	expression : expression . Fois expression  (6)
+	expression : expression . Egal expression  (7)
+	expression : expression . Different expression  (8)
+	boucle_tant_que : Tant_que expression . Alors paragraphe Fin_boucle Ponctuation_fin_phrase  (16)
 
-	De  shift 42
-	Ponctuation_fin_phrase  shift 43
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Alors  shift 43
 	.  error
 
 
 state 28
-	instruction : Decrementer Mot . Ponctuation_fin_phrase  (26)
-	instruction : Decrementer Mot . De expression Ponctuation_fin_phrase  (27)
+	boucle_pour : Iterer Mot . Allant_de expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
+	boucle_pour : Iterer Mot . Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
+	boucle_pour : Iterer Mot . Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
-	De  shift 44
-	Ponctuation_fin_phrase  shift 45
+	Allant_de  shift 44
 	.  error
 
 
 state 29
+	instruction : Incrementer Mot . Ponctuation_fin_phrase  (25)
+	instruction : Incrementer Mot . De expression Ponctuation_fin_phrase  (26)
+
+	De  shift 45
+	Ponctuation_fin_phrase  shift 46
+	.  error
+
+
+state 30
+	instruction : Decrementer Mot . Ponctuation_fin_phrase  (27)
+	instruction : Decrementer Mot . De expression Ponctuation_fin_phrase  (28)
+
+	De  shift 47
+	Ponctuation_fin_phrase  shift 48
+	.  error
+
+
+state 31
+	fonction : Commence Mot . Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Ponctuation_fin_phrase  shift 49
+	.  error
+
+
+state 32
 	main : paragraphe EOF .  (1)
 
 	.  reduce 1
 
 
-state 30
+state 33
 	declaration : maj_mot Assigne . expression Ponctuation_fin_phrase  (12)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 46
+	expression  goto 50
 
 
-state 31
-	paragraphe : instruction paragraphe .  (28)
+state 34
+	paragraphe : instruction paragraphe .  (29)
 
-	.  reduce 28
+	.  reduce 29
 
 
-state 32
+state 35
 	expression : Parenthese_Gauche expression . Parenthese_Droite  (4)
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Parenthese_Droite  shift 47
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Parenthese_Droite  shift 51
 	.  error
 
 
-state 33
+state 36
 	expression : Reste_division_euclidienne_debut expression . Par expression  (3)
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Par  shift 48
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Par  shift 52
 	.  error
-
-
-state 34
-	expression : expression Plus . expression  (5)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 49
-
-
-state 35
-	expression : expression Egal . expression  (7)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 50
-
-
-state 36
-	expression : expression Fois . expression  (6)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 51
 
 
 state 37
-	expression : expression Different . expression  (8)
+	expression : expression Plus . expression  (5)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 52
+	expression  goto 53
 
 
 state 38
+	expression : expression Egal . expression  (7)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 54
+
+
+state 39
+	expression : expression Fois . expression  (6)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 55
+
+
+state 40
+	expression : expression Different . expression  (8)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 56
+
+
+state 41
 	declaration : Afficher expression Ponctuation_fin_phrase .  (13)
 
 	.  reduce 13
 
 
-state 39
+state 42
 	conditionnelle : Si expression Alors . paragraphe Fin_condition Ponctuation_fin_phrase  (14)
 	conditionnelle : Si expression Alors . paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase  (15)
 
@@ -458,19 +489,21 @@ state 39
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 53
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	paragraphe  goto 57
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
-state 40
+state 43
 	boucle_tant_que : Tant_que expression Alors . paragraphe Fin_boucle Ponctuation_fin_phrase  (16)
 
 	Afficher  shift 3
@@ -479,113 +512,122 @@ state 40
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 54
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	paragraphe  goto 58
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
-state 41
+state 44
 	boucle_pour : Iterer Mot Allant_de . expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
 	boucle_pour : Iterer Mot Allant_de . expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 	boucle_pour : Iterer Mot Allant_de . expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 55
-
-
-state 42
-	instruction : Incrementer Mot De . expression Ponctuation_fin_phrase  (25)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 56
-
-
-state 43
-	instruction : Incrementer Mot Ponctuation_fin_phrase .  (24)
-
-	.  reduce 24
-
-
-state 44
-	instruction : Decrementer Mot De . expression Ponctuation_fin_phrase  (27)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 57
+	expression  goto 59
 
 
 state 45
-	instruction : Decrementer Mot Ponctuation_fin_phrase .  (26)
+	instruction : Incrementer Mot De . expression Ponctuation_fin_phrase  (26)
 
-	.  reduce 26
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 60
 
 
 state 46
+	instruction : Incrementer Mot Ponctuation_fin_phrase .  (25)
+
+	.  reduce 25
+
+
+state 47
+	instruction : Decrementer Mot De . expression Ponctuation_fin_phrase  (28)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 61
+
+
+state 48
+	instruction : Decrementer Mot Ponctuation_fin_phrase .  (27)
+
+	.  reduce 27
+
+
+state 49
+	fonction : Commence Mot Ponctuation_fin_phrase . Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Dedans  shift 62
+	.  error
+
+
+state 50
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 	declaration : maj_mot Assigne expression . Ponctuation_fin_phrase  (12)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Ponctuation_fin_phrase  shift 58
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Ponctuation_fin_phrase  shift 63
 	.  error
 
 
-state 47
+state 51
 	expression : Parenthese_Gauche expression Parenthese_Droite .  (4)
 
 	.  reduce 4
 
 
-state 48
+state 52
 	expression : Reste_division_euclidienne_debut expression Par . expression  (3)
 
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
 	.  error
 
-	expression  goto 59
+	expression  goto 64
 
 
-state 49
+state 53
 	expression : expression . Plus expression  (5)
 	expression : expression Plus expression .  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 
-	Fois  shift 36
+	Fois  shift 39
 	Egal  reduce 5
 	Different  reduce 5
 	Parenthese_Droite  reduce 5
@@ -598,15 +640,15 @@ state 49
 	Ponctuation_fin_phrase  reduce 5
 
 
-state 50
+state 54
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression Egal expression .  (7)
 	expression : expression . Different expression  (8)
 
-	Plus  shift 34
-	Fois  shift 36
+	Plus  shift 37
+	Fois  shift 39
 	Parenthese_Droite  reduce 7
 	Alors  reduce 7
 	Par  reduce 7
@@ -617,7 +659,7 @@ state 50
 	Ponctuation_fin_phrase  reduce 7
 
 
-state 51
+state 55
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression Fois expression .  (6)
@@ -627,15 +669,15 @@ state 51
 	.  reduce 6
 
 
-state 52
+state 56
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 	expression : expression Different expression .  (8)
 
-	Plus  shift 34
-	Fois  shift 36
+	Plus  shift 37
+	Fois  shift 39
 	Parenthese_Droite  reduce 8
 	Alors  reduce 8
 	Par  reduce 8
@@ -646,23 +688,23 @@ state 52
 	Ponctuation_fin_phrase  reduce 8
 
 
-state 53
+state 57
 	conditionnelle : Si expression Alors paragraphe . Fin_condition Ponctuation_fin_phrase  (14)
 	conditionnelle : Si expression Alors paragraphe . Sinon paragraphe Fin_condition Ponctuation_fin_phrase  (15)
 
-	Sinon  shift 60
-	Fin_condition  shift 61
+	Sinon  shift 65
+	Fin_condition  shift 66
 	.  error
 
 
-state 54
+state 58
 	boucle_tant_que : Tant_que expression Alors paragraphe . Fin_boucle Ponctuation_fin_phrase  (16)
 
-	Fin_boucle  shift 62
+	Fin_boucle  shift 67
 	.  error
 
 
-state 55
+state 59
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
@@ -671,58 +713,67 @@ state 55
 	boucle_pour : Iterer Mot Allant_de expression . A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 	boucle_pour : Iterer Mot Allant_de expression . A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	A  shift 63
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	A  shift 68
 	.  error
 
 
-state 56
+state 60
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
-	instruction : Incrementer Mot De expression . Ponctuation_fin_phrase  (25)
+	instruction : Incrementer Mot De expression . Ponctuation_fin_phrase  (26)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Ponctuation_fin_phrase  shift 64
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Ponctuation_fin_phrase  shift 69
 	.  error
 
 
-state 57
+state 61
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
-	instruction : Decrementer Mot De expression . Ponctuation_fin_phrase  (27)
+	instruction : Decrementer Mot De expression . Ponctuation_fin_phrase  (28)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Ponctuation_fin_phrase  shift 65
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Ponctuation_fin_phrase  shift 70
 	.  error
 
 
-state 58
+state 62
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans . parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Mot  shift 71
+	.  error
+
+	parametres  goto 72
+
+
+state 63
 	declaration : maj_mot Assigne expression Ponctuation_fin_phrase .  (12)
 
 	.  reduce 12
 
 
-state 59
+state 64
 	expression : Reste_division_euclidienne_debut expression Par expression .  (3)
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
 	expression : expression . Different expression  (8)
 
-	Fois  shift 36
+	Fois  shift 39
 	Plus  reduce 3
 	Egal  reduce 3
 	Different  reduce 3
@@ -736,7 +787,7 @@ state 59
 	Ponctuation_fin_phrase  reduce 3
 
 
-state 60
+state 65
 	conditionnelle : Si expression Alors paragraphe Sinon . paragraphe Fin_condition Ponctuation_fin_phrase  (15)
 
 	Afficher  shift 3
@@ -745,79 +796,96 @@ state 60
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 66
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
-
-
-state 61
-	conditionnelle : Si expression Alors paragraphe Fin_condition . Ponctuation_fin_phrase  (14)
-
-	Ponctuation_fin_phrase  shift 67
-	.  error
-
-
-state 62
-	boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle . Ponctuation_fin_phrase  (16)
-
-	Ponctuation_fin_phrase  shift 68
-	.  error
-
-
-state 63
-	boucle_pour : Iterer Mot Allant_de expression A . expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
-	boucle_pour : Iterer Mot Allant_de expression A . expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
-	boucle_pour : Iterer Mot Allant_de expression A . expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
-
-	Parenthese_Gauche  shift 18
-	Reste_division_euclidienne_debut  shift 19
-	Mot  shift 20
-	Entier  shift 21
-	Reel  shift 22
-	.  error
-
-	expression  goto 69
-
-
-state 64
-	instruction : Incrementer Mot De expression Ponctuation_fin_phrase .  (25)
-
-	.  reduce 25
-
-
-state 65
-	instruction : Decrementer Mot De expression Ponctuation_fin_phrase .  (27)
-
-	.  reduce 27
+	paragraphe  goto 73
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
 state 66
-	conditionnelle : Si expression Alors paragraphe Sinon paragraphe . Fin_condition Ponctuation_fin_phrase  (15)
+	conditionnelle : Si expression Alors paragraphe Fin_condition . Ponctuation_fin_phrase  (14)
 
-	Fin_condition  shift 70
+	Ponctuation_fin_phrase  shift 74
 	.  error
 
 
 state 67
+	boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle . Ponctuation_fin_phrase  (16)
+
+	Ponctuation_fin_phrase  shift 75
+	.  error
+
+
+state 68
+	boucle_pour : Iterer Mot Allant_de expression A . expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
+	boucle_pour : Iterer Mot Allant_de expression A . expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
+	boucle_pour : Iterer Mot Allant_de expression A . expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
+
+	Parenthese_Gauche  shift 20
+	Reste_division_euclidienne_debut  shift 21
+	Mot  shift 22
+	Entier  shift 23
+	Reel  shift 24
+	.  error
+
+	expression  goto 76
+
+
+state 69
+	instruction : Incrementer Mot De expression Ponctuation_fin_phrase .  (26)
+
+	.  reduce 26
+
+
+state 70
+	instruction : Decrementer Mot De expression Ponctuation_fin_phrase .  (28)
+
+	.  reduce 28
+
+
+state 71
+	parametres : Mot . Virgule parametres  (31)
+	parametres : Mot .  (32)
+
+	Virgule  shift 77
+	Ponctuation_fin_phrase  reduce 32
+
+
+state 72
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres . Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Ponctuation_fin_phrase  shift 78
+	.  error
+
+
+state 73
+	conditionnelle : Si expression Alors paragraphe Sinon paragraphe . Fin_condition Ponctuation_fin_phrase  (15)
+
+	Fin_condition  shift 79
+	.  error
+
+
+state 74
 	conditionnelle : Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase .  (14)
 
 	.  reduce 14
 
 
-state 68
+state 75
 	boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase .  (16)
 
 	.  reduce 16
 
 
-state 69
+state 76
 	expression : expression . Plus expression  (5)
 	expression : expression . Fois expression  (6)
 	expression : expression . Egal expression  (7)
@@ -826,38 +894,54 @@ state 69
 	boucle_pour : Iterer Mot Allant_de expression A expression . Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 	boucle_pour : Iterer Mot Allant_de expression A expression . Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
-	Plus  shift 34
-	Egal  shift 35
-	Fois  shift 36
-	Different  shift 37
-	Compris  shift 71
-	Non_compris  shift 72
-	Agir  shift 73
+	Plus  shift 37
+	Egal  shift 38
+	Fois  shift 39
+	Different  shift 40
+	Compris  shift 80
+	Non_compris  shift 81
+	Agir  shift 82
 	.  error
 
 
-state 70
+state 77
+	parametres : Mot Virgule . parametres  (31)
+
+	Mot  shift 71
+	.  error
+
+	parametres  goto 83
+
+
+state 78
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase . Proceder paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Proceder  shift 84
+	.  error
+
+
+state 79
 	conditionnelle : Si expression Alors paragraphe Sinon paragraphe Fin_condition . Ponctuation_fin_phrase  (15)
 
-	Ponctuation_fin_phrase  shift 74
+	Ponctuation_fin_phrase  shift 85
 	.  error
 
 
-state 71
+state 80
 	boucle_pour : Iterer Mot Allant_de expression A expression Compris . Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
 
-	Agir  shift 75
+	Agir  shift 86
 	.  error
 
 
-state 72
+state 81
 	boucle_pour : Iterer Mot Allant_de expression A expression Non_compris . Agir paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 
-	Agir  shift 76
+	Agir  shift 87
 	.  error
 
 
-state 73
+state 82
 	boucle_pour : Iterer Mot Allant_de expression A expression Agir . paragraphe Termine_sequence Ponctuation_fin_phrase  (19)
 
 	Afficher  shift 3
@@ -866,25 +950,56 @@ state 73
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 77
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	paragraphe  goto 88
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
-state 74
+state 83
+	parametres : Mot Virgule parametres .  (31)
+
+	.  reduce 31
+
+
+state 84
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder . paragraphe Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Afficher  shift 3
+	Si  shift 4
+	Tant_que  shift 5
+	Iterer  shift 6
+	Incrementer  shift 7
+	Decrementer  shift 8
+	Commence  shift 9
+	Mot_majuscule  shift 10
+	.  error
+
+	paragraphe  goto 89
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
+
+
+state 85
 	conditionnelle : Si expression Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase .  (15)
 
 	.  reduce 15
 
 
-state 75
+state 86
 	boucle_pour : Iterer Mot Allant_de expression A expression Compris Agir . paragraphe Termine_sequence Ponctuation_fin_phrase  (17)
 
 	Afficher  shift 3
@@ -893,19 +1008,21 @@ state 75
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 78
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	paragraphe  goto 90
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
-state 76
+state 87
 	boucle_pour : Iterer Mot Allant_de expression A expression Non_compris Agir . paragraphe Termine_sequence Ponctuation_fin_phrase  (18)
 
 	Afficher  shift 3
@@ -914,77 +1031,99 @@ state 76
 	Iterer  shift 6
 	Incrementer  shift 7
 	Decrementer  shift 8
-	Mot_majuscule  shift 9
+	Commence  shift 9
+	Mot_majuscule  shift 10
 	.  error
 
-	paragraphe  goto 79
-	maj_mot  goto 12
-	declaration  goto 13
-	conditionnelle  goto 14
-	boucle_tant_que  goto 15
-	boucle_pour  goto 16
-	instruction  goto 17
+	paragraphe  goto 91
+	maj_mot  goto 13
+	declaration  goto 14
+	conditionnelle  goto 15
+	boucle_tant_que  goto 16
+	boucle_pour  goto 17
+	instruction  goto 18
+	fonction  goto 19
 
 
-state 77
+state 88
 	boucle_pour : Iterer Mot Allant_de expression A expression Agir paragraphe . Termine_sequence Ponctuation_fin_phrase  (19)
 
-	Termine_sequence  shift 80
+	Termine_sequence  shift 92
 	.  error
 
 
-state 78
+state 89
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe . Termine_fonction Ponctuation_fin_phrase  (33)
+
+	Termine_fonction  shift 93
+	.  error
+
+
+state 90
 	boucle_pour : Iterer Mot Allant_de expression A expression Compris Agir paragraphe . Termine_sequence Ponctuation_fin_phrase  (17)
 
-	Termine_sequence  shift 81
+	Termine_sequence  shift 94
 	.  error
 
 
-state 79
+state 91
 	boucle_pour : Iterer Mot Allant_de expression A expression Non_compris Agir paragraphe . Termine_sequence Ponctuation_fin_phrase  (18)
 
-	Termine_sequence  shift 82
+	Termine_sequence  shift 95
 	.  error
 
 
-state 80
+state 92
 	boucle_pour : Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence . Ponctuation_fin_phrase  (19)
 
-	Ponctuation_fin_phrase  shift 83
+	Ponctuation_fin_phrase  shift 96
 	.  error
 
 
-state 81
+state 93
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction . Ponctuation_fin_phrase  (33)
+
+	Ponctuation_fin_phrase  shift 97
+	.  error
+
+
+state 94
 	boucle_pour : Iterer Mot Allant_de expression A expression Compris Agir paragraphe Termine_sequence . Ponctuation_fin_phrase  (17)
 
-	Ponctuation_fin_phrase  shift 84
+	Ponctuation_fin_phrase  shift 98
 	.  error
 
 
-state 82
+state 95
 	boucle_pour : Iterer Mot Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence . Ponctuation_fin_phrase  (18)
 
-	Ponctuation_fin_phrase  shift 85
+	Ponctuation_fin_phrase  shift 99
 	.  error
 
 
-state 83
+state 96
 	boucle_pour : Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase .  (19)
 
 	.  reduce 19
 
 
-state 84
+state 97
+	fonction : Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase .  (33)
+
+	.  reduce 33
+
+
+state 98
 	boucle_pour : Iterer Mot Allant_de expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase .  (17)
 
 	.  reduce 17
 
 
-state 85
+state 99
 	boucle_pour : Iterer Mot Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase .  (18)
 
 	.  reduce 18
 
 
-37 terminals, 11 nonterminals
-31 grammar rules, 86 states
+43 terminals, 13 nonterminals
+35 grammar rules, 100 states

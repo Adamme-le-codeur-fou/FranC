@@ -26,6 +26,12 @@ type token =
   | Incrementer
   | De
   | Decrementer
+  | Commence
+  | Dedans
+  | Attend
+  | Proceder
+  | Termine_fonction
+  | Virgule
   | EOF
   | Tabulation
   | Mot of string

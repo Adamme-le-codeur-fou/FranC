@@ -1,1 +1,8 @@
-X prend la valeur 3 plus 3,5. On décrémente x de 5. Afficher x.
+On commence par faire un moule oui. Dedans on rajoute des ingrédients : tomate. 
+Le moule va procéder selon la séquence suivante : Afficher 5. 
+Ce qui termine la préparation du moule.
+Afficher 66.
+On commence par faire un moule non. Dedans on rajoute des ingrédients : salade, tomate, oignon. 
+Le moule va procéder selon la séquence suivante : Afficher 66. 
+Ce qui termine la préparation du moule.
+Afficher 67.

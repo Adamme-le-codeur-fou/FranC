@@ -9,6 +9,8 @@
 %token Reste_division_euclidienne_debut Par
 %token Iterer Sur Allant_de A Compris Non_compris Termine_sequence Agir
 %token Incrementer De Decrementer
+%token Commence Dedans Attend Proceder Termine_fonction
+%token Virgule
 %token EOF Tabulation
 %token <string> Mot Mot_majuscule Ponctuation_fin_phrase
 %token <string> Entier Reel
@@ -28,7 +30,6 @@
 %%
 
 main: paragraphe EOF { Paragraphe($1) }
-
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
 
@@ -70,6 +71,7 @@ boucle_pour:
 
 instruction:
   | declaration { $1 }
+  | fonction { $1 }
   | conditionnelle { $1 }
   | boucle_tant_que { $1 }
   | boucle_pour { $1 }
@@ -82,3 +84,11 @@ paragraphe:
     | instruction paragraphe { $1 :: $2 }
     | instruction { [$1] }
 
+
+parametres:
+  | Mot Virgule parametres { $1 :: $3 }
+  | Mot { [$1] } 
+
+
+fonction:
+  | Commence Mot Ponctuation_fin_phrase Dedans parametres Ponctuation_fin_phrase Proceder paragraphe Termine_fonction Ponctuation_fin_phrase { Fonction($2, $5, $8) }
