@@ -2,18 +2,23 @@
     open Ast
 %}
 %token Assigne Afficher
-%token Plus Egal Fois
+%token Plus Egal Fois Different
 %token Parenthese_Gauche Parenthese_Droite
-%token Si Alors Sinon
+%token Si Alors Sinon Fin_condition
+%token Tant_que Fin_boucle 
+%token Reste_division_euclidienne_debut Par
+%token Iterer Sur Allant_de A Compri Non_compri Termine_sequence Agir
 %token EOF Tabulation
-%token <string> Mot Mot_majuscule Ponctuation_fin_phrase Nombre
+%token <string> Mot Mot_majuscule Ponctuation_fin_phrase
+%token <string> Entier Reel
 
 %nonassoc Assigne
-%nonassoc Egal
+%nonassoc Egal Different
 %nonassoc Plus
+%nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois
 %left Parenthese_Gauche
-%left Si Alors
+%left Si Alors Tant_que  AGIR
 %right Sinon
 
 %start main
@@ -21,7 +26,7 @@
 
 %%
 
-main: paragraphe EOF { Paragraphe(List.rev $1) }
+main: paragraphe EOF { Paragraphe($1) }
 
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
@@ -34,11 +39,14 @@ maj_mot: Mot_majuscule { Mot($1) }
 /* mot: Mot { Mot($1) } */
 
 expression:
+    | Reste_division_euclidienne_debut expression Par expression { Modulo($2, $4) }
     | Parenthese_Gauche expression Parenthese_Droite { $2 }
     | expression Plus expression { Plus($1, $3) }
     | expression Fois expression { Fois($1, $3) }
     | expression Egal expression { Egal($1, $3) }
-    | Nombre { Nombre($1) }
+    | expression Different expression { Different($1, $3) }
+    | Entier { Entier($1) }
+    | Reel { Reel($1) }
     | Mot { Mot($1) }
 
 declaration:
@@ -46,13 +54,27 @@ declaration:
     | Afficher expression Ponctuation_fin_phrase { Afficher($2) }
 
 conditionnelle:
-  | Si expression Alors paragraphe { Condition($2, $4, None) }
-  | Si expression Alors paragraphe Sinon paragraphe { Condition($2, $4, Some $6) }
+  | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }
+  | Si expression Alors paragraphe Sinon paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, Some $6) }
+
+boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase  { BoucleTantQue($2, $4) }
+
+boucle_pour:
+    | Iterer Mot Allant_de expression A expression Compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForInclus($2, $4, $6, $9) }
+    | Iterer Mot Allant_de expression A expression Non_compri Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForExclus($2, $4, $6, $9) }
+    | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForExclus($2, $4, $6, $8) }
+
+
+instruction:
+  | declaration { $1 }
+  | conditionnelle { $1 }
+  | boucle_tant_que { $1 }
+  | boucle_pour { $1 }
 
 paragraphe:
-  | declaration { [$1] }
-  | declaration paragraphe { $1::$2 }
-  | conditionnelle { [$1] }
-
-
+    | instruction paragraphe { $1 :: $2 }
+    | instruction { [$1] }
 

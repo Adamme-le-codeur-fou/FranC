@@ -8,23 +8,37 @@ let alphabet_min =  ['a'-'z']
 let alphabet_maj = ['A'-'Z']
 let lettre_speciales_min = ['\x82''\x8A''\x87''\x85''\x97'] (* é, è, ç, à, ù' *) 
 let lettre_speciales_maj = ['\x90''\xD4''\x80''\xB7''\xEB'] (* É, È, Ç, À, Ù *) 
-let ponctuation = ['.''?''!'','';'':'] | "..." | ['['']'] | "<<" | ">>" | "-"
+let ponctuation = ['.''?''!'','';'] | "..." | ['['']'] | "<<" | ">>" | "-"
 let mot = alphabet_min+
 
 rule decoupe =
     parse
     | [' ''\n''\t']+ { decoupe lexbuf }
+    | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "fois" | "multiplié par" { Fois }
-    | "prend la valeur" | "devient" { Assigne }
+    | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
+    | "par" { Par }
+    | "prend la valeur" | "devient" | "prend la valeur" { Assigne }
     | "vaut" | "égal" { Egal }
+    | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
-    | "Si" { Si }
+    | ['s''S']"i" { Si }
     | "alors" { Alors }
     | "sinon" { Sinon }
-    | nombre as d { Nombre d }
+    | "Tant que" { Tant_que }
+    | "Ce qui conclut la boucle" { Fin_boucle }
+    | "Ce qui correspond à la fin de notre condition" { Fin_condition }
+    | "En itérant sur" { Iterer }
+    | "allant de" { Allant_de }
+    | "à" { A }
+    | "compris" { Compri }
+    | "non compris" { Non_compri }
+    | "on agit selon la séquence suivante :" { Agir }
+    | "Ce qui termine la séquence" { Termine_sequence }
+    | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
     | ponctuation as ponct { Ponctuation_fin_phrase ponct } 

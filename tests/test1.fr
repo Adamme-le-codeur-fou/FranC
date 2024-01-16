@@ -1,1 +1,1 @@
-Si 11 vaut 10 alors afficher 20,afficher 21, sinon Si 3 plus 3 vaut 6 alors afficher 10,afficher 11, sinon afficher 0,afficher 1.
+I prend la valeur 6 vaut 2. En itérant sur i allant de 0 à 10 non compris on agit selon la séquence suivante : Afficher i. Ce qui termine la séquence. Afficher 3,0.
