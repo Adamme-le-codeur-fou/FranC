@@ -7,6 +7,8 @@ type token =
   | Different
   | Parenthese_Gauche
   | Parenthese_Droite
+  | Guillemet_Gauche
+  | Guillemet_Droit
   | Si
   | Alors
   | Sinon
@@ -30,6 +32,7 @@ type token =
   | Mot of string
   | Mot_majuscule of string
   | Ponctuation_fin_phrase of string
+  | Chaine_de_caracteres of string
   | Entier of string
   | Reel of string
 

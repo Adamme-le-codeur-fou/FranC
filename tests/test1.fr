@@ -1,1 +1,1 @@
-X prend la valeur 3 plus 3,5.
+X devient «coucou Bene.». Afficher x.

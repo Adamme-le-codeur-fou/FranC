@@ -2,10 +2,16 @@ exception PhraseInvalide
 exception TokenInvalide
 exception IncompatibiliteDeType
 
-type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeNeant
+type type_expression =
+  | TypeEntier
+  | TypeReel
+  | TypeBooleen
+  | TypeChaineDeCaracteres
+  | TypeNeant
 
 type ast =
   | Mot of string
+  | ChaineDeCaracteres of string
   | Entier of string
   | Reel of string
   | Phrase of ast list * string
@@ -28,8 +34,13 @@ let rec type_de_expression expr =
   match expr with
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
+  | ChaineDeCaracteres _ -> TypeChaineDeCaracteres
   | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) ->
       if
+        type_de_expression expr_gauche = TypeChaineDeCaracteres
+        || type_de_expression expr_droite = TypeChaineDeCaracteres
+      then TypeChaineDeCaracteres
+      else if
         type_de_expression expr_gauche = TypeReel
         || type_de_expression expr_droite = TypeReel
       then TypeReel
@@ -96,6 +107,7 @@ let rec afficher_expression portee expr =
   match expr with
   | Entier n -> Printf.printf "%s" n
   | Reel r -> Printf.printf "%s" (ramplacer_caractere ',' '.' r)
+  | ChaineDeCaracteres c -> Printf.printf "\"%s\"" c
   | Mot m ->
       let m_minuscule = String.lowercase_ascii m in
       Printf.printf "%s"
@@ -145,6 +157,7 @@ let afficher_assignation portee (var, expr) =
      | TypeEntier | TypeBooleen -> Printf.printf "int "
      | TypeNeant -> Printf.printf "void "
      | TypeReel -> Printf.printf "float "
+     | TypeChaineDeCaracteres -> Printf.printf "char* "
      | _ -> Printf.printf "int ");
   Printf.printf "%s = " var_minuscule;
   afficher_expression portee_maj expr;
@@ -157,6 +170,7 @@ let afficher_printf portee e =
   | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
   | Reel r ->
       Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
+  | ChaineDeCaracteres c -> Printf.printf "printf(\"%s\\n\");" c
   | _ ->
       Printf.printf "printf(\"%%d\\n\", ";
       afficher_expression portee e;

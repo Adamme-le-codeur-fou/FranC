@@ -3,14 +3,14 @@
 %}
 %token Assigne Afficher
 %token Plus Egal Fois Different
-%token Parenthese_Gauche Parenthese_Droite
+%token Parenthese_Gauche Parenthese_Droite Guillemet_Gauche Guillemet_Droit
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
 %token Reste_division_euclidienne_debut Par
 %token Iterer Sur Allant_de A Compris Non_compris Termine_sequence Agir
 %token Incrementer De
 %token EOF Tabulation
-%token <string> Mot Mot_majuscule Ponctuation_fin_phrase
+%token <string> Mot Mot_majuscule Ponctuation_fin_phrase Chaine_de_caracteres
 %token <string> Entier Reel
 
 %nonassoc Assigne
@@ -49,6 +49,7 @@ expression:
     | Entier { Entier($1) }
     | Reel { Reel($1) }
     | Mot { Mot($1) }
+    | Chaine_de_caracteres { ChaineDeCaracteres($1) }
 
 declaration:
     | maj_mot Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
