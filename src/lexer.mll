@@ -45,6 +45,12 @@ rule decoupe =
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
-    | ponctuation_fin_phrase as c { Ponctuation_fin_phrase c } 
+    | ponctuation_fin_phrase as c { Ponctuation_fin_phrase c }
+    | "Nota bene : " | "N. B. : " { commentaire lexbuf }
     | eof { EOF }
     | _ as c { Printf.printf "Caractère inconnu '%c'\n" c; exit 1}
+
+and commentaire =
+    parse
+    | "\n" { decoupe lexbuf }
+    | _ { commentaire lexbuf }
