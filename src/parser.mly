@@ -2,7 +2,7 @@
     open Ast
 %} 
 %token Assigne Afficher
-%token Plus Egal Fois Different
+%token Plus Egal Fois Different Moins
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
@@ -16,7 +16,7 @@
 
 %nonassoc Assigne
 %nonassoc Egal Different
-%nonassoc Plus
+%nonassoc Plus Moins
 %nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois
 %left Parenthese_Gauche
@@ -44,6 +44,7 @@ expression:
     | Reste_division_euclidienne_debut expression Par expression { Modulo($2, $4) }
     | Parenthese_Gauche expression Parenthese_Droite { $2 }
     | expression Plus expression { Plus($1, $3) }
+    | expression Moins expression { Moins($1, $3) }
     | expression Fois expression { Fois($1, $3) }
     | expression Egal expression { Egal($1, $3) }
     | expression Different expression { Different($1, $3) }

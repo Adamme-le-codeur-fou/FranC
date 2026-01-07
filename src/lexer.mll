@@ -16,6 +16,7 @@ rule decoupe =
     | [' ''\n''\t']+ { decoupe lexbuf }
     | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
+    | "moins" { Moins }
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
     | "par" { Par }

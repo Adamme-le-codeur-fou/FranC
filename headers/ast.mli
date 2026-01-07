@@ -9,6 +9,7 @@ type ast =
   | Chaine_caractere of string
   | Phrase of ast list * string
   | Plus of ast * ast
+  | Moins of ast * ast
   | Egal of ast * ast
   | Fois of ast * ast
   | Modulo of ast * ast

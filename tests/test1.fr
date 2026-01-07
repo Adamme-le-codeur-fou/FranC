@@ -1,1 +1,1 @@
-Afficher <ç é è à ù û ô ê ï>.
+A devient 10,5 plus 1,5. B devient 2,5. C devient a moins b. Afficher c.
