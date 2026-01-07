@@ -29,19 +29,26 @@ type ast =
   
 let oc = ref stdout
 
-let rec type_de_expression expr =
+let rec type_de_expression portee expr =
   match expr with
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
   | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) ->
     if
-      type_de_expression expr_gauche = TypeReel
-      || type_de_expression expr_droite = TypeReel
+      type_de_expression portee expr_gauche = TypeReel
+      || type_de_expression portee expr_droite = TypeReel
     then TypeReel
     else TypeEntier
   | Egal _ | Different _ -> TypeBooleen
   | Modulo _ -> TypeEntier
-
+  | Mot m -> begin
+    let m_minuscule = String.lowercase_ascii m in
+      match List.assoc m_minuscule portee with
+      | "int" -> TypeEntier
+      | "float" -> TypeReel
+      | "bool" -> TypeBooleen
+      | _ -> TypeNeant
+      end
   | _ -> TypeNeant
 
 let remplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
@@ -147,9 +154,9 @@ let afficher_assignation portee (var, expr) =
     else (var_minuscule, "int") :: portee
   in
   (if not (variable_est_declaree portee var_minuscule) then
-     match type_de_expression expr with
+     match type_de_expression portee expr with
      | TypeEntier | TypeBooleen -> Printf.fprintf !oc "int "
-     | TypeNeant -> Printf.fprintf !oc "void "
+     | TypeNeant -> Printf.fprintf !oc "void *"
      | TypeReel -> Printf.fprintf !oc "float ");
   Printf.fprintf !oc "%s = " var_minuscule;
   afficher_expression portee_maj expr;
@@ -171,7 +178,7 @@ let afficher_printf portee e =
   match e with
   | Entier n -> Printf.fprintf !oc "printf(\"%%d\\n\", %s);" n
   | Reel r -> Printf.fprintf !oc "printf(\"%%f\\n\", %s);" (remplacer_caractere ',' '.' r)
-  | Chaine_caractere s -> Printf.fprintf !oc "printf(\"%s\\n\");" (normaliser_chaine s)
+  | Chaine_caractere s -> Printf.fprintf !oc "wprintf(L\"%s\\n\");" (normaliser_chaine s)
   | _ ->
     Printf.fprintf !oc "printf(\"%%d\\n\", ";
     afficher_expression portee e;
@@ -258,7 +265,7 @@ let verifier_type attendu obtenu =
 (* Fonction principale pour afficher le code C *)
 let affiche a channel =
   oc := channel;
-  if contient_afficher a then Printf.fprintf !oc "#include <stdio.h>\n";
-  Printf.fprintf !oc "\nint main(){\n";
+  Printf.fprintf !oc "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
+  Printf.fprintf !oc "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
   let _ = afficher_ast [] a in
   Printf.fprintf !oc "\nreturn 0;\n}"

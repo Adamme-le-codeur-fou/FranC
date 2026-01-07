@@ -28,7 +28,7 @@
 
 %%
 
-main: paragraphe EOF { Paragraphe($1) }
+main: EOF {Paragraphe([])} | paragraphe EOF { Paragraphe($1) }
 
 
 /* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
