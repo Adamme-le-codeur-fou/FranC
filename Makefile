@@ -39,7 +39,7 @@ $(SRC)/parser.ml $(HEADER)/parser.mli: $(SRC)/parser.mly
 	mv $(SRC)/parser.mli $(HEADER)/parser.mli
 
 run: clean clear all format
-	OCAMLRUNPARAM=pb $(EXE) < $(TEST_FILE) > $(OUTPUT_FILE)
+	OCAMLRUNPARAM=pb $(EXE) $(TEST_FILE) $(OUTPUT_FILE)
 	gcc -Wall -Wextra $(OUTPUT_FILE) -o $(GCC_OUTPUT)
 	$(GCC_OUTPUT)
 

@@ -1,1 +1,1 @@
-Afficher <test % \n \\n %% \%>.
+Afficher <ç é è à ù û ô ê ï>.

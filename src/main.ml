@@ -1,46 +1,12 @@
-let lexbuf = if Array.length Sys.argv > 1 then
-    Lexing.from_channel (open_in Sys.argv.(1))
-  else
-    Lexing.from_channel stdin
+let lexbuf = Lexing.from_channel (open_in Sys.argv.(1))
 
 let _ =
+  if Array.length Sys.argv <= 2 then
+    begin
+      Printf.eprintf "Usage: %s <source .fr file> <output .c file>\n" Sys.argv.(0);
+      exit 1
+    end;
+  let oc = open_out Sys.argv.(2) in
   let a = Parser.main Lexer.decoupe lexbuf in
-  Ast.affiche a
-
-(* let emitf x = Printf.ksprintf print_endline x
-
-   let rec emit = function
-       | Main body ->
-           emitf ".global _main";
-           emitf "_main:";
-           emit body;
-           emitf "  ret"
-       | Number n ->
-           emitf "  mov rax, %d" n
-       | Add (left, right) ->
-           emit left;
-           emitf "  push rax";
-           emit right;
-           emitf "  pop rbx";
-           emitf "  add rax, rbx"
-       | Mul (left, right) ->
-           emit left;
-           emitf "  push rax";
-           emit right;
-           emitf "  pop rbx";
-           emitf "  mul rbx"
-
-   let () =
-       (* main() = 4 + 2 * 10 + 3 * (5 + 1) *)
-       let term =
-         Main (
-           Add (
-             Number 4,
-             Add (
-               Mul (Number 2, Number 10),
-               Mul (Number 3, Add (Number 5, Number 1))
-             )
-           )
-         )
-        in
-        emit term *)
+  Ast.affiche a oc;
+  close_out oc

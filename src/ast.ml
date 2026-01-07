@@ -26,6 +26,9 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
 
+  
+let oc = ref stdout
+
 let rec type_de_expression expr =
   match expr with
   | Entier _ -> TypeEntier
@@ -52,7 +55,7 @@ let rec print_mot_liste l =
   match l with
   | [] -> ()
   | Mot m :: q ->
-    Printf.printf "mot(%s)%s" m (if q = [] then "" else ", ");
+    Printf.fprintf !oc "mot(%s)%s" m (if q = [] then "" else ", ");
     print_mot_liste q
   | _ -> raise PhraseInvalide
 
@@ -97,43 +100,43 @@ let variable_est_declaree portee var_name =
 (* Fonction pour afficher une expression *)
 let rec afficher_expression portee expr =
   match expr with
-  | Entier n -> Printf.printf "%s" n
-  | Reel r -> Printf.printf "%s" (remplacer_caractere ',' '.' r)
+  | Entier n -> Printf.fprintf !oc "%s" n
+  | Reel r -> Printf.fprintf !oc "%s" (remplacer_caractere ',' '.' r)
   | Mot m ->
     let m_minuscule = String.lowercase_ascii m in
-    Printf.printf "%s"
+    Printf.fprintf !oc "%s"
       (if variable_est_declaree portee m_minuscule then m_minuscule
        else raise TokenInvalide)
   | Plus (e1, e2) ->
-    Printf.printf "(";
+    Printf.fprintf !oc "(";
     afficher_expression portee e1;
-    Printf.printf " + ";
+    Printf.fprintf !oc " + ";
     afficher_expression portee e2;
-    Printf.printf ")"
+    Printf.fprintf !oc ")"
   | Fois (p1, p2) ->
-    Printf.printf "(";
+    Printf.fprintf !oc "(";
     afficher_expression portee p1;
-    Printf.printf " * ";
+    Printf.fprintf !oc " * ";
     afficher_expression portee p2;
-    Printf.printf ")"
+    Printf.fprintf !oc ")"
   | Egal (p1, p2) ->
-    Printf.printf "(";
+    Printf.fprintf !oc "(";
     afficher_expression portee p1;
-    Printf.printf " == ";
+    Printf.fprintf !oc " == ";
     afficher_expression portee p2;
-    Printf.printf ")"
+    Printf.fprintf !oc ")"
   | Different (p1, p2) ->
-    Printf.printf "(";
+    Printf.fprintf !oc "(";
     afficher_expression portee p1;
-    Printf.printf " != ";
+    Printf.fprintf !oc " != ";
     afficher_expression portee p2;
-    Printf.printf ")"
+    Printf.fprintf !oc ")"
   | Modulo (p1, p2) ->
-    Printf.printf "(";
+    Printf.fprintf !oc "(";
     afficher_expression portee p1;
-    Printf.printf " %% ";
+    Printf.fprintf !oc " %% ";
     afficher_expression portee p2;
-    Printf.printf ")"
+    Printf.fprintf !oc ")"
   | _ -> raise PhraseInvalide
 
 (* Fonction pour afficher une assignation *)
@@ -145,13 +148,12 @@ let afficher_assignation portee (var, expr) =
   in
   (if not (variable_est_declaree portee var_minuscule) then
      match type_de_expression expr with
-     | TypeEntier | TypeBooleen -> Printf.printf "int "
-     | TypeNeant -> Printf.printf "void "
-     | TypeReel -> Printf.printf "float "
-     | _ -> Printf.printf "int ");
-  Printf.printf "%s = " var_minuscule;
+     | TypeEntier | TypeBooleen -> Printf.fprintf !oc "int "
+     | TypeNeant -> Printf.fprintf !oc "void "
+     | TypeReel -> Printf.fprintf !oc "float ");
+  Printf.fprintf !oc "%s = " var_minuscule;
   afficher_expression portee_maj expr;
-  Printf.printf ";\n";
+  Printf.fprintf !oc ";\n";
   portee_maj
 
 let normaliser_chaine s =
@@ -167,13 +169,13 @@ let normaliser_chaine s =
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
-  | Reel r -> Printf.printf "printf(\"%%f\\n\", %s);" (remplacer_caractere ',' '.' r)
-  | Chaine_caractere s -> Printf.printf "printf(\"%s\\n\");" (normaliser_chaine s)
+  | Entier n -> Printf.fprintf !oc "printf(\"%%d\\n\", %s);" n
+  | Reel r -> Printf.fprintf !oc "printf(\"%%f\\n\", %s);" (remplacer_caractere ',' '.' r)
+  | Chaine_caractere s -> Printf.fprintf !oc "printf(\"%s\\n\");" (normaliser_chaine s)
   | _ ->
-    Printf.printf "printf(\"%%d\\n\", ";
+    Printf.fprintf !oc "printf(\"%%d\\n\", ";
     afficher_expression portee e;
-    Printf.printf ");"
+    Printf.fprintf !oc ");"
 
 let rec afficher_ast portee ast =
   match ast with
@@ -190,20 +192,20 @@ let rec afficher_ast portee ast =
     afficher_condition portee cond alors_list sinon_opt
   | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
   | Increment (var, None) ->
-    Printf.printf "%s++;\n" (String.lowercase_ascii var);
+    Printf.fprintf !oc "%s++;\n" (String.lowercase_ascii var);
     portee
   | Increment (var, Some expr) ->
-    Printf.printf "%s += " (String.lowercase_ascii var);
+    Printf.fprintf !oc "%s += " (String.lowercase_ascii var);
     afficher_expression portee expr;
-    Printf.printf ";\n";
+    Printf.fprintf !oc ";\n";
     portee
   | Decrement (var, None) ->
-    Printf.printf "%s--;\n" (String.lowercase_ascii var);
+    Printf.fprintf !oc "%s--;\n" (String.lowercase_ascii var);
     portee
   | Decrement (var, Some expr) ->
-    Printf.printf "%s -= " (String.lowercase_ascii var);
+    Printf.fprintf !oc "%s -= " (String.lowercase_ascii var);
     afficher_expression portee expr;
-    Printf.printf ";\n";
+    Printf.fprintf !oc ";\n";
     portee
   | _ ->
     afficher_expression portee ast;
@@ -211,49 +213,52 @@ let rec afficher_ast portee ast =
 
 (* Fonction pour afficher une condition *)
 and afficher_condition portee cond alors_list sinon_opt =
-  Printf.printf "if (";
+  Printf.fprintf !oc "if (";
   afficher_expression portee cond;
-  Printf.printf ") {\n";
+  Printf.fprintf !oc ") {\n";
   let portee_apres_alors = List.fold_left afficher_ast portee alors_list in
-  Printf.printf "}\n";
+  Printf.fprintf !oc "}\n";
   match sinon_opt with
   | Some sinon_list ->
-    Printf.printf "else {\n";
+    Printf.fprintf !oc "else {\n";
     let portee_apres_sinon =
       List.fold_left afficher_ast portee_apres_alors sinon_list
     in
-    Printf.printf "}\n";
+    Printf.fprintf !oc "}\n";
     portee_apres_sinon
   | None -> portee_apres_alors
 
 (* Fonction pour afficher une boucle 'tant que' *)
 and afficher_boucle portee cond paragraphe =
-  Printf.printf "while (";
+  Printf.fprintf !oc "while (";
   afficher_expression portee cond;
-  Printf.printf ") {\n";
+  Printf.fprintf !oc ") {\n";
   let portee_apres_boucle = List.fold_left afficher_ast portee paragraphe in
-  Printf.printf "}\n";
+  Printf.fprintf !oc "}\n";
   portee_apres_boucle
 
 (* Fonction pour afficher une boucle 'for' *)
 and afficher_for portee var start_expr end_expr inclusive paragraphe =
-  Printf.printf "for (int %s = " (String.lowercase_ascii var);
+  Printf.fprintf !oc "for (int %s = " (String.lowercase_ascii var);
   afficher_expression portee start_expr;
-  Printf.printf "; %s " (String.lowercase_ascii var);
-  Printf.printf (if inclusive then "<= " else "< ");
+  Printf.fprintf !oc "; %s " (String.lowercase_ascii var);
+  Printf.fprintf !oc (if inclusive then "<= " else "< ");
   afficher_expression portee end_expr;
-  Printf.printf "; %s++) {\n" (String.lowercase_ascii var);
+  Printf.fprintf !oc "; %s++) {\n" (String.lowercase_ascii var);
   let portee_apres_for = (String.lowercase_ascii var, "int") :: portee in
   let _ = List.fold_left afficher_ast portee_apres_for paragraphe in
-  Printf.printf "}\n";
+  Printf.fprintf !oc "}\n";
   portee_apres_for
 
 let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
 
+
+
 (* Fonction principale pour afficher le code C *)
-let affiche a =
-  if contient_afficher a then print_endline "#include <stdio.h>\n";
-  print_string "\nint main(){\n";
+let affiche a channel =
+  oc := channel;
+  if contient_afficher a then Printf.fprintf !oc "#include <stdio.h>\n";
+  Printf.fprintf !oc "\nint main(){\n";
   let _ = afficher_ast [] a in
-  print_string "\nreturn 0;\n}"
+  Printf.fprintf !oc "\nreturn 0;\n}"

@@ -6,6 +6,7 @@ type ast =
   | Mot of string
   | Entier of string
   | Reel of string
+  | Chaine_caractere of string
   | Phrase of ast list * string
   | Plus of ast * ast
   | Egal of ast * ast
@@ -23,4 +24,4 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
 
-val affiche : ast -> unit
+val affiche : ast -> out_channel -> unit
