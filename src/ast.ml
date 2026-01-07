@@ -8,6 +8,7 @@ type ast =
   | Mot of string
   | Entier of string
   | Reel of string
+  | Chaine_caractere of string
   | Phrase of ast list * string
   | Plus of ast * ast
   | Egal of ast * ast
@@ -37,9 +38,10 @@ let rec type_de_expression expr =
     else TypeEntier
   | Egal _ | Different _ -> TypeBooleen
   | Modulo _ -> TypeEntier
+
   | _ -> TypeNeant
 
-let ramplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
+let remplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
   String.map
     (fun caractere_courrant ->
        if caractere_courrant = ancien_caractere then nouveau_caractere
@@ -96,7 +98,7 @@ let variable_est_declaree portee var_name =
 let rec afficher_expression portee expr =
   match expr with
   | Entier n -> Printf.printf "%s" n
-  | Reel r -> Printf.printf "%s" (ramplacer_caractere ',' '.' r)
+  | Reel r -> Printf.printf "%s" (remplacer_caractere ',' '.' r)
   | Mot m ->
     let m_minuscule = String.lowercase_ascii m in
     Printf.printf "%s"
@@ -152,12 +154,22 @@ let afficher_assignation portee (var, expr) =
   Printf.printf ";\n";
   portee_maj
 
+let normaliser_chaine s =
+  String.fold_left
+    (fun acc caractere_courrant ->
+       match caractere_courrant with
+       | '%' -> acc ^ "%%"
+       | '\\' -> acc ^ "\\\\"
+       | _ -> acc ^ String.make 1 caractere_courrant)
+    "" s
+
+
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
   | Entier n -> Printf.printf "printf(\"%%d\\n\", %s);" n
-  | Reel r ->
-    Printf.printf "printf(\"%%f\\n\", %s);" (ramplacer_caractere ',' '.' r)
+  | Reel r -> Printf.printf "printf(\"%%f\\n\", %s);" (remplacer_caractere ',' '.' r)
+  | Chaine_caractere s -> Printf.printf "printf(\"%s\\n\");" (normaliser_chaine s)
   | _ ->
     Printf.printf "printf(\"%%d\\n\", ";
     afficher_expression portee e;

@@ -1,4 +1,7 @@
-let lexbuf = Lexing.from_channel stdin
+let lexbuf = if Array.length Sys.argv > 1 then
+    Lexing.from_channel (open_in Sys.argv.(1))
+  else
+    Lexing.from_channel stdin
 
 let _ =
   let a = Parser.main Lexer.decoupe lexbuf in

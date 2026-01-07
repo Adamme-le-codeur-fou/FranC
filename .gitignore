@@ -29,4 +29,14 @@ setup.log
 _opam/
 /.idea/
 
-bin/main
+# Output files and directories
+bin/
+output/
+src/lexer.ml
+src/parser.ml
+src/parser.output
+headers/parser.mli
+
+
+#vscode
+.vscode/

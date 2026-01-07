@@ -8,7 +8,7 @@ let alphabet_min =  ['a'-'z']
 let alphabet_maj = ['A'-'Z']
 let lettre_speciales_min = ['\x82''\x8A''\x87''\x85''\x97'] (* é, è, ç, à, ù' *) 
 let lettre_speciales_maj = ['\x90''\xD4''\x80''\xB7''\xEB'] (* É, È, Ç, À, Ù *) 
-let ponctuation = ['.''?''!'','';'] | "..." | ['['']'] | "<<" | ">>" | "-"
+let ponctuation_fin_phrase = ['.''?''!'','';']
 let mot = alphabet_min+
 
 rule decoupe =
@@ -41,9 +41,10 @@ rule decoupe =
     | "On incrémente" { Incrementer }
     | "On décrémente" { Decrementer }
     | "de" { De }
+    | '<' ([^'>']* as str) '>' { Chaine_caractere(str) }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
-    | ponctuation as ponct { Ponctuation_fin_phrase ponct } 
+    | ponctuation_fin_phrase as c { Ponctuation_fin_phrase c } 
     | eof { EOF }
-    | _ as c { Printf.printf "unknown character '%c'\n" c; exit 1}
+    | _ as c { Printf.printf "Caractère inconnu '%c'\n" c; exit 1}

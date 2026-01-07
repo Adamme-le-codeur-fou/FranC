@@ -1,1 +1,1 @@
-X prend la valeur 3 plus 3,5. On décrémente x de 5. Afficher x.
+Afficher <test % \n \\n %% \%>.
