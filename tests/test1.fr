@@ -1,1 +1,4 @@
-A devient 10,5 plus 1,5. B devient 2,5. C devient a moins b. Afficher c.
+X prend la valeur 0. Y prend la valeur 1.
+
+Si y est égal à x plus 1 alors afficher <y est égal à x plus 1>. Sinon afficher <y vaut autre chose>.
+Ce qui correspond à la fin de notre condition.

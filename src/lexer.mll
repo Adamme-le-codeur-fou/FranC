@@ -21,17 +21,17 @@ rule decoupe =
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
     | "par" { Par }
     | "prend la valeur" | "devient" { Assigne }
-    | "vaut" | "égal" { Egal }
+    | "vaut" | "égal" | "est égal à" { Egal }
     | "est différent de" { Different }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
     | ['s''S']"i" { Si }
     | "alors" { Alors }
-    | "sinon" { Sinon }
+    | ['s''S']"inon" { Sinon }
     | "Tant que" { Tant_que }
     | "Ce qui conclut la boucle" { Fin_boucle }
-    | "Ce qui correspond à la fin de notre condition" { Fin_condition }
+    | "Ce qui correspond à la fin de notre condition" | "Fin de la condition" { Fin_condition }
     | "En itérant sur" { Iterer }
     | "allant de" { Allant_de }
     | "à" { A }
