@@ -1,6 +1,7 @@
 exception PhraseInvalide
 exception TokenInvalide
 exception IncompatibiliteDeType
+exception VariableNonDeclaree
 
 type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeNeant
 
@@ -32,6 +33,7 @@ type ast =
   | ForExclus of string * ast * ast * ast list
   | Increment of string * ast option
   | Decrement of string * ast option
+  | Permuter of string * string
 
   
 let oc = ref stdout
@@ -163,6 +165,15 @@ let rec afficher_expression portee expr =
     Printf.fprintf !oc ")"
   | _ -> raise PhraseInvalide
 
+
+(* fonction qui recherche une variable dams la portée et retourne son type*)
+let rec type_variable portee var_name =
+  match portee with
+  | [] -> raise VariableNonDeclaree
+  | (name, var_type) :: q ->
+    if name = var_name then var_type
+    else type_variable q var_name
+
 (* Fonction pour afficher une assignation *)
 let afficher_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
@@ -189,17 +200,22 @@ let normaliser_chaine s =
        | _ -> acc ^ String.make 1 caractere_courrant)
     "" s
 
+let temporaire_id = ref 0
+let temporaire_suivant () = 
+  let id = !temporaire_id in
+  temporaire_id := !temporaire_id + 1;
+  Printf.sprintf "_variable_temporaire_%d" id
 
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Entier n -> Printf.fprintf !oc "printf(\"%%d\\n\", %s);" n
-  | Reel r -> Printf.fprintf !oc "printf(\"%%f\\n\", %s);" (remplacer_caractere ',' '.' r)
-  | Chaine_caractere s -> Printf.fprintf !oc "wprintf(L\"%s\\n\");" (normaliser_chaine s)
+  | Entier n -> Printf.fprintf !oc "printf(\"%%d\\n\", %s);\n" n
+  | Reel r -> Printf.fprintf !oc "printf(\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
+  | Chaine_caractere s -> Printf.fprintf !oc "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
   | _ ->
     Printf.fprintf !oc "printf(\"%%d\\n\", ";
     afficher_expression portee e;
-    Printf.fprintf !oc ");"
+    Printf.fprintf !oc ");\n"
 
 let rec afficher_ast portee ast =
   match ast with
@@ -230,6 +246,14 @@ let rec afficher_ast portee ast =
     Printf.fprintf !oc "%s -= " (String.lowercase_ascii var);
     afficher_expression portee expr;
     Printf.fprintf !oc ";\n";
+    portee
+  | Permuter (var1, var2) ->
+    let v1 = String.lowercase_ascii var1 in
+    let v2 = String.lowercase_ascii var2 in
+    let variable_temporaire = temporaire_suivant () in
+    Printf.fprintf !oc "%s %s = %s;\n" (type_variable portee v1) variable_temporaire v1;
+    Printf.fprintf !oc "%s = %s;\n" v1 v2;
+    Printf.fprintf !oc "%s = %s;\n" v2 variable_temporaire;
     portee
   | _ ->
     afficher_expression portee ast;

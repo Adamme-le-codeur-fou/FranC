@@ -1,3 +1,9 @@
-I prend la valeur 0.
-Tant que i est inferieur à 10 alors afficher i. On incrémente i.
-Ce qui termine la boucle.
+X prend la valeur 0; Y prend la valeur 1;
+
+Afficher <x vaut >; Afficher x;
+Afficher <y vaut >; Afficher y;
+Permuter x avec y;
+Permuter x avec y;
+Permuter x avec y;
+Afficher <x vaut >; Afficher x;
+Afficher <y vaut >; Afficher y;

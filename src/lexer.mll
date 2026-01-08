@@ -19,6 +19,7 @@ rule decoupe =
     | "moins" { Moins }
     | "et" { Et }
     | "ou" { Ou }
+    | "avec" { Avec }
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }
     | "par" { Par }
@@ -48,6 +49,7 @@ rule decoupe =
     | "On incrémente" { Incrementer }
     | "On décrémente" { Decrementer }
     | "de" { De }
+    | "Permuter" { Permuter }
     | '<' ([^'>']* as str) '>' { Chaine_caractere(str) }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }

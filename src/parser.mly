@@ -1,7 +1,7 @@
 %{
     open Ast
 %} 
-%token Assigne Afficher
+%token Assigne Afficher Permuter Avec
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %token Plus Fois Moins 
 %token Et Ou
@@ -36,12 +36,12 @@
 main: EOF {Paragraphe([])} | paragraphe EOF { Paragraphe($1) }
 
 
-/* phrase: maj_mot mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
+/* phrase: mot_majuscule mots Ponctuation_fin_phrase EOF { Phrase($1::$2, $3) } */
 
 
 /* mots: mot { [$1] } | mot mots { $1::$2 } */
 
-maj_mot: Mot_majuscule { Mot($1) }
+mot_majuscule: Mot_majuscule { Mot($1) }
 
 /* mot: Mot { Mot($1) } */
 
@@ -65,8 +65,13 @@ expression:
     | expression Ou expression { Ou($1, $3) }
 
 declaration:
-    | maj_mot Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
+    | mot_majuscule Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
     | Afficher expression Ponctuation_fin_phrase { Afficher($2) }
+    | Permuter Mot Avec Mot Ponctuation_fin_phrase { Permuter($2, $4) }
+    | Incrementer Mot Ponctuation_fin_phrase { Increment($2, None) }
+    | Incrementer Mot De expression Ponctuation_fin_phrase { Increment($2, Some $4) }
+    | Decrementer Mot Ponctuation_fin_phrase { Decrement($2, None) }
+    | Decrementer Mot De expression Ponctuation_fin_phrase { Decrement($2, Some $4) }
 
 conditionnelle:
   | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }
@@ -87,10 +92,6 @@ instruction:
   | conditionnelle { $1 }
   | boucle_tant_que { $1 }
   | boucle_pour { $1 }
-  | Incrementer Mot Ponctuation_fin_phrase { Increment($2, None) }
-  | Incrementer Mot De expression Ponctuation_fin_phrase { Increment($2, Some $4) }
-  | Decrementer Mot Ponctuation_fin_phrase { Decrement($2, None) }
-  | Decrementer Mot De expression Ponctuation_fin_phrase { Decrement($2, Some $4) }
 
 paragraphe:
     | instruction paragraphe { $1 :: $2 }

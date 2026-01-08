@@ -30,5 +30,6 @@ type ast =
   | ForExclus of string * ast * ast * ast list
   | Increment of string * ast option
   | Decrement of string * ast option
+  | Permuter of string * string
 
 val affiche : ast -> out_channel -> unit
