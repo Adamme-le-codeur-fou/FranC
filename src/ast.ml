@@ -15,6 +15,10 @@ type ast =
   | Et of ast * ast
   | Ou of ast * ast
   | Egal of ast * ast
+  | Inferieur of ast * ast
+  | Inferieur_ou_egal of ast * ast
+  | Superieur of ast * ast
+  | Superieur_ou_egal of ast * ast
   | Fois of ast * ast
   | Modulo of ast * ast
   | Assigne of ast * ast
@@ -42,7 +46,7 @@ let rec type_de_expression portee expr =
       || type_de_expression portee expr_droite = TypeReel
     then TypeReel
     else TypeEntier
-  | Egal _ | Different _ | Et _ | Ou _ -> TypeBooleen
+  | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen
   | Modulo _ -> TypeEntier
   | Mot m -> begin
     let m_minuscule = String.lowercase_ascii m in
@@ -69,39 +73,6 @@ let rec print_mot_liste l =
     print_mot_liste q
   | _ -> raise PhraseInvalide
 
-let rec contient_afficher a =
-  match a with
-  | Afficher _ -> true
-  | Mot _ | Entier _ | Reel _ -> false
-  | Plus (ast1, ast2)
-  | Egal (ast1, ast2)
-  | Fois (ast1, ast2)
-  | Moins (ast1, ast2)
-  | Assigne (ast1, ast2) ->
-    contient_afficher ast1 || contient_afficher ast2
-  | Paragraphe ast_list ->
-    List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
-  | Condition (ast1, p1, p2_opt) -> (
-      contient_afficher ast1
-      || List.fold_left (fun acc elt -> acc || contient_afficher elt) false p1
-      ||
-      match p2_opt with
-      | Some p2 ->
-        List.fold_left (fun acc elt -> acc || contient_afficher elt) false p2
-      | None -> false)
-  | BoucleTantQue (ast1, ast_list) ->
-    contient_afficher ast1
-    || List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
-  | ForInclus (_, ast1, ast2, ast_list) | ForExclus (_, ast1, ast2, ast_list) ->
-    contient_afficher ast1 || contient_afficher ast2
-    || List.fold_left
-      (fun acc elt -> acc || contient_afficher elt)
-      false ast_list
-  | _ -> false
 
 type portee = (string * string) list
 
@@ -146,6 +117,30 @@ let rec afficher_expression portee expr =
     Printf.fprintf !oc "(";
     afficher_expression portee p1;
     Printf.fprintf !oc " != ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Inferieur (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " < ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Inferieur_ou_egal (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " <= ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Superieur (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " > ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Superieur_ou_egal (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " >= ";
     afficher_expression portee p2;
     Printf.fprintf !oc ")"
   | Modulo (p1, p2) ->
@@ -290,4 +285,4 @@ let affiche a channel =
   Printf.fprintf !oc "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
   Printf.fprintf !oc "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
   let _ = afficher_ast [] a in
-  Printf.fprintf !oc "\nreturn 0;\n}"
+  Printf.fprintf !oc "return 0;\n}"

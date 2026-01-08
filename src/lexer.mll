@@ -20,11 +20,15 @@ rule decoupe =
     | "et" { Et }
     | "ou" { Ou }
     | "fois" | "multiplié par" { Fois }
-    | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
+    | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }
     | "par" { Par }
     | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal" | "est égal à" { Egal }
-    | "est différent de" { Different }
+    | "est différent de" | "n'est pas égal à" { Different }
+    | "est inferieur à" | "plus petit que" { Inferieur }
+    | "est inférieur ou égal à" | "plus petit ou égal à" { Inferieur_ou_egal }
+    | "est supérieur à" | "plus grand que" { Superieur }
+    | "est supérieur ou égal à" | "plus grand ou égal à" { Superieur_ou_egal }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
@@ -32,7 +36,7 @@ rule decoupe =
     | "alors" { Alors }
     | ['s''S']"inon" { Sinon }
     | "Tant que" { Tant_que }
-    | "Ce qui conclut la boucle" { Fin_boucle }
+    | "Ce qui conclut la boucle" | "Ce qui termine la boucle" { Fin_boucle }
     | "Ce qui correspond à la fin de notre condition" | "Fin de la condition" { Fin_condition }
     | "En itérant sur" { Iterer }
     | "allant de" { Allant_de }

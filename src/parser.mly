@@ -2,7 +2,8 @@
     open Ast
 %} 
 %token Assigne Afficher
-%token Plus Egal Fois Different Moins
+%token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
+%token Plus Fois Moins 
 %token Et Ou
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
@@ -19,7 +20,7 @@
 %nonassoc Ou
 %nonassoc Et
 %nonassoc Assigne
-%nonassoc Egal Different
+%nonassoc Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %nonassoc Plus Moins
 %nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois
@@ -52,6 +53,10 @@ expression:
     | expression Fois expression { Fois($1, $3) }
     | expression Egal expression { Egal($1, $3) }
     | expression Different expression { Different($1, $3) }
+    | expression Inferieur expression { Inferieur($1, $3) }
+    | expression Inferieur_ou_egal expression { Inferieur_ou_egal($1, $3) }
+    | expression Superieur expression { Superieur($1, $3) }
+    | expression Superieur_ou_egal expression { Superieur_ou_egal($1, $3) }
     | Entier { Entier($1) }
     | Reel { Reel($1) }
     | Mot { Mot($1) }

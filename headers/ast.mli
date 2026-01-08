@@ -13,6 +13,10 @@ type ast =
   | Et of ast * ast
   | Ou of ast * ast
   | Egal of ast * ast
+  | Inferieur of ast * ast
+  | Inferieur_ou_egal of ast * ast
+  | Superieur of ast * ast
+  | Superieur_ou_egal of ast * ast
   | Fois of ast * ast
   | Modulo of ast * ast
   | Assigne of ast * ast

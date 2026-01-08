@@ -1,3 +1,3 @@
-X prend la valeur 0. Y prend la valeur x est égal à 1 et 1 plus 1 est égal à 2 ou x est égal à 1 moins 1.
-
-Si y est égal à x plus 1 et x est égal à 1 ou y est égal à 1 alors afficher <Y vaut 0 ou 1>. Fin de la condition.
+I prend la valeur 0.
+Tant que i est inferieur à 10 alors afficher i. On incrémente i.
+Ce qui termine la boucle.
