@@ -12,6 +12,8 @@ type ast =
   | Phrase of ast list * string
   | Plus of ast * ast
   | Moins of ast * ast
+  | Et of ast * ast
+  | Ou of ast * ast
   | Egal of ast * ast
   | Fois of ast * ast
   | Modulo of ast * ast
@@ -40,7 +42,7 @@ let rec type_de_expression portee expr =
       || type_de_expression portee expr_droite = TypeReel
     then TypeReel
     else TypeEntier
-  | Egal _ | Different _ -> TypeBooleen
+  | Egal _ | Different _ | Et _ | Ou _ -> TypeBooleen
   | Modulo _ -> TypeEntier
   | Mot m -> begin
     let m_minuscule = String.lowercase_ascii m in
@@ -150,6 +152,18 @@ let rec afficher_expression portee expr =
     Printf.fprintf !oc "(";
     afficher_expression portee p1;
     Printf.fprintf !oc " %% ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Et (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " && ";
+    afficher_expression portee p2;
+    Printf.fprintf !oc ")"
+  | Ou (p1, p2) ->
+    Printf.fprintf !oc "(";
+    afficher_expression portee p1;
+    Printf.fprintf !oc " || ";
     afficher_expression portee p2;
     Printf.fprintf !oc ")"
   | _ -> raise PhraseInvalide

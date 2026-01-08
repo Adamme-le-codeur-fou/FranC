@@ -10,6 +10,8 @@ type ast =
   | Phrase of ast list * string
   | Plus of ast * ast
   | Moins of ast * ast
+  | Et of ast * ast
+  | Ou of ast * ast
   | Egal of ast * ast
   | Fois of ast * ast
   | Modulo of ast * ast

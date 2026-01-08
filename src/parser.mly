@@ -3,6 +3,7 @@
 %} 
 %token Assigne Afficher
 %token Plus Egal Fois Different Moins
+%token Et Ou
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
@@ -14,6 +15,9 @@
 %token <char> Ponctuation_fin_phrase
 %token <string> Entier Reel
 
+
+%nonassoc Ou
+%nonassoc Et
 %nonassoc Assigne
 %nonassoc Egal Different
 %nonassoc Plus Moins
@@ -52,6 +56,8 @@ expression:
     | Reel { Reel($1) }
     | Mot { Mot($1) }
     | Chaine_caractere { Chaine_caractere($1) }
+    | expression Et expression { Et($1, $3) }
+    | expression Ou expression { Ou($1, $3) }
 
 declaration:
     | maj_mot Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }

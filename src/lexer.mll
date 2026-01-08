@@ -17,6 +17,8 @@ rule decoupe =
     | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "moins" { Moins }
+    | "et" { Et }
+    | "ou" { Ou }
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" { Reste_division_euclidienne_debut }
     | "par" { Par }
