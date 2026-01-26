@@ -3,7 +3,7 @@ exception TokenInvalide
 exception IncompatibiliteDeType
 exception VariableNonDeclaree
 
-type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeNeant
+type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
 
 type ast =
   | Mot of string
@@ -34,6 +34,9 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
   | Permuter of string * string
+  | Recette of string * (type_expression * string) list * type_expression * ast list
+  | Appel_recette of string * string list
+  | Renvoyer of ast
 
   
 let oc = ref stdout
@@ -185,7 +188,8 @@ let afficher_assignation portee (var, expr) =
      match type_de_expression portee expr with
      | TypeEntier | TypeBooleen -> Printf.fprintf !oc "int "
      | TypeNeant -> Printf.fprintf !oc "void *"
-     | TypeReel -> Printf.fprintf !oc "float ");
+     | TypeReel -> Printf.fprintf !oc "float "
+     | TypeChaineCaractere -> Printf.fprintf !oc "wchar_t *");
   Printf.fprintf !oc "%s = " var_minuscule;
   afficher_expression portee_maj expr;
   Printf.fprintf !oc ";\n";

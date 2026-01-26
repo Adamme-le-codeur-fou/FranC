@@ -1,9 +1,7 @@
-X prend la valeur 0; Y prend la valeur 1;
-
-Afficher <x vaut >; Afficher x;
-Afficher <y vaut >; Afficher y;
-Permuter x avec y;
-Permuter x avec y;
-Permuter x avec y;
-Afficher <x vaut >; Afficher x;
-Afficher <y vaut >; Afficher y;
+On définit une recette nommée puissance dont les ingrédients sont :
+ - un entier a
+ - un entier b
+et qui renvoie un entier : 
+    Si b est égal à 0 alors renvoyer 1.
+    Sinon renvoyer a multiplié par le résultat de puissance avec les ingrédients a et b moins 1. Fin de la condition.
+Fin de la recette.

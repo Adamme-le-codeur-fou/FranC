@@ -14,6 +14,9 @@ let mot = alphabet_min+
 rule decoupe =
     parse
     | [' ''\n''\t']+ { decoupe lexbuf }
+    | ":" { Deux_points }
+    | "-" { Tiret }
+    | "," { Virgule }
     | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "moins" { Moins }
@@ -50,6 +53,16 @@ rule decoupe =
     | "On décrémente" { Decrementer }
     | "de" { De }
     | "Permuter" { Permuter }
+    | "On définit une recette nommée" { Definir_recette }
+    | "dont les ingrédients sont :" { Ingredients_recette }
+    | "et qui renvoie" { Type_retour_Recette }
+    | "Fin de la recette" { Fin_recette }
+    | "renvoyer" { Renvoyer }
+    | "le résultat de" | "le résultat de la recette" { Resultat_de_recette }
+    | "avec les ingrédients" { Avec_les_ingredients }
+    | "un entier" { Type_entier }
+    | "un réel" { Type_reel }
+    | "une chaîne de caractères" { Type_chaine_caractere }
     | '<' ([^'>']* as str) '>' { Chaine_caractere(str) }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
