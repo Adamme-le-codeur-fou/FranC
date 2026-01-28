@@ -33,7 +33,7 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
   | Permuter of string * string
-  | Recette of string * (type_expression * string) list * type_expression * ast
+  | Recette of string * (string * type_expression) list * type_expression * ast list
   | Appel_recette of string * string list
   | Renvoyer of ast
 

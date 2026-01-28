@@ -101,8 +101,8 @@ liste_mots:
     | Mot Et Mot { [ $1; $3 ] }
 
 liste_ingredients:
-    | Tiret types Mot liste_ingredients { ( $2, $3 ) :: $4 }
-    | Tiret types Mot { [ ( $2, $3 ) ] }
+    | Tiret types Mot liste_ingredients { ( $3, $2 ) :: $4 }
+    | Tiret types Mot { [ ( $3, $2 ) ] }
 
 recette:
   | Definir_recette Mot Ingredients_recette liste_ingredients Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase

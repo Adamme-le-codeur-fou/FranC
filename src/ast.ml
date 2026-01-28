@@ -34,13 +34,14 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
   | Permuter of string * string
-  | Recette of string * (type_expression * string) list * type_expression * ast list
+  | Recette of string * (string * type_expression) list * type_expression * ast list
   | Appel_recette of string * string list
   | Renvoyer of ast
 
-  
+
+let canal_sortie = ref stdout
 let ecrire chaine_format =
-  Printf.fprintf stdout chaine_format
+  Printf.fprintf !canal_sortie chaine_format
 
 let rec type_de_expression portee expr =
   match expr with
@@ -54,14 +55,8 @@ let rec type_de_expression portee expr =
     else TypeEntier
   | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen
   | Modulo _ -> TypeEntier
-  | Mot m -> begin
-    let m_minuscule = String.lowercase_ascii m in
-      match List.assoc m_minuscule portee with
-      | "int" -> TypeEntier
-      | "float" -> TypeReel
-      | "bool" -> TypeBooleen
-      | _ -> TypeNeant
-      end
+  | Mot m ->
+    let m_minuscule = String.lowercase_ascii m in List.assoc m_minuscule portee
   | _ -> TypeNeant
 
 let remplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
@@ -80,7 +75,7 @@ let rec print_mot_liste l =
   | _ -> raise PhraseInvalide
 
 
-type portee = (string * string) list
+type portee = (string * type_expression) list
 
 let variable_est_declaree portee var_name =
   List.exists (fun (name, _) -> name = var_name) portee
@@ -189,8 +184,8 @@ let rec type_variable portee var_name =
     if name = var_name then var_type
     else type_variable q var_name
 
-let type_en_chaine_caractere type_de_expression =
-  match type_de_expression with
+let type_vers_chaine_caractere t =
+  match t with
      | TypeEntier | TypeBooleen -> "int "
      | TypeNeant -> "void *"
      | TypeReel -> "float "
@@ -202,10 +197,10 @@ let afficher_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
   let portee_maj =
     if variable_est_declaree portee var_minuscule then portee
-    else (var_minuscule, "int") :: portee
+    else (var_minuscule, TypeEntier) :: portee
   in
   (if not (variable_est_declaree portee var_minuscule) then
-    ecrire  "%s" (type_en_chaine_caractere (type_de_expression portee expr)));
+    ecrire  "%s" (type_vers_chaine_caractere (type_de_expression portee expr)));
   ecrire "%s = " var_minuscule;
   afficher_expression portee_maj expr;
   ecrire ";\n";
@@ -237,12 +232,12 @@ let afficher_printf portee e =
     afficher_expression portee e;
     ecrire ");\n"
 
-let rec afficher_arguments_avec_type arguments_list =
+let rec afficher_variable_avec_type arguments_list =
     match arguments_list with
     | [] -> ()
-    | (argument_type, argument_nom)::q ->
-        ecrire "%s %s%s" (type_en_chaine_caractere argument_type) argument_nom (if q = [] then "" else ", ");
-        afficher_arguments_avec_type q
+    | (argument_nom, argument_type)::q ->
+        ecrire "%s %s%s" (type_vers_chaine_caractere argument_type) argument_nom (if q = [] then "" else ", ");
+        afficher_variable_avec_type q
 
 
 let rec afficher_ast portee ast =
@@ -279,7 +274,7 @@ let rec afficher_ast portee ast =
     let v1 = String.lowercase_ascii var1 in
     let v2 = String.lowercase_ascii var2 in
     let variable_temporaire = temporaire_suivant () in
-    ecrire "%s %s = %s;\n" (type_variable portee v1) variable_temporaire v1;
+    ecrire "%s %s = %s;\n" (type_vers_chaine_caractere (type_variable portee v1)) variable_temporaire v1;
     ecrire "%s = %s;\n" v1 v2;
     ecrire "%s = %s;\n" v2 variable_temporaire;
     portee
@@ -327,7 +322,7 @@ and afficher_for portee var start_expr end_expr inclusive paragraphe =
   ecrire (if inclusive then "<= " else "< ");
   afficher_expression portee end_expr;
   ecrire "; %s++) {\n" (String.lowercase_ascii var);
-  let portee_apres_for = (String.lowercase_ascii var, "int") :: portee in
+  let portee_apres_for = (String.lowercase_ascii var, TypeEntier) :: portee in
   let _ = List.fold_left afficher_ast portee_apres_for paragraphe in
   ecrire "}\n";
   portee_apres_for
@@ -336,11 +331,11 @@ let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
 
 let afficher_function nom arguments type_function corps =
-  ecrire "\n%s" (type_en_chaine_caractere type_function);
+  ecrire "\n%s" (type_vers_chaine_caractere type_function);
   ecrire "%s(" nom;
-  afficher_arguments_avec_type arguments;
+  afficher_variable_avec_type arguments;
   ecrire ") {\n";
-  let _ = List.fold_left afficher_ast [("a", "int"); ("b", "int")] corps in
+  let _ = List.fold_left afficher_ast arguments corps in
   ecrire "}\n"
 
 let rec afficher_fonctions_pre_main ast =
@@ -349,9 +344,10 @@ let rec afficher_fonctions_pre_main ast =
   | Paragraphe l -> List.iter afficher_fonctions_pre_main l
   | _ -> ()
 
-  
+
 (* Fonction principale pour afficher le code C *)
 let affiche a channel =
+  canal_sortie := channel;
   ecrire "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
   afficher_fonctions_pre_main a;
   ecrire "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
