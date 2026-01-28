@@ -39,7 +39,8 @@ type ast =
   | Renvoyer of ast
 
   
-let oc = ref stdout
+let ecrire chaine_format =
+  Printf.fprintf stdout chaine_format
 
 let rec type_de_expression portee expr =
   match expr with
@@ -74,7 +75,7 @@ let rec print_mot_liste l =
   match l with
   | [] -> ()
   | Mot m :: q ->
-    Printf.fprintf !oc "mot(%s)%s" m (if q = [] then "" else ", ");
+    ecrire "mot(%s)%s" m (if q = [] then "" else ", ");
     print_mot_liste q
   | _ -> raise PhraseInvalide
 
@@ -88,95 +89,95 @@ let rec afficher_arguments arguments_list =
     match arguments_list with
     | [] -> ()
     | argument_nom::q ->
-        Printf.fprintf !oc "%s%s" argument_nom (if q = [] then "" else ", ");
+        ecrire "%s%s" argument_nom (if q = [] then "" else ", ");
         afficher_arguments q
 
 (* Fonction pour afficher une expression *)
 let rec afficher_expression portee expr =
   match expr with
-  | Entier n -> Printf.fprintf !oc "%s" n
-  | Reel r -> Printf.fprintf !oc "%s" (remplacer_caractere ',' '.' r)
+  | Entier n -> ecrire "%s" n
+  | Reel r -> ecrire "%s" (remplacer_caractere ',' '.' r)
   | Mot m ->
     let m_minuscule = String.lowercase_ascii m in
-    Printf.fprintf !oc "%s"
+    ecrire "%s"
       (if variable_est_declaree portee m_minuscule then m_minuscule
        else raise TokenInvalide)
   | Plus (e1, e2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee e1;
-    Printf.fprintf !oc " + ";
+    ecrire " + ";
     afficher_expression portee e2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Moins (e1, e2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee e1;
-    Printf.fprintf !oc " - ";
+    ecrire " - ";
     afficher_expression portee e2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Fois (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " * ";
+    ecrire " * ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Egal (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " == ";
+    ecrire " == ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Different (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " != ";
+    ecrire " != ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Inferieur (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " < ";
+    ecrire " < ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Inferieur_ou_egal (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " <= ";
+    ecrire " <= ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Superieur (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " > ";
+    ecrire " > ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Superieur_ou_egal (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " >= ";
+    ecrire " >= ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Modulo (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " %% ";
+    ecrire " %% ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Et (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " && ";
+    ecrire " && ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Ou (p1, p2) ->
-    Printf.fprintf !oc "(";
+    ecrire "(";
     afficher_expression portee p1;
-    Printf.fprintf !oc " || ";
+    ecrire " || ";
     afficher_expression portee p2;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | Appel_recette (fonction_nom, arguments) ->
-    Printf.fprintf !oc "%s(" fonction_nom;
+    ecrire "%s(" fonction_nom;
     afficher_arguments arguments;
-    Printf.fprintf !oc ")"
+    ecrire ")"
   | _ -> raise PhraseInvalide
 
 
@@ -204,10 +205,10 @@ let afficher_assignation portee (var, expr) =
     else (var_minuscule, "int") :: portee
   in
   (if not (variable_est_declaree portee var_minuscule) then
-    Printf.fprintf !oc  "%s" (type_en_chaine_caractere (type_de_expression portee expr)));
-  Printf.fprintf !oc "%s = " var_minuscule;
+    ecrire  "%s" (type_en_chaine_caractere (type_de_expression portee expr)));
+  ecrire "%s = " var_minuscule;
   afficher_expression portee_maj expr;
-  Printf.fprintf !oc ";\n";
+  ecrire ";\n";
   portee_maj
 
 let normaliser_chaine s =
@@ -228,19 +229,19 @@ let temporaire_suivant () =
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Entier n -> Printf.fprintf !oc "printf(\"%%d\\n\", %s);\n" n
-  | Reel r -> Printf.fprintf !oc "printf(\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
-  | Chaine_caractere s -> Printf.fprintf !oc "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
+  | Entier n -> ecrire "printf(\"%%d\\n\", %s);\n" n
+  | Reel r -> ecrire "printf(\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
+  | Chaine_caractere s -> ecrire "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
   | _ ->
-    Printf.fprintf !oc "printf(\"%%d\\n\", ";
+    ecrire "printf(\"%%d\\n\", ";
     afficher_expression portee e;
-    Printf.fprintf !oc ");\n"
+    ecrire ");\n"
 
 let rec afficher_arguments_avec_type arguments_list =
     match arguments_list with
     | [] -> ()
     | (argument_type, argument_nom)::q ->
-        Printf.fprintf !oc "%s %s%s" (type_en_chaine_caractere argument_type) argument_nom (if q = [] then "" else ", ");
+        ecrire "%s %s%s" (type_en_chaine_caractere argument_type) argument_nom (if q = [] then "" else ", ");
         afficher_arguments_avec_type q
 
 
@@ -259,33 +260,33 @@ let rec afficher_ast portee ast =
     afficher_condition portee cond alors_list sinon_opt
   | BoucleTantQue (cond, paragraphe) -> afficher_boucle portee cond paragraphe
   | Increment (var, None) ->
-    Printf.fprintf !oc "%s++;\n" (String.lowercase_ascii var);
+    ecrire "%s++;\n" (String.lowercase_ascii var);
     portee
   | Increment (var, Some expr) ->
-    Printf.fprintf !oc "%s += " (String.lowercase_ascii var);
+    ecrire "%s += " (String.lowercase_ascii var);
     afficher_expression portee expr;
-    Printf.fprintf !oc ";\n";
+    ecrire ";\n";
     portee
   | Decrement (var, None) ->
-    Printf.fprintf !oc "%s--;\n" (String.lowercase_ascii var);
+    ecrire "%s--;\n" (String.lowercase_ascii var);
     portee
   | Decrement (var, Some expr) ->
-    Printf.fprintf !oc "%s -= " (String.lowercase_ascii var);
+    ecrire "%s -= " (String.lowercase_ascii var);
     afficher_expression portee expr;
-    Printf.fprintf !oc ";\n";
+    ecrire ";\n";
     portee
   | Permuter (var1, var2) ->
     let v1 = String.lowercase_ascii var1 in
     let v2 = String.lowercase_ascii var2 in
     let variable_temporaire = temporaire_suivant () in
-    Printf.fprintf !oc "%s %s = %s;\n" (type_variable portee v1) variable_temporaire v1;
-    Printf.fprintf !oc "%s = %s;\n" v1 v2;
-    Printf.fprintf !oc "%s = %s;\n" v2 variable_temporaire;
+    ecrire "%s %s = %s;\n" (type_variable portee v1) variable_temporaire v1;
+    ecrire "%s = %s;\n" v1 v2;
+    ecrire "%s = %s;\n" v2 variable_temporaire;
     portee
   | Renvoyer a -> 
-    Printf.fprintf !oc "return ";
+    ecrire "return ";
     let _ = afficher_ast portee a in
-    Printf.fprintf !oc ";\n";
+    ecrire ";\n";
     portee
   | Recette(_) -> portee
   | _ ->
@@ -294,53 +295,53 @@ let rec afficher_ast portee ast =
 
 (* Fonction pour afficher une condition *)
 and afficher_condition portee cond alors_list sinon_opt =
-  Printf.fprintf !oc "if (";
+  ecrire "if (";
   afficher_expression portee cond;
-  Printf.fprintf !oc ") {\n";
+  ecrire ") {\n";
   let portee_apres_alors = List.fold_left afficher_ast portee alors_list in
-  Printf.fprintf !oc "}\n";
+  ecrire "}\n";
   match sinon_opt with
   | Some sinon_list ->
-    Printf.fprintf !oc "else {\n";
+    ecrire "else {\n";
     let portee_apres_sinon =
       List.fold_left afficher_ast portee_apres_alors sinon_list
     in
-    Printf.fprintf !oc "}\n";
+    ecrire "}\n";
     portee_apres_sinon
   | None -> portee_apres_alors
 
 (* Fonction pour afficher une boucle 'tant que' *)
 and afficher_boucle portee cond paragraphe =
-  Printf.fprintf !oc "while (";
+  ecrire "while (";
   afficher_expression portee cond;
-  Printf.fprintf !oc ") {\n";
+  ecrire ") {\n";
   let portee_apres_boucle = List.fold_left afficher_ast portee paragraphe in
-  Printf.fprintf !oc "}\n";
+  ecrire "}\n";
   portee_apres_boucle
 
 (* Fonction pour afficher une boucle 'for' *)
 and afficher_for portee var start_expr end_expr inclusive paragraphe =
-  Printf.fprintf !oc "for (int %s = " (String.lowercase_ascii var);
+  ecrire "for (int %s = " (String.lowercase_ascii var);
   afficher_expression portee start_expr;
-  Printf.fprintf !oc "; %s " (String.lowercase_ascii var);
-  Printf.fprintf !oc (if inclusive then "<= " else "< ");
+  ecrire "; %s " (String.lowercase_ascii var);
+  ecrire (if inclusive then "<= " else "< ");
   afficher_expression portee end_expr;
-  Printf.fprintf !oc "; %s++) {\n" (String.lowercase_ascii var);
+  ecrire "; %s++) {\n" (String.lowercase_ascii var);
   let portee_apres_for = (String.lowercase_ascii var, "int") :: portee in
   let _ = List.fold_left afficher_ast portee_apres_for paragraphe in
-  Printf.fprintf !oc "}\n";
+  ecrire "}\n";
   portee_apres_for
 
 let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
 
 let afficher_function nom arguments type_function corps =
-  Printf.fprintf !oc "\n%s" (type_en_chaine_caractere type_function);
-  Printf.fprintf !oc "%s(" nom;
+  ecrire "\n%s" (type_en_chaine_caractere type_function);
+  ecrire "%s(" nom;
   afficher_arguments_avec_type arguments;
-  Printf.fprintf !oc ") {\n";
+  ecrire ") {\n";
   let _ = List.fold_left afficher_ast [("a", "int"); ("b", "int")] corps in
-  Printf.fprintf !oc "}\n"
+  ecrire "}\n"
 
 let rec afficher_fonctions_pre_main ast =
   match ast with
@@ -348,11 +349,11 @@ let rec afficher_fonctions_pre_main ast =
   | Paragraphe l -> List.iter afficher_fonctions_pre_main l
   | _ -> ()
 
+  
 (* Fonction principale pour afficher le code C *)
 let affiche a channel =
-  oc := channel;
-  Printf.fprintf !oc "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
+  ecrire "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
   afficher_fonctions_pre_main a;
-  Printf.fprintf !oc "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
+  ecrire "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
   let _ = afficher_ast [] a in
-  Printf.fprintf !oc "return 0;\n}"
+  ecrire "return 0;\n}"
