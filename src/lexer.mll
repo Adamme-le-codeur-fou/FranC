@@ -42,22 +42,22 @@ rule decoupe =
     | "Tant que" { Tant_que }
     | "Ce qui conclut la boucle" | "Ce qui termine la boucle" { Fin_boucle }
     | "Ce qui correspond à la fin de notre condition" | "Fin de la condition" { Fin_condition }
-    | "En itérant sur" { Iterer }
+    | ['e''E']"n itérant sur" { Iterer }
     | "allant de" { Allant_de }
     | "à" { A }
     | "compris" { Compris }
     | "non compris" { Non_compris }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
-    | "On incrémente" { Incrementer }
-    | "On décrémente" { Decrementer }
+    | ['o''O']"n incrémente" { Incrementer }
+    | ['o''O']"n décrémente" { Decrementer }
     | "de" { De }
     | "Permuter" { Permuter }
     | "On définit une recette nommée" { Definir_recette }
     | "dont les ingrédients sont :" { Ingredients_recette }
     | "et qui renvoie" { Type_retour_Recette }
     | "Fin de la recette" { Fin_recette }
-    | "renvoyer" { Renvoyer }
+    | ['r''R']"envoyer" { Renvoyer }
     | "le résultat de" | "le résultat de la recette" { Resultat_de_recette }
     | "avec les ingrédients" { Avec_les_ingredients }
     | "un entier" { Type_entier }

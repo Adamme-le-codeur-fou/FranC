@@ -84,6 +84,13 @@ type portee = (string * string) list
 let variable_est_declaree portee var_name =
   List.exists (fun (name, _) -> name = var_name) portee
 
+let rec afficher_arguments arguments_list =
+    match arguments_list with
+    | [] -> ()
+    | argument_nom::q ->
+        Printf.fprintf !oc "%s%s" argument_nom (if q = [] then "" else ", ");
+        afficher_arguments q
+
 (* Fonction pour afficher une expression *)
 let rec afficher_expression portee expr =
   match expr with
@@ -166,6 +173,10 @@ let rec afficher_expression portee expr =
     Printf.fprintf !oc " || ";
     afficher_expression portee p2;
     Printf.fprintf !oc ")"
+  | Appel_recette (fonction_nom, arguments) ->
+    Printf.fprintf !oc "%s(" fonction_nom;
+    afficher_arguments arguments;
+    Printf.fprintf !oc ")"
   | _ -> raise PhraseInvalide
 
 
@@ -177,6 +188,14 @@ let rec type_variable portee var_name =
     if name = var_name then var_type
     else type_variable q var_name
 
+let type_en_chaine_caractere type_de_expression =
+  match type_de_expression with
+     | TypeEntier | TypeBooleen -> "int "
+     | TypeNeant -> "void *"
+     | TypeReel -> "float "
+     | TypeChaineCaractere -> "wchar_t *"
+
+
 (* Fonction pour afficher une assignation *)
 let afficher_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
@@ -185,11 +204,7 @@ let afficher_assignation portee (var, expr) =
     else (var_minuscule, "int") :: portee
   in
   (if not (variable_est_declaree portee var_minuscule) then
-     match type_de_expression portee expr with
-     | TypeEntier | TypeBooleen -> Printf.fprintf !oc "int "
-     | TypeNeant -> Printf.fprintf !oc "void *"
-     | TypeReel -> Printf.fprintf !oc "float "
-     | TypeChaineCaractere -> Printf.fprintf !oc "wchar_t *");
+    Printf.fprintf !oc  "%s" (type_en_chaine_caractere (type_de_expression portee expr)));
   Printf.fprintf !oc "%s = " var_minuscule;
   afficher_expression portee_maj expr;
   Printf.fprintf !oc ";\n";
@@ -220,6 +235,14 @@ let afficher_printf portee e =
     Printf.fprintf !oc "printf(\"%%d\\n\", ";
     afficher_expression portee e;
     Printf.fprintf !oc ");\n"
+
+let rec afficher_arguments_avec_type arguments_list =
+    match arguments_list with
+    | [] -> ()
+    | (argument_type, argument_nom)::q ->
+        Printf.fprintf !oc "%s %s%s" (type_en_chaine_caractere argument_type) argument_nom (if q = [] then "" else ", ");
+        afficher_arguments_avec_type q
+
 
 let rec afficher_ast portee ast =
   match ast with
@@ -259,6 +282,12 @@ let rec afficher_ast portee ast =
     Printf.fprintf !oc "%s = %s;\n" v1 v2;
     Printf.fprintf !oc "%s = %s;\n" v2 variable_temporaire;
     portee
+  | Renvoyer a -> 
+    Printf.fprintf !oc "return ";
+    let _ = afficher_ast portee a in
+    Printf.fprintf !oc ";\n";
+    portee
+  | Recette(_) -> portee
   | _ ->
     afficher_expression portee ast;
     portee
@@ -305,12 +334,25 @@ and afficher_for portee var start_expr end_expr inclusive paragraphe =
 let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
 
+let afficher_function nom arguments type_function corps =
+  Printf.fprintf !oc "\n%s" (type_en_chaine_caractere type_function);
+  Printf.fprintf !oc "%s(" nom;
+  afficher_arguments_avec_type arguments;
+  Printf.fprintf !oc ") {\n";
+  let _ = List.fold_left afficher_ast [("a", "int"); ("b", "int")] corps in
+  Printf.fprintf !oc "}\n"
 
+let rec afficher_fonctions_pre_main ast =
+  match ast with
+  | Recette(nom, arguments, type_function, corps) -> afficher_function nom arguments type_function corps
+  | Paragraphe l -> List.iter afficher_fonctions_pre_main l
+  | _ -> ()
 
 (* Fonction principale pour afficher le code C *)
 let affiche a channel =
   oc := channel;
   Printf.fprintf !oc "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
+  afficher_fonctions_pre_main a;
   Printf.fprintf !oc "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
   let _ = afficher_ast [] a in
   Printf.fprintf !oc "return 0;\n}"

@@ -2,6 +2,8 @@ exception PhraseInvalide
 exception TokenInvalide
 exception TypeMismatch
 
+type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
+
 type ast =
   | Mot of string
   | Entier of string
@@ -31,5 +33,8 @@ type ast =
   | Increment of string * ast option
   | Decrement of string * ast option
   | Permuter of string * string
+  | Recette of string * (type_expression * string) list * type_expression * ast
+  | Appel_recette of string * string list
+  | Renvoyer of ast
 
 val affiche : ast -> out_channel -> unit

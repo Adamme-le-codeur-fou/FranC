@@ -3,5 +3,9 @@ On définit une recette nommée puissance dont les ingrédients sont :
  - un entier b
 et qui renvoie un entier : 
     Si b est égal à 0 alors renvoyer 1.
-    Sinon renvoyer a multiplié par le résultat de puissance avec les ingrédients a et b moins 1. Fin de la condition.
+    Sinon Temp devient b moins 1. Renvoyer a multiplié par le résultat de puissance avec les ingrédients a et temp. Fin de la condition.
 Fin de la recette.
+
+A devient 2. B devient 11.
+Afficher <2 puissance 11 :>.
+Afficher le résultat de puissance avec les ingrédients a et b.
