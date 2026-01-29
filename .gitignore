@@ -32,11 +32,6 @@ _opam/
 # Output files and directories
 bin/
 output/
-src/lexer.ml
-src/parser.ml
-src/parser.output
-headers/parser.mli
-
 
 #vscode
 .vscode/

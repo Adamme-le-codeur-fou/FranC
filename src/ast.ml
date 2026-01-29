@@ -1,9 +1,9 @@
+open Types
+
 exception PhraseInvalide
 exception TokenInvalide
 exception IncompatibiliteDeType
 exception VariableNonDeclaree
-
-type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
 
 type ast =
   | Mot of string
@@ -43,6 +43,7 @@ let canal_sortie = ref stdout
 let ecrire chaine_format =
   Printf.fprintf !canal_sortie chaine_format
 
+  (* détermine le type d'une expression *)
 let rec type_de_expression portee expr =
   match expr with
   | Entier _ -> TypeEntier
@@ -175,21 +176,6 @@ let rec afficher_expression portee expr =
     ecrire ")"
   | _ -> raise PhraseInvalide
 
-
-(* fonction qui recherche une variable dams la portée et retourne son type*)
-let rec type_variable portee var_name =
-  match portee with
-  | [] -> raise VariableNonDeclaree
-  | (name, var_type) :: q ->
-    if name = var_name then var_type
-    else type_variable q var_name
-
-let type_vers_chaine_caractere t =
-  match t with
-     | TypeEntier | TypeBooleen -> "int "
-     | TypeNeant -> "void *"
-     | TypeReel -> "float "
-     | TypeChaineCaractere -> "wchar_t *"
 
 
 (* Fonction pour afficher une assignation *)
@@ -326,9 +312,6 @@ and afficher_for portee var start_expr end_expr inclusive paragraphe =
   let _ = List.fold_left afficher_ast portee_apres_for paragraphe in
   ecrire "}\n";
   portee_apres_for
-
-let verifier_type attendu obtenu =
-  if attendu <> obtenu then raise IncompatibiliteDeType
 
 let afficher_function nom arguments type_function corps =
   ecrire "\n%s" (type_vers_chaine_caractere type_function);

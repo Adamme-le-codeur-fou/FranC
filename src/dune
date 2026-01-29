@@ -1,0 +1,6 @@
+(executable
+ (public_name FranC)
+ (name main)
+ (libraries FranC))
+(ocamllex lexer)
+(ocamlyacc parser)

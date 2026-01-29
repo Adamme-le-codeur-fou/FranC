@@ -1,5 +1,6 @@
 %{
     open Ast
+    open Types
 %} 
 %token Assigne Afficher Permuter Avec
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
