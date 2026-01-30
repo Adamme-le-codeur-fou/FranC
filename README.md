@@ -2,6 +2,39 @@
 
 Langage de programmation français
 
+## Installation et Utilisation (Linux)
+
+### Prérequis
+
+- OCaml et opam installés
+- GCC (ou n'importe quel compilateur C)
+- Dune (système de build pour OCaml)
+
+### Compilation du projet
+
+1. **Nettoyer les builds précédents** :
+   ```bash
+    dune clean
+   ```
+
+2. **Compiler le projet** :
+   ```bash
+    dune build
+   ```
+
+### Exécution d'un programme FranC
+
+1. **Compiler un fichier FranC vers C puis vers un exécutable** :
+   ```bash
+    ./_build/default/src/main.exe votre_fichier.fr output/output.c
+    gcc -Wall -Wextra -std=c99 -o output/output output/output.c
+   ```
+
+2. **Exécuter le programme compilé** :
+   ```bash
+    ./output/output
+   ```
+
 # Dictionnaire de Référence pour le Langage FranC vers C
 
 Ce dictionnaire fournit des exemples de comment différentes constructions en FranC sont traduites en code C.
@@ -11,6 +44,14 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 - En FranC, une variable est **définie** avec une **lettre majuscule** au début (exemple : `A`).
 - Pour **utiliser** une variable déjà définie, on utilise une **lettre minuscule** au début (exemple : `a`).
 - On ne peut pas utiliser une variable si elle n'a pas été définie auparavant.
+
+## Types de Données
+
+| Type FranC                    | Type C       | Exemple                                  |
+| ----------------------------- | ------------ | ---------------------------------------- |
+| un entier                     | `int`        | `A devient 10.`                          |
+| un réel                       | `float`      | `B devient 3,14.`                        |
+| une chaîne de caractères      | `wchar_t *`  | `Message devient <Bonjour>.`             |
 
 ## Variables et Affectations
 
@@ -25,15 +66,27 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | FranC                                                       | C                           |
 | ----------------------------------------------------------- | --------------------------- |
 | `C devient 1 plus 1.`                                       | `int C = 1 + 1;`            |
-| `A devient 2. D devient a fois 3.`                          | `int A = 2; int D = a * 3;` |
-| `E devient le reste de la division euclidienne de 5 par 3.` | `int E = 5 % 3;`            |
+| `D devient 10 moins 3.`                                     | `int D = 10 - 3;`           |
+| `A devient 2. E devient a fois 3.`                          | `int A = 2; int E = a * 3;` |
+| `F devient le reste de la division euclidienne de 5 par 3.` | `int F = 5 % 3;`            |
 
 ## Comparaisons
 
-| FranC                             | C                   |
-| --------------------------------- | ------------------- |
-| `A devient a est égal à 4`        | `int A = (a == 4);` |
-| `B devient a est différent de b.` | `int B = (a != b);` |
+| FranC                                    | C                   |
+| ---------------------------------------- | ------------------- |
+| `A devient a est égal à 4.`              | `int A = (a == 4);` |
+| `B devient a est différent de b.`        | `int B = (a != b);` |
+| `C devient a est inferieur à b.`         | `int C = (a < b);`  |
+| `D devient a est inférieur ou égal à b.` | `int D = (a <= b);` |
+| `E devient a est supérieur à b.`         | `int E = (a > b);`  |
+| `F devient a est supérieur ou égal à b.` | `int F = (a >= b);` |
+
+## Opérateurs Logiques
+
+| FranC                          | C                         |
+| ------------------------------ | ------------------------- |
+| `A devient a et b.`            | `int A = (a && b);`       |
+| `B devient a ou b.`            | `int B = (a \|\| b);`     |
 
 ## Structures Conditionnelles
 
@@ -53,9 +106,58 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 
 ## Affichage
 
-| FranC         | C                    |
-| ------------- | -------------------- |
-| `Afficher a.` | `printf("%d\n", a);` |
+| FranC                        | C                         |
+| ---------------------------- | ------------------------- |
+| `Afficher a.`                | `printf("%d\n", a);`      |
+| `Afficher <Bonjour>.`        | `wprintf(L"Bonjour\n");`  |
+
+## Opérations sur Variables
+
+| FranC                        | C                                    |
+| ---------------------------- | ------------------------------------ |
+| `On incrémente a.`           | `a++;`                               |
+| `On incrémente a de 5.`      | `a += 5;`                            |
+| `On décrémente a.`           | `a--;`                               |
+| `On décrémente a de 3.`      | `a -= 3;`                            |
+| `Permuter a avec b.`         | `{ int temp = a; a = b; b = temp; }` |
+
+## Fonctions (Recettes)
+
+En FranC, les fonctions sont appelées "recettes" :
+
+```franc
+On définit une recette nommée puissance dont les ingrédients sont :
+ - un entier a
+ - un entier b
+et qui renvoie un entier : 
+    Si b est égal à 0 alors renvoyer 1.
+    Sinon temp devient b moins 1. Renvoyer a multiplié par le résultat de puissance avec les ingrédients a et temp. Fin de la condition.
+Fin de la recette.
+```
+
+Ce qui équivaut en C à :
+```c
+int puissance(int a, int b) {
+    if (b == 0) {
+        return 1;
+    } else {
+        int temp = b - 1;
+        return a * puissance(a, temp);
+    }
+}
+```
+
+**Appel d'une recette :**
+```franc
+Resultat devient le résultat de puissance avec les ingrédients a et b.
+```
+
+## Commentaires
+
+| FranC                              | C                    |
+| ---------------------------------- | -------------------- |
+| `N. B. : Ceci est un commentaire.` | `// Commentaire`     |
+| `Nota bene : Un autre commentaire.`| `// Commentaire`     |
 
 Note : Les exemples en C supposent que les variables sont déjà déclarées et initialisées si nécessaire.
 
@@ -66,18 +168,28 @@ Dans le cadre du développement de FranC, plusieurs exceptions sont définies po
 - `PhraseInvalide` : Levée lorsqu'une phrase ne peut pas être correctement analysée ou transformée en AST.
 - `TokenInvalide` : Levée lorsqu'un jeton (token) inattendu ou invalide est rencontré dans l'analyse syntaxique.
 - `IncompatibiliteDeType` : Levée lorsqu'il y a une incompatibilité de types dans les expressions ou affectations.
+- `VariableNonDeclaree` : Levée lorsqu'une variable est utilisée sans avoir été déclarée auparavant.
 
 La structure du Abstract Syntax Tree (AST) est définie comme suit :
 
 - `Mot` : Représente un mot ou une variable dans le code FranC.
-- `Nombre` : Représente un nombre littéral.
+- `Entier` : Représente un nombre entier littéral.
+- `Reel` : Représente un nombre réel littéral.
+- `Chaine_caractere` : Représente une chaîne de caractères littérale.
 - `Phrase` : Une suite d'éléments AST formant une phrase.
-- `Plus`, `Egal`, `Fois`, `Modulo`, `Assigne`, `Afficher` : Représentent respectivement les opérations d'addition, égalité, multiplication, modulo, assignation et affichage.
+- `Plus`, `Moins`, `Fois`, `Modulo` : Représentent les opérations arithmétiques.
+- `Egal`, `Different`, `Inferieur`, `Inferieur_ou_egal`, `Superieur`, `Superieur_ou_egal` : Représentent les opérations de comparaison.
+- `Et`, `Ou` : Représentent les opérations logiques.
+- `Assigne`, `Afficher` : Représentent l'assignation et l'affichage.
 - `Paragraphe` : Un ensemble d'instructions ou d'expressions.
 - `Condition` : Représente une structure conditionnelle (if-else).
 - `BoucleTantQue` : Représente une boucle while.
-- `Different` : Représente une comparaison de non-égalité.
 - `ForInclus` et `ForExclus` : Représentent des boucles for, avec des limites inclusives ou exclusives.
+- `Increment`, `Decrement` : Représentent l'incrémentation et la décrémentation d'une variable.
+- `Permuter` : Représente l'échange de valeurs entre deux variables.
+- `Recette` : Représente une définition de fonction.
+- `Appel_recette` : Représente un appel de fonction.
+- `Renvoyer` : Représente l'instruction return dans une fonction.
 
 Les fonctions `print_mot_liste` et `contient_afficher` sont utilisées pour analyser et transformer le AST en code exécutable ou pour vérifier la présence d'éléments spécifiques dans le AST.
 
@@ -87,13 +199,19 @@ Les fonctions `print_mot_liste` et `contient_afficher` sont utilisées pour anal
 
 ## TODO
 
+- [x] Ajouter le support pour les chaînes de caractères et les opérations associées.
+- [x] Ajouter la prise en charge des commentaires dans le code FranC.
+- [x] Implémenter les fonctions (recettes).
+- [x] Ajouter les opérateurs de comparaison complets (<, <=, >, >=).
+- [x] Ajouter les opérateurs logiques (et, ou).
+- [x] Ajouter les nombres réels.
+- [x] Ajouter l'incrémentation et la décrémentation.
 - [ ] Implémenter le typage haut niveau pour des structures de données complexes.
-- [ ] Ajouter le support pour les chaînes de caractères et les opérations associées.
 - [ ] Développer des fonctions intégrées pour les opérations courantes (mathématiques, chaînes, etc.).
 - [ ] Améliorer le système d'erreur pour fournir des messages plus détaillés et des suggestions de correction.
-- [ ] Optimiser le parseur pour une meilleure performance sur des scripts plus longs.
 - [ ] Ajouter une fonctionnalité de vérification de type statique.
 - [ ] Créer un système de modules ou de packages pour permettre la réutilisation du code.
-- [ ] Ajouter la prise en charge des commentaires dans le code FranC.
 - [ ] Étendre la documentation pour couvrir plus de cas d'utilisation et d'exemples.
 - [ ] Implémenter une interface graphique pour faciliter l'écriture et le test de code en FranC.
+- [ ] Ajouter le support pour les tableaux et les structures de données.
+- [ ] Ajouter les opérations sur les chaînes de caractères (concaténation, longueur, etc.).
