@@ -119,7 +119,7 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `On incrémente a de 5.`      | `a += 5;`                            |
 | `On décrémente a.`           | `a--;`                               |
 | `On décrémente a de 3.`      | `a -= 3;`                            |
-| `Permuter a avec b.`         | `{ int temp = a; a = b; b = temp; }` |
+| `Permuter a avec b.`         | `int temp = a; a = b; b = temp;` |
 
 ## Fonctions (Recettes)
 
@@ -148,9 +148,9 @@ int puissance(int a, int b) {
 ```
 
 **Appel d'une recette :**
-```franc
-Resultat devient le résultat de puissance avec les ingrédients a et b.
-```
+| FranC                                                                     | C                                    |
+| ------------------------------------------------------------------------- | ------------------------------------ |
+| `Resultat devient le résultat de puissance avec les ingrédients a et b. ` | `int resultat = puissance(a, b);`    |
 
 ## Commentaires
 
@@ -190,8 +190,6 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `Recette` : Représente une définition de fonction.
 - `Appel_recette` : Représente un appel de fonction.
 - `Renvoyer` : Représente l'instruction return dans une fonction.
-
-Les fonctions `print_mot_liste` et `contient_afficher` sont utilisées pour analyser et transformer le AST en code exécutable ou pour vérifier la présence d'éléments spécifiques dans le AST.
 
 ## À Vérifier
 
