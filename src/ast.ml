@@ -210,11 +210,11 @@ let temporaire_suivant () =
 (* Fonction pour afficher un appel à printf avec la valeur correcte *)
 let afficher_printf portee e =
   match e with
-  | Entier n -> ecrire "printf(\"%%d\\n\", %s);\n" n
-  | Reel r -> ecrire "printf(\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
+  | Entier n -> ecrire "wprintf(L\"%%d\\n\", %s);\n" n
+  | Reel r -> ecrire "wprintf(L\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
   | Chaine_caractere s -> ecrire "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
   | _ ->
-    ecrire "printf(\"%%d\\n\", ";
+    ecrire "wprintf(L\"%%d\\n\", ";
     afficher_expression portee e;
     ecrire ");\n"
 
