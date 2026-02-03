@@ -1,7 +1,7 @@
 %{
     open Ast
-    open Types
-%} 
+%}
+
 %token Assigne Afficher Permuter Avec
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %token Plus Fois Moins 
@@ -54,8 +54,8 @@ types:
     | Type_chaine_caractere { TypeChaineCaractere }
 
 expression:
-    | Reste_division_euclidienne_debut expression Par expression { Modulo($2, $4) }
     | Parenthese_Gauche expression Parenthese_Droite { $2 }
+    | Reste_division_euclidienne_debut expression Par expression { Modulo($2, $4) }
     | expression Plus expression { Plus($1, $3) }
     | expression Moins expression { Moins($1, $3) }
     | expression Fois expression { Fois($1, $3) }

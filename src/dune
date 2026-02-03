@@ -2,5 +2,4 @@
  (public_name FranC)
  (name main)
  (libraries FranC))
-(ocamllex lexer)
-(ocamlyacc parser)
+(include_subdirs unqualified)
