@@ -1,5 +1,0 @@
-(executable
- (public_name FranC)
- (name main)
- (libraries FranC))
-(include_subdirs unqualified)

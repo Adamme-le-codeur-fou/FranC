@@ -1,2 +1,3 @@
 (library
  (name FranC))
+(include_subdirs unqualified)
