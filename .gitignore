@@ -29,8 +29,7 @@ setup.log
 _opam/
 /.idea/
 
-# Output files and directories
-bin/
+# Output files
 output/
 
 #vscode
