@@ -8,7 +8,8 @@ Langage de programmation français
 
 - OCaml et opam installés
 - GCC (ou n'importe quel compilateur C)
-- Dune (système de build pour OCaml)
+- Dune (système de build pour OCaml : `opam install dune`)
+- Alcotest (pour les tests unitaires : `opam install alcotest`)
 
 ### Compilation du projet
 
@@ -20,6 +21,11 @@ Langage de programmation français
 2. **Compiler le projet** :
    ```bash
     dune build
+   ```
+
+3. **Exécuter les tests unitaires** :
+   ```bash
+    dune runtest
    ```
 
 ### Exécution d'un programme FranC
