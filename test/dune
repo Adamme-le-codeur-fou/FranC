@@ -1,3 +1,4 @@
 (test
  (name test_FranC)
  (libraries alcotest FranC))
+(include_subdirs unqualified)
