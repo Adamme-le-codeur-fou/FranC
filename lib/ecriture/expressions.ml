@@ -1,9 +1,17 @@
-open Ecrire
+open String_outils
 open Ast
+open Ecrire
 open Portee
 
 exception PhraseInvalide
 exception TokenInvalide
+
+let rec ecrire_arguments arguments_list =
+    match arguments_list with
+    | [] -> ()
+    | argument_nom::q ->
+        ecrire "%s%s" argument_nom (if q = [] then "" else ", ");
+        ecrire_arguments q
 
 (* Fonction pour afficher une expression *)
 let rec ecrire_expression portee expr =
@@ -37,3 +45,5 @@ and ecrire_operateur_binaire portee expr_a exbr_b operateur =
   ecrire " %s " operateur;
   ecrire_expression portee exbr_b;
   ecrire ")"
+
+  

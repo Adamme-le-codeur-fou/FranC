@@ -1,5 +1,3 @@
-open Ecrire
-
 exception PhraseInvalide
 
 type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
@@ -36,47 +34,6 @@ type ast =
   | Recette            of string * (string * type_expression) list * type_expression * ast list
   | Appel_recette      of string * string list
   | Renvoyer           of ast
-
-
-let remplacer_caractere ancien_caractere nouveau_caractere chaine_caractere =
-  String.map
-    (fun caractere_courrant ->
-       if caractere_courrant = ancien_caractere then nouveau_caractere
-       else caractere_courrant)
-    chaine_caractere
-
-let rec print_mot_liste l =
-  match l with
-  | [] -> ()
-  | Mot m :: q ->
-    ecrire "mot(%s)%s" m (if q = [] then "" else ", ");
-    print_mot_liste q
-  | _ -> raise PhraseInvalide
-
-
-
-let rec ecrire_arguments arguments_list =
-    match arguments_list with
-    | [] -> ()
-    | argument_nom::q ->
-        ecrire "%s%s" argument_nom (if q = [] then "" else ", ");
-        ecrire_arguments q
-
-
-let normaliser_chaine s =
-  String.fold_left
-    (fun acc caractere_courrant ->
-       match caractere_courrant with
-       | '%' -> acc ^ "%%"
-       | '\\' -> acc ^ "\\\\"
-       | _ -> acc ^ String.make 1 caractere_courrant)
-    "" s
-
-let temporaire_id = ref 0
-let temporaire_suivant () = 
-  let id = !temporaire_id in
-  temporaire_id := !temporaire_id + 1;
-  Printf.sprintf "_variable_temporaire_%d" id
 
 
 

@@ -9,3 +9,4 @@ Fin de la recette.
 A devient 2. B devient 11.
 Afficher <2 puissance 11 :>.
 Afficher le résultat de puissance avec les ingrédients a et b.
+Permuter a avec b.

@@ -1,3 +1,4 @@
+open String_outils
 open Ast
 open Ecrire
 open Expressions
@@ -54,10 +55,10 @@ let ecrire_decrementer portee var expression = ecrire_xcrementer portee var expr
 let ecrire_permuter portee variable1 variable2 =
     let v1_minuscule = String.lowercase_ascii variable1 in
     let v2_minuscule = String.lowercase_ascii variable2 in
-    let variable_temporaire = temporaire_suivant () in
-    ecrire "%s %s = %s;\n" (type_de_variable_vers_string portee v1_minuscule) variable_temporaire v1_minuscule;
+    let variable_temporaire = "variable_temporaire" in
+    ecrire "{%s %s = %s;\n" (type_de_variable_vers_string portee v1_minuscule) variable_temporaire v1_minuscule;
     ecrire "%s = %s;\n" v1_minuscule v2_minuscule;
-    ecrire "%s = %s;\n" v2_minuscule variable_temporaire;
+    ecrire "%s = %s;}\n" v2_minuscule variable_temporaire;
     portee
 
 let ecrire_renvoyer portee expression =
