@@ -10,7 +10,6 @@ let rec ecrire_ast portee ast =
   match ast with
   | ForInclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr true paragraphe
   | ForExclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr false paragraphe
-  | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
   | Assigne       (Mot mot, expression)                   -> ecrire_assignation portee (mot, expression)
   | Afficher      (expression)                            -> ecrire_printf portee expression
   | Condition     (condition, alors_liste, sinon_OPTION)  -> ecrire_condition ecrire_ast portee condition alors_liste sinon_OPTION
@@ -18,14 +17,15 @@ let rec ecrire_ast portee ast =
   | Increment     (variable, expression)                  -> ecrire_incrementer portee variable expression
   | Decrement     (variable, expression)                  -> ecrire_decrementer portee variable expression
   | Permuter      (variable1, variable2)                  -> ecrire_permuter portee variable1 variable2
-  | Renvoyer      (expression)                            -> ecrire_renvoyer portee expression 
+  | Renvoyer      (expression)                            -> ecrire_renvoyer portee expression
+  | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
   | Recette(_)                                            -> portee
   | _                                                     -> ecrire_expression portee ast; portee
 
-let affiche a channel nom_programme =
-  change_canal channel;
-  ecrire_debut ecrire_ast a nom_programme;
-  let _ = ecrire_ast [] a in
+let affiche arbre canal_sortie nom_programme=
+  change_canal canal_sortie;
+  ecrire_debut ecrire_ast arbre nom_programme;
+  let _ = ecrire_ast [] arbre in
   ecrire "return 0;\n}"
 
 let affiche_usage_et_quitte_erreur () =
