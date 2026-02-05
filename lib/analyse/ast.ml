@@ -32,9 +32,5 @@ type ast =
   | Decrement          of string * ast option
   | Permuter           of string * string
   | Recette            of string * (string * type_expression) list * type_expression * ast list
-  | Appel_recette      of string * string list
+  | Appel_recette      of string * ast list
   | Renvoyer           of ast
-
-
-
-

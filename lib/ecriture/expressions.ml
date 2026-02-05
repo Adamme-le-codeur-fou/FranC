@@ -6,15 +6,15 @@ open Portee
 exception PhraseInvalide
 exception TokenInvalide
 
-let rec ecrire_arguments arguments_list =
+let rec ecrire_expression_list portee arguments_list =
     match arguments_list with
     | [] -> ()
-    | argument_nom::q ->
-        ecrire "%s%s" argument_nom (if q = [] then "" else ", ");
-        ecrire_arguments q
+    | argument::q ->
+        ecrire_expression portee argument;
+        if q <> [] then ecrire ", ";
+        ecrire_expression_list portee q
 
-(* Fonction pour afficher une expression *)
-let rec ecrire_expression portee expr =
+and ecrire_expression portee expr =
   match expr with
   | Entier n -> ecrire "%s" n
   | Reel r -> ecrire "%s" (remplacer_caractere ',' '.' r)
@@ -23,7 +23,7 @@ let rec ecrire_expression portee expr =
           ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise TokenInvalide)
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
-        ecrire_arguments arguments;
+        ecrire_expression_list portee arguments;
         ecrire ")"
   | Plus              (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "+"
   | Moins             (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "-"
@@ -34,7 +34,7 @@ let rec ecrire_expression portee expr =
   | Inferieur_ou_egal (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "<="
   | Superieur         (p1, p2) -> ecrire_operateur_binaire portee p1 p2 ">"
   | Superieur_ou_egal (p1, p2) -> ecrire_operateur_binaire portee p1 p2 ">="
-  | Modulo            (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "%%"
+  | Modulo            (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "%"
   | Et                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "&&"
   | Ou                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "||"
   | _ -> raise PhraseInvalide

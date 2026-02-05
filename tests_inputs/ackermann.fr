@@ -1,0 +1,13 @@
+On définit une recette nommée ackermann dont les ingrédients sont :
+ - un entier m
+ - un entier n
+et qui renvoie un entier : 
+    Si m est égal à 0 alors renvoyer n plus 1.
+    Sinon 
+        Si n est égal à 0 alors renvoyer le résultat de ackermann avec les ingrédients m moins 1 et 1.
+        Sinon renvoyer le résultat de ackermann avec les ingrédients m moins 1 et le résultat de ackermann avec les ingrédients m et n moins 1. Fin de la condition. 
+    Fin de la condition.
+Fin de la recette.
+
+Afficher <Ackermann(3, 4) :>.
+Afficher le résultat de ackermann avec les ingrédients 3 et 4.

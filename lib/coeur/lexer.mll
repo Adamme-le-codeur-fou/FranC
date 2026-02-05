@@ -20,8 +20,9 @@ rule decoupe =
     | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "moins" { Moins }
+    | "et si" { Et_Si }
+    | "ou si" { Ou_Si }
     | "et" { Et }
-    | "ou" { Ou }
     | "avec" { Avec }
     | "fois" | "multiplié par" { Fois }
     | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }

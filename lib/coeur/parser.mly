@@ -5,7 +5,7 @@
 %token Assigne Afficher Permuter Avec
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %token Plus Fois Moins 
-%token Et Ou
+%token Et_Si Ou_Si Et
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
 %token Tant_que Fin_boucle 
@@ -20,8 +20,10 @@
 %token <char> Ponctuation_fin_phrase
 %token <string> Entier Reel
 
-%nonassoc Ou
+
 %nonassoc Et
+%nonassoc Ou_Si
+%nonassoc Et_Si
 %nonassoc Assigne
 %nonassoc Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %nonassoc Plus Moins
@@ -69,9 +71,9 @@ expression:
     | Reel { Reel($1) }
     | Mot { Mot($1) }
     | Chaine_caractere { Chaine_caractere($1) }
-    | expression Et expression { Et($1, $3) }
-    | expression Ou expression { Ou($1, $3) }
-    | Resultat_de_recette Mot Avec_les_ingredients liste_mots { Appel_recette($2, $4) }
+    | expression Et_Si expression { Et($1, $3) }
+    | expression Ou_Si expression { Ou($1, $3) }
+    | Resultat_de_recette Mot Avec_les_ingredients liste_expressions { Appel_recette($2, $4) }
 
 declaration:
     | mot_majuscule Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
@@ -97,9 +99,9 @@ boucle_pour:
     | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForExclus($2, $4, $6, $8) }
 
-liste_mots:
-    | Mot Virgule liste_mots { $1 :: $3 }
-    | Mot Et Mot { [ $1; $3 ] }
+liste_expressions:
+    | expression Virgule liste_expressions { $1 :: $3 }
+    | expression Et expression { [ $1; $3 ] }
 
 liste_ingredients:
     | Tiret types Mot liste_ingredients { ( $3, $2 ) :: $4 }
