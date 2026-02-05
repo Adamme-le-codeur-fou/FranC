@@ -1,9 +1,6 @@
 open Ecrire
 
 exception PhraseInvalide
-exception TokenInvalide
-exception IncompatibiliteDeType
-exception VariableNonDeclaree
 
 type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
 
@@ -58,12 +55,12 @@ let rec print_mot_liste l =
 
 
 
-let rec afficher_arguments arguments_list =
+let rec ecrire_arguments arguments_list =
     match arguments_list with
     | [] -> ()
     | argument_nom::q ->
         ecrire "%s%s" argument_nom (if q = [] then "" else ", ");
-        afficher_arguments q
+        ecrire_arguments q
 
 
 let normaliser_chaine s =

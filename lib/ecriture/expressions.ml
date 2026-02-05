@@ -4,11 +4,9 @@ open Portee
 
 exception PhraseInvalide
 exception TokenInvalide
-exception IncompatibiliteDeType
-exception VariableNonDeclaree
 
 (* Fonction pour afficher une expression *)
-let rec afficher_expression portee expr =
+let rec ecrire_expression portee expr =
   match expr with
   | Entier n -> ecrire "%s" n
   | Reel r -> ecrire "%s" (remplacer_caractere ',' '.' r)
@@ -17,7 +15,7 @@ let rec afficher_expression portee expr =
           ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise TokenInvalide)
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
-        afficher_arguments arguments;
+        ecrire_arguments arguments;
         ecrire ")"
   | Plus              (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "+"
   | Moins             (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "-"
@@ -35,7 +33,7 @@ let rec afficher_expression portee expr =
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =
   ecrire "(";
-  afficher_expression portee expr_a;
+  ecrire_expression portee expr_a;
   ecrire " %s " operateur;
-  afficher_expression portee exbr_b;
+  ecrire_expression portee exbr_b;
   ecrire ")"
