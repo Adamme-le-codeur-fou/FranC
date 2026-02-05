@@ -27,18 +27,12 @@ let rec type_de_expression portee expr =
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
   | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) | Moins (expr_gauche, expr_droite) ->
-    if
-      type_de_expression portee expr_gauche = TypeReel
-      || type_de_expression portee expr_droite = TypeReel
-    then TypeReel
-    else TypeEntier
+    if type_de_expression portee expr_gauche = TypeReel || type_de_expression portee expr_droite = TypeReel
+      then TypeReel else TypeEntier
   | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen
   | Modulo _ -> TypeEntier
-  | Mot m ->
-    let m_minuscule = String.lowercase_ascii m in List.assoc m_minuscule portee
+  | Mot m -> let m_minuscule = String.lowercase_ascii m in List.assoc m_minuscule portee
   | _ -> TypeNeant
-
-
 
 let verifier_type attendu obtenu =
   if attendu <> obtenu then raise IncompatibiliteDeType
