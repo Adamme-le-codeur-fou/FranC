@@ -1,0 +1,4 @@
+(test
+ (name test_FranC_creation_ast)
+ (libraries alcotest FranC))
+(include_subdirs unqualified)

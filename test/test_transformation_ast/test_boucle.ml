@@ -42,4 +42,4 @@ let retourne_tests () =
     test_case "Ecrire boucle while" `Quick test_ecrire_boucle_while;
     test_case "Ecrire boucle for"   `Quick test_ecrire_for;
     test_case "Ecrire condition"    `Quick test_ecrire_condition 
-    ]
+  ]
