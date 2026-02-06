@@ -6,10 +6,12 @@ let chiffre = ['0'-'9']
 let nombre = chiffre+
 let alphabet_min =  ['a'-'z']
 let alphabet_maj = ['A'-'Z']
+let alphabet = alphabet_min | alphabet_maj
 let lettre_speciales_min = ['\x82''\x8A''\x87''\x85''\x97'] (* é, è, ç, à, ù' *) 
 let lettre_speciales_maj = ['\x90''\xD4''\x80''\xB7''\xEB'] (* É, È, Ç, À, Ù *) 
 let ponctuation_fin_phrase = ['.''?''!'','';']
-let mot = alphabet_min+
+let mot = alphabet_min+ ('''+ alphabet+)*
+let mot_maj = alphabet_maj mot?
 
 rule decoupe =
     parse
@@ -67,7 +69,7 @@ rule decoupe =
     | '<' ([^'>']* as str) '>' { Chaine_caractere(str) }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
-    | (alphabet_maj | lettre_speciales_maj) mot? as mot_maj { Mot_majuscule mot_maj } 
+    | mot_maj as mot_maj { Mot_majuscule mot_maj } 
     | ponctuation_fin_phrase as c { Ponctuation_fin_phrase c }
     | "Nota bene : " | "N. B. : " { commentaire lexbuf }
     | eof { EOF }

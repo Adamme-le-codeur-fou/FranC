@@ -4,7 +4,7 @@ open Ecrire
 open Portee
 
 exception PhraseInvalide
-exception TokenInvalide
+exception MotInvalide
 
 let rec ecrire_expression_list portee arguments_list =
     match arguments_list with
@@ -20,7 +20,7 @@ and ecrire_expression portee expr =
   | Reel r -> ecrire "%s" (remplacer_caractere ',' '.' r)
   | Mot m ->
         let m_minuscule = String.lowercase_ascii m in
-          ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise TokenInvalide)
+          ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise MotInvalide)
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
         ecrire_expression_list portee arguments;
