@@ -10,6 +10,6 @@ let capture_sortie_avec fonction =
   fonction ();
   close_out canal_sortie;
 
-  let result = really_input_string canal_entree (in_channel_length canal_entree) in
+  let resultat = really_input_string canal_entree (in_channel_length canal_entree) in
   close_in canal_entree;
-  result
+  resultat
