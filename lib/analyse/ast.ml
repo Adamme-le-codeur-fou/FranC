@@ -41,3 +41,4 @@ type ast =
   | TailleTableau      of string
   | AjouterTableau     of string * ast
   | Lire               of string
+  | ChaineFormatee     of string list * string list

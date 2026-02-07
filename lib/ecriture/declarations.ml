@@ -63,6 +63,23 @@ let ecrire_printf portee e =
   | Entier n -> ecrire "wprintf(L\"%%d\\n\", %s);\n" n
   | Reel r -> ecrire "wprintf(L\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
   | Chaine_caractere s -> ecrire "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
+  | ChaineFormatee (textes, vars) ->
+    ecrire "wprintf(L\"";
+    List.iteri (fun i texte ->
+      ecrire "%s" (normaliser_chaine texte);
+      if i < List.length vars then begin
+        let var = List.nth vars i in
+        let var_min = String.lowercase_ascii var in
+        let t = type_variable portee var_min in
+        ecrire "%s" (format_printf_pour_type t)
+      end
+    ) textes;
+    ecrire "\\n\"";
+    List.iter (fun var ->
+      let var_min = String.lowercase_ascii var in
+      ecrire ", %s" var_min
+    ) vars;
+    ecrire ");\n"
   | _ ->
     let format = format_printf_pour_type (type_de_expression portee e) in
     ecrire "wprintf(L\"%s\\n\", " format;

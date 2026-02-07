@@ -73,6 +73,19 @@ let test_ecrire_taille_tableau () =
   ) in
   (check string) "taille tableau" "nombres->taille" resultat
 
+let test_ecrire_printf_formate () =
+  let portee = [("x", TypeEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_printf portee (ChaineFormatee(["Valeur : "; ""], ["x"])) in ()
+  ) in
+  (check string) "printf formate entier" "wprintf(L\"Valeur : %d\\n\", x);\n" resultat;
+
+  let portee = [("nom", TypeChaineCaractere); ("age", TypeEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_printf portee (ChaineFormatee(["Bonjour "; ", vous avez "; " ans"], ["nom"; "age"])) in ()
+  ) in
+  (check string) "printf formate multiple" "wprintf(L\"Bonjour %ls, vous avez %d ans\\n\", nom, age);\n" resultat
+
 let test_ecrire_lire () =
   let portee = [("x", TypeEntier)] in
   let resultat = capture_sortie_avec(fun () ->
@@ -94,5 +107,6 @@ let retourne_tests () =
     test_case "Printf avec types"          `Quick test_ecrire_printf_types;
     test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
     test_case "Taille tableau"             `Quick test_ecrire_taille_tableau;
+    test_case "Printf formate"            `Quick test_ecrire_printf_formate;
     test_case "Lire"                       `Quick test_ecrire_lire
   ]

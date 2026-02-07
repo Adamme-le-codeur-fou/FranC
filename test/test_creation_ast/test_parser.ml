@@ -73,6 +73,17 @@ let test_lire () =
   (check bool) "lire variable" true
     (arbre = Paragraphe [Assigne (Mot "X", Entier("0")); Lire "x"])
 
+let test_chaine_formatee () =
+  let arbre = construire_arbre "Afficher <Bonjour [nom]>." in
+  (check bool) "chaine formatee simple" true
+    (arbre = Paragraphe [Afficher (ChaineFormatee(["Bonjour "; ""], ["nom"]))]);
+  let arbre = construire_arbre "Afficher <[x] plus [y] egale [z]>." in
+  (check bool) "chaine formatee multiple" true
+    (arbre = Paragraphe [Afficher (ChaineFormatee([""; " plus "; " egale "; ""], ["x"; "y"; "z"]))]);
+  let arbre = construire_arbre "Afficher <Pas de variable>." in
+  (check bool) "chaine sans interpolation" true
+    (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))])
+
 let retourne_tests () =
       "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
@@ -84,5 +95,6 @@ let retourne_tests () =
         test_case "Tableau" `Quick test_tableau;
         test_case "Acces tableau" `Quick test_acces_tableau;
         test_case "Taille tableau" `Quick test_taille_tableau;
-        test_case "Lire" `Quick test_lire
+        test_case "Lire" `Quick test_lire;
+        test_case "Chaine formatee" `Quick test_chaine_formatee
       ]

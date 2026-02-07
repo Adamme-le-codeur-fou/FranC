@@ -18,6 +18,7 @@
 %token Type_entier Type_reel Type_chaine_caractere
 %token Deux_points Tiret Virgule
 %token <string> Mot Mot_majuscule Chaine_caractere
+%token <string list * string list> Chaine_formatee
 %token <char> Ponctuation_fin_phrase
 %token <string> Entier Reel
 
@@ -73,6 +74,7 @@ expression:
     | Reel { Reel($1) }
     | Mot { Mot($1) }
     | Chaine_caractere { Chaine_caractere($1) }
+    | Chaine_formatee { let (t, v) = $1 in ChaineFormatee(t, v) }
     | expression Et_Si expression { Et($1, $3) }
     | expression Ou_Si expression { Ou($1, $3) }
     | Resultat_de_recette Mot Avec_les_ingredients liste_expressions { Appel_recette($2, $4) }

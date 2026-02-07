@@ -32,13 +32,13 @@ Langage de programmation français
 
 1. **Compiler un fichier FranC vers C puis vers un exécutable** :
    ```bash
-    ./_build/default/src/main.exe votre_fichier.fr output/output.c
-    gcc -Wall -Wextra -std=c99 -o output/output output/output.c
+    dune exec -- FranC votre_fichier.fr sortie.c
+    gcc -o sortie sortie.c
    ```
 
 2. **Exécuter le programme compilé** :
    ```bash
-    ./output/output
+    ./sortie
    ```
 
 # Dictionnaire de Référence pour le Langage FranC vers C
@@ -50,6 +50,8 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 - En FranC, une variable est **définie** avec une **lettre majuscule** au début (exemple : `A`).
 - Pour **utiliser** une variable déjà définie, on utilise une **lettre minuscule** au début (exemple : `a`).
 - On ne peut pas utiliser une variable si elle n'a pas été définie auparavant.
+- La réassignation d'une variable avec un type différent lève une erreur.
+- Les variables déclarées dans un bloc (boucle, condition) ne sont **pas accessibles** en dehors (portée par bloc).
 
 ## Types de Données
 
@@ -74,7 +76,8 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `C devient 1 plus 1.`                                       | `int C = 1 + 1;`            |
 | `D devient 10 moins 3.`                                     | `int D = 10 - 3;`           |
 | `A devient 2. E devient a fois 3.`                          | `int A = 2; int E = a * 3;` |
-| `F devient le reste de la division euclidienne de 5 par 3.` | `int F = 5 % 3;`            |
+| `F devient 10 divisé par 3.`                                | `int F = 10 / 3;`           |
+| `G devient le reste de la division euclidienne de 5 par 3.` | `int G = 5 % 3;`            |
 
 ## Comparaisons
 
@@ -112,10 +115,22 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 
 ## Affichage
 
-| FranC                        | C                         |
-| ---------------------------- | ------------------------- |
-| `Afficher a.`                | `printf("%d\n", a);`      |
-| `Afficher <Bonjour>.`        | `wprintf(L"Bonjour\n");`  |
+| FranC                                    | C                                              |
+| ---------------------------------------- | ---------------------------------------------- |
+| `Afficher a.`                            | `printf("%d\n", a);`                            |
+| `Afficher <Bonjour>.`                    | `wprintf(L"Bonjour\n");`                        |
+| `Afficher <La valeur est [x]>.`          | `wprintf(L"La valeur est %d\n", x);`            |
+| `Afficher <[nom] a [age] ans>.`          | `wprintf(L"%ls a %d ans\n", nom, age);`         |
+
+Les chaînes formatées utilisent `[variable]` pour interpoler des variables. Le format (`%d`, `%f`, `%ls`) est déterminé automatiquement selon le type.
+
+## Entrée Utilisateur
+
+| FranC        | C                          |
+| ------------ | -------------------------- |
+| `Lire x.`   | `wscanf(L"%d", &x);`      |
+
+La variable doit être déclarée avant. Types supportés : entier et réel.
 
 ## Opérations sur Variables
 
@@ -127,6 +142,18 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `On décrémente a de 3.`      | `a -= 3;`                            |
 | `Permuter a avec b.`         | `int temp = a; a = b; b = temp;` |
 
+## Tableaux Dynamiques
+
+| FranC                                              | C                                          |
+| -------------------------------------------------- | ------------------------------------------ |
+| `Nombres devient un tableau contenant 10, 20 et 30.` | `nombres = nouveau_tableau_entier(3); ...` |
+| `Afficher l'element 0 de nombres.`                 | `wprintf(L"%d\n", nombres->donnees[0]);`   |
+| `Modifier l'element 0 de nombres avec 99.`         | `nombres->donnees[0] = 99;`               |
+| `Ajouter 50 à nombres.`                            | `ajouter_element_entier(nombres, 50);`     |
+| `Afficher la taille de nombres.`                   | `wprintf(L"%d\n", nombres->taille);`       |
+
+Les tableaux sont gérés automatiquement (allocation et libération mémoire). Les helpers C nécessaires ne sont inclus dans le prélude que si le programme utilise des tableaux.
+
 ## Fonctions (Recettes)
 
 En FranC, les fonctions sont appelées "recettes" :
@@ -135,7 +162,7 @@ En FranC, les fonctions sont appelées "recettes" :
 On définit une recette nommée puissance dont les ingrédients sont :
  - un entier a
  - un entier b
-et qui renvoie un entier : 
+et qui renvoie un entier :
     Si b est égal à 0 alors renvoyer 1.
     Sinon temp devient b moins 1. Renvoyer a multiplié par le résultat de puissance avec les ingrédients a et temp. Fin de la condition.
 Fin de la recette.
@@ -175,6 +202,7 @@ Dans le cadre du développement de FranC, plusieurs exceptions sont définies po
 - `TokenInvalide` : Levée lorsqu'un jeton (token) inattendu ou invalide est rencontré dans l'analyse syntaxique.
 - `IncompatibiliteDeType` : Levée lorsqu'il y a une incompatibilité de types dans les expressions ou affectations.
 - `VariableNonDeclaree` : Levée lorsqu'une variable est utilisée sans avoir été déclarée auparavant.
+- `Erreur_type` : Levée avec un message détaillé en français lors d'une erreur de typage (réassignation incompatible, lecture d'un type non supporté, etc.).
 
 La structure du Abstract Syntax Tree (AST) est définie comme suit :
 
@@ -182,8 +210,9 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `Entier` : Représente un nombre entier littéral.
 - `Reel` : Représente un nombre réel littéral.
 - `Chaine_caractere` : Représente une chaîne de caractères littérale.
+- `ChaineFormatee` : Représente une chaîne avec interpolation de variables (`<Bonjour [nom]>`).
 - `Phrase` : Une suite d'éléments AST formant une phrase.
-- `Plus`, `Moins`, `Fois`, `Modulo` : Représentent les opérations arithmétiques.
+- `Plus`, `Moins`, `Fois`, `Division`, `Modulo` : Représentent les opérations arithmétiques.
 - `Egal`, `Different`, `Inferieur`, `Inferieur_ou_egal`, `Superieur`, `Superieur_ou_egal` : Représentent les opérations de comparaison.
 - `Et`, `Ou` : Représentent les opérations logiques.
 - `Assigne`, `Afficher` : Représentent l'assignation et l'affichage.
@@ -196,10 +225,16 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `Recette` : Représente une définition de fonction.
 - `Appel_recette` : Représente un appel de fonction.
 - `Renvoyer` : Représente l'instruction return dans une fonction.
+- `Tableau` : Représente un tableau littéral.
+- `AccesTableau` : Représente l'accès à un élément d'un tableau.
+- `ModificationTableau` : Représente la modification d'un élément d'un tableau.
+- `TailleTableau` : Représente l'accès à la taille d'un tableau.
+- `AjouterTableau` : Représente l'ajout d'un élément à un tableau.
+- `Lire` : Représente la lecture d'une entrée utilisateur.
 
 ## À Vérifier
 
-- [ ] Les erreurs de scope
+- [x] Les erreurs de scope
 
 ## TODO
 
@@ -210,6 +245,13 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - [x] Ajouter les opérateurs logiques (et, ou).
 - [x] Ajouter les nombres réels.
 - [x] Ajouter l'incrémentation et la décrémentation.
+- [x] Ajouter le support pour les tableaux et les structures de données.
+- [x] Ajouter l'opérateur de division.
+- [x] Ajouter les messages d'erreur avec positions.
+- [x] Implémenter la portée par bloc.
+- [x] Ajouter la gestion automatique de la mémoire (tableaux).
+- [x] Ajouter l'entrée utilisateur (Lire).
+- [x] Ajouter l'interpolation de variables dans les chaînes (<Bonjour [x]>).
 - [ ] Implémenter le typage haut niveau pour des structures de données complexes.
 - [ ] Développer des fonctions intégrées pour les opérations courantes (mathématiques, chaînes, etc.).
 - [ ] Améliorer le système d'erreur pour fournir des messages plus détaillés et des suggestions de correction.
@@ -217,5 +259,4 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - [ ] Créer un système de modules ou de packages pour permettre la réutilisation du code.
 - [ ] Étendre la documentation pour couvrir plus de cas d'utilisation et d'exemples.
 - [ ] Implémenter une interface graphique pour faciliter l'écriture et le test de code en FranC.
-- [ ] Ajouter le support pour les tableaux et les structures de données.
 - [ ] Ajouter les opérations sur les chaînes de caractères (concaténation, longueur, etc.).

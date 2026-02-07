@@ -1,6 +1,24 @@
 {
     open Parser
     open Erreurs
+
+    let analyser_chaine str =
+      if not (String.contains str '[') then
+        Chaine_caractere(str)
+      else
+        let len = String.length str in
+        let rec aux i texte_courant textes vars =
+          if i >= len then
+            (List.rev (texte_courant :: textes), List.rev vars)
+          else if str.[i] = '[' then
+            let j = String.index_from str (i + 1) ']' in
+            let var = String.sub str (i + 1) (j - i - 1) in
+            aux (j + 1) "" (texte_courant :: textes) (var :: vars)
+          else
+            aux (i + 1) (texte_courant ^ String.make 1 str.[i]) textes vars
+        in
+        let (textes, vars) = aux 0 "" [] [] in
+        Chaine_formatee(textes, vars)
 }
 
 let chiffre = ['0'-'9']
@@ -75,7 +93,7 @@ rule decoupe =
     | "un entier" { Type_entier }
     | "un réel" { Type_reel }
     | "une chaîne de caractères" { Type_chaine_caractere }
-    | '<' ([^'>']* as str) '>' { Chaine_caractere(str) }
+    | '<' ([^'>']* as str) '>' { analyser_chaine str }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | mot_maj as mot_maj { Mot_majuscule mot_maj } 

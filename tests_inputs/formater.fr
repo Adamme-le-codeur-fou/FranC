@@ -1,0 +1,4 @@
+N. B. : Test du formatage de chaînes.
+
+X devient 42.
+Afficher <La réponse est [x]>.
