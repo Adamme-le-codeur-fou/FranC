@@ -84,6 +84,17 @@ let test_ecrire_negatif () =
   ) in
   (check string) "negatif dans addition" "(10 + (-3))" resultat
 
+let test_ecrire_booleens () =
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_assignation [] ("X", Vrai) in ()
+  ) in
+  (check string) "assignation vrai" "int x = 1;\n" resultat;
+
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_assignation [] ("X", Faux) in ()
+  ) in
+  (check string) "assignation faux" "int x = 0;\n" resultat
+
 let test_ecrire_printf_formate () =
   let portee = [("x", TypeEntier)] in
   let resultat = capture_sortie_avec(fun () ->
@@ -146,6 +157,7 @@ let retourne_tests () =
     test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
     test_case "Taille tableau"             `Quick test_ecrire_taille_tableau;
     test_case "Negatif"                    `Quick test_ecrire_negatif;
+    test_case "Booleens"                   `Quick test_ecrire_booleens;
     test_case "Printf formate"            `Quick test_ecrire_printf_formate;
     test_case "Lire"                       `Quick test_ecrire_lire;
     test_case "Erreur variable non declaree" `Quick test_erreur_variable_non_declaree;

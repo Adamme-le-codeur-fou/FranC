@@ -53,6 +53,8 @@ and ecrire_expression portee expr =
     ecrire "(-";
     ecrire_expression portee e;
     ecrire ")"
+  | Vrai -> ecrire "1"
+  | Faux -> ecrire "0"
   | _ -> raise (Erreurs.Erreur_type "expression non supportée dans ce contexte")
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =

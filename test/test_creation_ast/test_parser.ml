@@ -118,6 +118,12 @@ let test_chaine_formatee () =
   (check bool) "chaine sans interpolation" true
     (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))])
 
+let test_booleens () =
+  let arbre = construire_arbre "X devient vrai." in
+  (check bool) "vrai" true (arbre = Paragraphe [Assigne (Mot "X", Vrai)]);
+  let arbre = construire_arbre "X devient faux." in
+  (check bool) "faux" true (arbre = Paragraphe [Assigne (Mot "X", Faux)])
+
 let test_pour_chaque () =
   let arbre = construire_arbre "Pour chaque element de nombres on agit selon la séquence suivante :\n  Afficher element.\nCe qui termine la séquence." in
   (check bool) "pour chaque" true
@@ -155,6 +161,7 @@ let retourne_tests () =
         test_case "Lire" `Quick test_lire;
         test_case "Negatif" `Quick test_negatif;
         test_case "Chaine formatee" `Quick test_chaine_formatee;
+        test_case "Booleens" `Quick test_booleens;
         test_case "Pour chaque" `Quick test_pour_chaque;
         test_case "Procedure" `Quick test_procedure;
         test_case "Procedure avec ingredients" `Quick test_procedure_avec_ingredients;

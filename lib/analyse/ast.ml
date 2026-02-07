@@ -41,5 +41,7 @@ type ast =
   | Lire               of string
   | ChaineFormatee     of string list * string list
   | Negatif            of ast
+  | Vrai
+  | Faux
   | PourChaque         of string * string * ast list
   | Localise           of Lexing.position * ast

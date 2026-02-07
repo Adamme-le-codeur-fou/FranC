@@ -17,7 +17,7 @@
 %token Definir_recette Ingredients_recette Type_retour_Recette Fin_recette Renvoyer Resultat_de_recette Avec_les_ingredients Avec_ingredient
 %token Pour_chaque Executer
 %token Type_entier Type_reel Type_chaine_caractere
-%token Deux_points Tiret Virgule NEGATIF
+%token Deux_points Tiret Virgule NEGATIF Vrai Faux
 %token <string> Mot Mot_majuscule Chaine_caractere
 %token <string list * string list> Chaine_formatee
 %token <char> Ponctuation_fin_phrase
@@ -32,7 +32,7 @@
 %nonassoc Plus Moins
 %nonassoc Reste_division_euclidienne_debut Par
 %nonassoc Fois Division
-%nonassoc NEGATIF
+%nonassoc NEGATIF Avec_ingredient
 %left Parenthese_Gauche
 %left Si Alors Tant_que Agir
 %right Sinon
@@ -85,6 +85,8 @@ expression:
     | Element expression De Mot { AccesTableau($4, $2) }
     | Taille_de Mot { TailleTableau($2) }
     | Tiret expression %prec NEGATIF { Negatif($2) }
+    | Vrai { Vrai }
+    | Faux { Faux }
 
 declaration:
     | mot_majuscule Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }

@@ -53,5 +53,6 @@ let rec type_de_expression portee expr =
   | TailleTableau _ -> TypeEntier
   | Appel_recette (nom, _) -> type_variable portee nom
   | Negatif e -> type_de_expression portee e
+  | Vrai | Faux -> TypeBooleen
   | _ -> TypeNeant
 

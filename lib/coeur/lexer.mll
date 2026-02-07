@@ -82,6 +82,8 @@ rule decoupe =
     | "Ajouter" { Ajouter }
     | "Modifier" { Modifier }
     | "Lire" { Lire }
+    | "vrai" { Vrai }
+    | "faux" { Faux }
     | ['p''P']"our chaque" { Pour_chaque }
     | ['e''E']"xécuter" | ['e''E']"xecuter" { Executer }
     | "avec l'ingrédient" | "avec l'ingredient" { Avec_ingredient }
