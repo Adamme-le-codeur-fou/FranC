@@ -14,7 +14,8 @@
 %token Iterer Sur Allant_de A Compris Non_compris Termine_sequence Agir
 %token Incrementer De Decrementer
 %token EOF Tabulation
-%token Definir_recette Ingredients_recette Type_retour_Recette Fin_recette Renvoyer Resultat_de_recette Avec_les_ingredients
+%token Definir_recette Ingredients_recette Type_retour_Recette Fin_recette Renvoyer Resultat_de_recette Avec_les_ingredients Avec_ingredient
+%token Pour_chaque Executer
 %token Type_entier Type_reel Type_chaine_caractere
 %token Deux_points Tiret Virgule NEGATIF
 %token <string> Mot Mot_majuscule Chaine_caractere
@@ -78,6 +79,7 @@ expression:
     | Chaine_formatee { let (t, v) = $1 in ChaineFormatee(t, v) }
     | expression Et_Si expression { Et($1, $3) }
     | expression Ou_Si expression { Ou($1, $3) }
+    | Resultat_de_recette Mot Avec_ingredient expression { Appel_recette($2, [$4]) }
     | Resultat_de_recette Mot Avec_les_ingredients liste_expressions { Appel_recette($2, $4) }
     | Tableau_contenant liste_expressions { Tableau($2) }
     | Element expression De Mot { AccesTableau($4, $2) }
@@ -96,6 +98,9 @@ declaration:
     | Modifier Element expression De Mot Avec expression Ponctuation_fin_phrase { ModificationTableau($5, $3, $7) }
     | Ajouter expression A Mot Ponctuation_fin_phrase { AjouterTableau($4, $2) }
     | Lire Mot Ponctuation_fin_phrase { Lire($2) }
+    | Executer Mot Ponctuation_fin_phrase { Appel_recette($2, []) }
+    | Executer Mot Avec_ingredient expression Ponctuation_fin_phrase { Appel_recette($2, [$4]) }
+    | Executer Mot Avec_les_ingredients liste_expressions Ponctuation_fin_phrase { Appel_recette($2, $4) }
 
 conditionnelle:
   | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }
@@ -111,6 +116,10 @@ boucle_pour:
     | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForExclus($2, $4, $6, $8) }
 
+boucle_pour_chaque:
+    | Pour_chaque Mot De Mot Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { PourChaque($2, $4, $6) }
+
 liste_expressions:
     | expression Virgule liste_expressions { $1 :: $3 }
     | expression Et expression { [ $1; $3 ] }
@@ -122,12 +131,19 @@ liste_ingredients:
 recette:
   | Definir_recette Mot Ingredients_recette liste_ingredients Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
       { Recette($2, $4, $6, $8) }
+  | Definir_recette Mot Ingredients_recette liste_ingredients Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, $4, TypeNeant, $6) }
+  | Definir_recette Mot Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, [], $4, $6) }
+  | Definir_recette Mot Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, [], TypeNeant, $4) }
 
 instruction:
   | declaration { Localise(Parsing.symbol_start_pos (), $1) }
   | conditionnelle { Localise(Parsing.symbol_start_pos (), $1) }
   | boucle_tant_que { Localise(Parsing.symbol_start_pos (), $1) }
   | boucle_pour { Localise(Parsing.symbol_start_pos (), $1) }
+  | boucle_pour_chaque { Localise(Parsing.symbol_start_pos (), $1) }
   | recette { Localise(Parsing.symbol_start_pos (), $1) }
 
 paragraphe:

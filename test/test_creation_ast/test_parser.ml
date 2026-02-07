@@ -17,6 +17,8 @@ let rec supprimer_positions ast =
     ForInclus (v, supprimer_positions s, supprimer_positions e, List.map supprimer_positions corps)
   | ForExclus (v, s, e, corps) ->
     ForExclus (v, supprimer_positions s, supprimer_positions e, List.map supprimer_positions corps)
+  | PourChaque (v, arr, corps) ->
+    PourChaque (v, arr, List.map supprimer_positions corps)
   | Recette (n, args, t, corps) ->
     Recette (n, args, t, List.map supprimer_positions corps)
   | Afficher e -> Afficher (supprimer_positions e)
@@ -116,6 +118,29 @@ let test_chaine_formatee () =
   (check bool) "chaine sans interpolation" true
     (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))])
 
+let test_pour_chaque () =
+  let arbre = construire_arbre "Pour chaque element de nombres on agit selon la séquence suivante :\n  Afficher element.\nCe qui termine la séquence." in
+  (check bool) "pour chaque" true
+    (arbre = Paragraphe [PourChaque ("element", "nombres", [Afficher (Mot "element")])])
+
+let test_procedure () =
+  let arbre = construire_arbre "On définit une recette nommée saluer :\n  Afficher <Bonjour>.\nFin de la recette." in
+  (check bool) "procedure sans args" true
+    (arbre = Paragraphe [Recette ("saluer", [], TypeNeant, [Afficher (Chaine_caractere "Bonjour")])])
+
+let test_procedure_avec_ingredients () =
+  let arbre = construire_arbre "On définit une recette nommée doubler dont les ingrédients sont :\n- un entier n\n:\n  Afficher n.\nFin de la recette." in
+  (check bool) "procedure avec args" true
+    (arbre = Paragraphe [Recette ("doubler", [("n", TypeEntier)], TypeNeant, [Afficher (Mot "n")])])
+
+let test_executer () =
+  let arbre = construire_arbre "Exécuter saluer." in
+  (check bool) "executer sans args" true
+    (arbre = Paragraphe [Appel_recette ("saluer", [])]);
+  let arbre = construire_arbre "Exécuter doubler avec l'ingrédient 5." in
+  (check bool) "executer avec un ingredient" true
+    (arbre = Paragraphe [Appel_recette ("doubler", [Entier "5"])])
+
 let retourne_tests () =
       "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
@@ -129,5 +154,9 @@ let retourne_tests () =
         test_case "Taille tableau" `Quick test_taille_tableau;
         test_case "Lire" `Quick test_lire;
         test_case "Negatif" `Quick test_negatif;
-        test_case "Chaine formatee" `Quick test_chaine_formatee
+        test_case "Chaine formatee" `Quick test_chaine_formatee;
+        test_case "Pour chaque" `Quick test_pour_chaque;
+        test_case "Procedure" `Quick test_procedure;
+        test_case "Procedure avec ingredients" `Quick test_procedure_avec_ingredients;
+        test_case "Executer" `Quick test_executer
       ]

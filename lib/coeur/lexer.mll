@@ -82,6 +82,9 @@ rule decoupe =
     | "Ajouter" { Ajouter }
     | "Modifier" { Modifier }
     | "Lire" { Lire }
+    | ['p''P']"our chaque" { Pour_chaque }
+    | ['e''E']"xécuter" | ['e''E']"xecuter" { Executer }
+    | "avec l'ingrédient" | "avec l'ingredient" { Avec_ingredient }
     | "Permuter" { Permuter }
     | "On définit une recette nommée" { Definir_recette }
     | "dont les ingrédients sont :" { Ingredients_recette }

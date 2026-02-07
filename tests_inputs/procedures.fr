@@ -1,0 +1,13 @@
+On définit une recette nommée saluer :
+  Afficher <Bonjour le monde>.
+Fin de la recette.
+
+On définit une recette nommée doubler dont les ingrédients sont :
+- un entier n
+:
+  Resultat devient n fois 2.
+  Afficher <[resultat]>.
+Fin de la recette.
+
+Exécuter saluer.
+Exécuter doubler avec l'ingrédient 21.

@@ -18,6 +18,7 @@ let rec utilise_tableaux ast =
     utilise_tableaux cond || List.exists utilise_tableaux corps
   | ForInclus (_, s, e, corps) | ForExclus (_, s, e, corps) ->
     utilise_tableaux s || utilise_tableaux e || List.exists utilise_tableaux corps
+  | PourChaque _ -> true
   | Plus (a, b) | Moins (a, b) | Fois (a, b) | Division (a, b)
   | Egal (a, b) | Different (a, b) | Et (a, b) | Ou (a, b)
   | Inferieur (a, b) | Superieur (a, b) | Inferieur_ou_egal (a, b)

@@ -19,6 +19,7 @@ let rec ecrire_ast portee ast =
     ecrire_ast portee inner
   | ForInclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr true paragraphe
   | ForExclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr false paragraphe
+  | PourChaque    (element, tableau, paragraphe)          -> ecrire_pour_chaque ecrire_ast portee element tableau paragraphe
   | Assigne       (Mot mot, expression)                   -> ecrire_assignation portee (mot, expression)
   | Afficher      (expression)                            -> ecrire_printf portee expression
   | Condition     (condition, alors_liste, sinon_OPTION)  -> ecrire_condition ecrire_ast portee condition alors_liste sinon_OPTION
@@ -30,6 +31,7 @@ let rec ecrire_ast portee ast =
   | ModificationTableau (nom, index, valeur)              -> ecrire_modification_tableau portee nom index valeur
   | AjouterTableau (nom, valeur)                          -> ecrire_ajouter_tableau portee nom valeur
   | Lire var                                               -> ecrire_lire portee var
+  | Appel_recette (_, _)                                   -> ecrire_expression portee ast; ecrire ";\n"; portee
   | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
   | Recette(nom, _, type_retour, _)                        -> (nom, type_retour) :: portee
   | _                                                     -> ecrire_expression portee ast; portee

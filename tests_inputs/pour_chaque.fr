@@ -1,0 +1,5 @@
+Nombres devient un tableau contenant 10, 20, 30, 40 et 50.
+
+Pour chaque element de nombres on agit selon la séquence suivante :
+  Afficher element.
+Ce qui termine la séquence.
