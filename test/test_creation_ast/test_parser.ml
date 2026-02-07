@@ -94,6 +94,17 @@ let test_lire () =
   (check bool) "lire variable" true
     (arbre = Paragraphe [Assigne (Mot "X", Entier("0")); Lire "x"])
 
+let test_negatif () =
+  let arbre = construire_arbre "X devient -5." in
+  (check bool) "negatif entier" true
+    (arbre = Paragraphe [Assigne (Mot "X", Negatif(Entier("5")))]);
+  let arbre = construire_arbre "X devient -3,14." in
+  (check bool) "negatif reel" true
+    (arbre = Paragraphe [Assigne (Mot "X", Negatif(Reel("3,14")))]);
+  let arbre = construire_arbre "X devient 10 plus -3." in
+  (check bool) "negatif dans expression" true
+    (arbre = Paragraphe [Assigne (Mot "X", Plus(Entier("10"), Negatif(Entier("3"))))])
+
 let test_chaine_formatee () =
   let arbre = construire_arbre "Afficher <Bonjour [nom]>." in
   (check bool) "chaine formatee simple" true
@@ -117,5 +128,6 @@ let retourne_tests () =
         test_case "Acces tableau" `Quick test_acces_tableau;
         test_case "Taille tableau" `Quick test_taille_tableau;
         test_case "Lire" `Quick test_lire;
+        test_case "Negatif" `Quick test_negatif;
         test_case "Chaine formatee" `Quick test_chaine_formatee
       ]

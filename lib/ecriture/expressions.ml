@@ -49,6 +49,10 @@ and ecrire_expression portee expr =
     if not (variable_est_declaree portee nom_min) then
       raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
     ecrire "%s->taille" nom_min
+  | Negatif e ->
+    ecrire "(-";
+    ecrire_expression portee e;
+    ecrire ")"
   | _ -> raise (Erreurs.Erreur_type "expression non supportée dans ce contexte")
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =

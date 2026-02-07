@@ -73,6 +73,17 @@ let test_ecrire_taille_tableau () =
   ) in
   (check string) "taille tableau" "nombres->taille" resultat
 
+let test_ecrire_negatif () =
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (Negatif(Entier("5")))
+  ) in
+  (check string) "negatif entier" "(-5)" resultat;
+
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (Plus(Entier("10"), Negatif(Entier("3"))))
+  ) in
+  (check string) "negatif dans addition" "(10 + (-3))" resultat
+
 let test_ecrire_printf_formate () =
   let portee = [("x", TypeEntier)] in
   let resultat = capture_sortie_avec(fun () ->
@@ -134,6 +145,7 @@ let retourne_tests () =
     test_case "Printf avec types"          `Quick test_ecrire_printf_types;
     test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
     test_case "Taille tableau"             `Quick test_ecrire_taille_tableau;
+    test_case "Negatif"                    `Quick test_ecrire_negatif;
     test_case "Printf formate"            `Quick test_ecrire_printf_formate;
     test_case "Lire"                       `Quick test_ecrire_lire;
     test_case "Erreur variable non declaree" `Quick test_erreur_variable_non_declaree;

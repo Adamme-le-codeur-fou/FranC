@@ -40,4 +40,5 @@ type ast =
   | AjouterTableau     of string * ast
   | Lire               of string
   | ChaineFormatee     of string list * string list
+  | Negatif            of ast
   | Localise           of Lexing.position * ast

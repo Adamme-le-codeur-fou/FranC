@@ -52,5 +52,6 @@ let rec type_de_expression portee expr =
     (match t with TypeTableauReel -> TypeReel | _ -> TypeEntier)
   | TailleTableau _ -> TypeEntier
   | Appel_recette (nom, _) -> type_variable portee nom
+  | Negatif e -> type_de_expression portee e
   | _ -> TypeNeant
 
