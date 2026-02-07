@@ -78,6 +78,8 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `A devient 2. E devient a fois 3.`                          | `int A = 2; int E = a * 3;` |
 | `F devient 10 divisé par 3.`                                | `int F = 10 / 3;`           |
 | `G devient le reste de la division euclidienne de 5 par 3.` | `int G = 5 % 3;`            |
+| `H devient -5.`                                            | `int H = (-5);`             |
+| `I devient 10 plus -3.`                                    | `int I = (10 + (-3));`      |
 
 ## Comparaisons
 
@@ -112,6 +114,7 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `En itérant sur i allant de 0 à 10 on agit selon la séquence suivante : afficher i. Ce qui termine la séquence.`             | `for (int i = 0; i < 10; i++) { printf("%d\\n", i); }`  |
 | `En itérant sur i allant de 0 à 10 non compris on agit selon la séquence suivante : afficher i. Ce qui termine la séquence.` | `for (int i = 0; i < 10; i++) { printf("%d\\n", i); }`  |
 | `En itérant sur i allant de 0 à 10 compris on agit selon la séquence suivante : afficher i. Ce qui termine la séquence.`     | `for (int i = 0; i <= 10; i++) { printf("%d\\n", i); }` |
+| `Pour chaque element de nombres on agit selon la séquence suivante : afficher element. Ce qui termine la séquence.`          | `for (int _idx = 0; _idx < nombres->taille; _idx++) { int element = nombres->donnees[_idx]; ... }` |
 
 ## Affichage
 
@@ -180,10 +183,32 @@ int puissance(int a, int b) {
 }
 ```
 
+### Procédures (recettes sans retour)
+
+Les procédures sont des recettes qui ne renvoient rien. On omet la clause `et qui renvoie` :
+
+```franc
+On définit une recette nommée saluer :
+  Afficher <Bonjour>.
+Fin de la recette.
+
+On définit une recette nommée doubler dont les ingrédients sont :
+- un entier n
+:
+  Afficher <[n] fois 2>.
+Fin de la recette.
+```
+
+Ce qui génère des fonctions `void` en C.
+
 **Appel d'une recette :**
 | FranC                                                                     | C                                    |
 | ------------------------------------------------------------------------- | ------------------------------------ |
 | `Resultat devient le résultat de puissance avec les ingrédients a et b. ` | `int resultat = puissance(a, b);`    |
+| `Resultat devient le résultat de carre avec l'ingrédient 5.`              | `int resultat = carre(5);`           |
+| `Exécuter saluer.`                                                        | `saluer();`                          |
+| `Exécuter doubler avec l'ingrédient 5.`                                   | `doubler(5);`                        |
+| `Exécuter afficher avec les ingrédients a, b et c.`                       | `afficher(a, b, c);`                 |
 
 ## Commentaires
 
@@ -198,11 +223,11 @@ Note : Les exemples en C supposent que les variables sont déjà déclarées et 
 
 Dans le cadre du développement de FranC, plusieurs exceptions sont définies pour gérer les cas d'erreurs spécifiques :
 
-- `PhraseInvalide` : Levée lorsqu'une phrase ne peut pas être correctement analysée ou transformée en AST.
-- `TokenInvalide` : Levée lorsqu'un jeton (token) inattendu ou invalide est rencontré dans l'analyse syntaxique.
-- `IncompatibiliteDeType` : Levée lorsqu'il y a une incompatibilité de types dans les expressions ou affectations.
+- `Erreur_lexer` : Levée avec la position lorsqu'un caractère inconnu est rencontré dans l'analyse lexicale.
 - `VariableNonDeclaree` : Levée lorsqu'une variable est utilisée sans avoir été déclarée auparavant.
-- `Erreur_type` : Levée avec un message détaillé en français lors d'une erreur de typage (réassignation incompatible, lecture d'un type non supporté, etc.).
+- `Erreur_type` : Levée avec un message détaillé en français lors d'une erreur de typage (réassignation incompatible, lecture d'un type non supporté, variable non déclarée, etc.).
+
+Toutes les erreurs incluent la position (ligne, colonne) dans le fichier source.
 
 La structure du Abstract Syntax Tree (AST) est définie comme suit :
 
@@ -231,6 +256,8 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `TailleTableau` : Représente l'accès à la taille d'un tableau.
 - `AjouterTableau` : Représente l'ajout d'un élément à un tableau.
 - `Lire` : Représente la lecture d'une entrée utilisateur.
+- `Negatif` : Représente un nombre négatif (unaire).
+- `PourChaque` : Représente une boucle foreach sur un tableau.
 
 ## À Vérifier
 
@@ -252,6 +279,9 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - [x] Ajouter la gestion automatique de la mémoire (tableaux).
 - [x] Ajouter l'entrée utilisateur (Lire).
 - [x] Ajouter l'interpolation de variables dans les chaînes (<Bonjour [x]>).
+- [x] Ajouter les nombres négatifs.
+- [x] Ajouter le foreach (Pour chaque) sur les tableaux.
+- [x] Ajouter les procédures (recettes sans retour) et Exécuter.
 - [ ] Implémenter le typage haut niveau pour des structures de données complexes.
 - [ ] Développer des fonctions intégrées pour les opérations courantes (mathématiques, chaînes, etc.).
 - [ ] Améliorer le système d'erreur pour fournir des messages plus détaillés et des suggestions de correction.
