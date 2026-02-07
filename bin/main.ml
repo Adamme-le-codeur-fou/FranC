@@ -5,9 +5,18 @@ open FranC.Boucles
 open FranC.Declarations
 open FranC.Prelude
 
+let position_courante = ref None
+
+let formater_erreur_avec_position msg =
+  match !position_courante with
+  | Some pos -> FranC.Erreurs.formater_erreur (FranC.Erreurs.formater_position pos) msg
+  | None -> Printf.sprintf "Erreur : %s" msg
 
 let rec ecrire_ast portee ast =
   match ast with
+  | Localise (pos, inner) ->
+    position_courante := Some pos;
+    ecrire_ast portee inner
   | ForInclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr true paragraphe
   | ForExclus     (var, start_expr, end_expr, paragraphe) -> ecrire_for ecrire_ast portee var start_expr end_expr false paragraphe
   | Assigne       (Mot mot, expression)                   -> ecrire_assignation portee (mot, expression)
@@ -68,21 +77,16 @@ let _ =
     exit 1
   | FranC.Types.VariableNonDeclaree var ->
     close_out canal_sortie;
-    Printf.eprintf "Erreur : la variable '%s' n'a pas été déclarée.\n" var;
-    exit 1
-  | FranC.Types.IncompatibiliteDeType ->
-    close_out canal_sortie;
-    Printf.eprintf "Erreur : incompatibilité de type dans une expression.\n";
+    let msg = Printf.sprintf
+      "la variable '%s' n'a pas été déclarée. Vérifiez qu'elle a bien été initialisée (exemple : %s devient ...)"
+      var (String.capitalize_ascii var) in
+    Printf.eprintf "%s\n" (formater_erreur_avec_position msg);
     exit 1
   | FranC.Erreurs.Erreur_type msg ->
     close_out canal_sortie;
-    Printf.eprintf "Erreur : %s\n" msg;
-    exit 1
-  | FranC.Expressions.MotInvalide ->
-    close_out canal_sortie;
-    Printf.eprintf "Erreur : mot invalide rencontré lors de la génération du code.\n";
+    Printf.eprintf "%s\n" (formater_erreur_avec_position msg);
     exit 1
   | e ->
     close_out canal_sortie;
-    Printf.eprintf "Erreur inattendue : %s\n" (Printexc.to_string e);
+    Printf.eprintf "%s\n" (formater_erreur_avec_position (Printf.sprintf "erreur inattendue : %s" (Printexc.to_string e)));
     exit 1

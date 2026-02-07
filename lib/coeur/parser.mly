@@ -122,11 +122,11 @@ recette:
       { Recette($2, $4, $6, $8) }
 
 instruction:
-  | declaration { $1 }
-  | conditionnelle { $1 }
-  | boucle_tant_que { $1 }
-  | boucle_pour { $1 }
-  | recette { $1 }
+  | declaration { Localise(Parsing.symbol_start_pos (), $1) }
+  | conditionnelle { Localise(Parsing.symbol_start_pos (), $1) }
+  | boucle_tant_que { Localise(Parsing.symbol_start_pos (), $1) }
+  | boucle_pour { Localise(Parsing.symbol_start_pos (), $1) }
+  | recette { Localise(Parsing.symbol_start_pos (), $1) }
 
 paragraphe:
     | instruction paragraphe { $1 :: $2 }

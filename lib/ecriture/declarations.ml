@@ -95,10 +95,12 @@ let rec ecrire_variable_avec_type arguments_list =
         ecrire_variable_avec_type q
 
 let ecrire_xcrementer portee var expression signe =
+  let var_min = String.lowercase_ascii var in
+  let _ = type_variable portee var_min in
   (match expression with
-  | None -> ecrire "%s%s;\n" (String.lowercase_ascii var) (signe^signe)
+  | None -> ecrire "%s%s;\n" var_min (signe^signe)
   | Some expr ->
-    ecrire "%s %s= " (String.lowercase_ascii var) signe;
+    ecrire "%s %s= " var_min signe;
     ecrire_expression portee expr;
     ecrire ";\n");
   portee
@@ -118,6 +120,7 @@ let ecrire_permuter portee variable1 variable2 =
 
 let ecrire_modification_tableau portee nom index valeur =
   let nom_minuscule = String.lowercase_ascii nom in
+  let _ = type_variable portee nom_minuscule in
   ecrire "%s->donnees[" nom_minuscule;
   ecrire_expression portee index;
   ecrire "] = ";
@@ -146,7 +149,7 @@ let ecrire_lire portee var =
   | TypeEntier -> ecrire "wscanf(L\"%%d\", &%s);\n" var_min
   | TypeReel -> ecrire "wscanf(L\"%%f\", &%s);\n" var_min
   | _ -> raise (Erreurs.Erreur_type
-      (Printf.sprintf "impossible de lire une valeur de type %s" (nom_type type_var))));
+      (Printf.sprintf "impossible de lire une valeur de type %s (seuls les types entier et réel sont supportés)" (nom_type type_var))));
   portee
 
 let ecrire_liberation_tableaux portee_base portee =

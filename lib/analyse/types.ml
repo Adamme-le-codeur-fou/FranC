@@ -1,6 +1,5 @@
 open Ast
 
-exception IncompatibiliteDeType
 exception VariableNonDeclaree of string
 
 let type_vers_string t =
@@ -44,7 +43,7 @@ let rec type_de_expression portee expr =
       then TypeReel else TypeEntier
   | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen
   | Modulo _ -> TypeEntier
-  | Mot m -> let m_minuscule = String.lowercase_ascii m in List.assoc m_minuscule portee
+  | Mot m -> type_variable portee (String.lowercase_ascii m)
   | Tableau elements ->
     if List.exists (fun e -> type_de_expression portee e = TypeReel) elements
     then TypeTableauReel else TypeTableauEntier
@@ -54,5 +53,3 @@ let rec type_de_expression portee expr =
   | TailleTableau _ -> TypeEntier
   | _ -> TypeNeant
 
-let verifier_type attendu obtenu =
-  if attendu <> obtenu then raise IncompatibiliteDeType

@@ -1,5 +1,3 @@
-exception PhraseInvalide
-
 type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant | TypeTableauEntier | TypeTableauReel
 
 type ast =
@@ -42,3 +40,4 @@ type ast =
   | AjouterTableau     of string * ast
   | Lire               of string
   | ChaineFormatee     of string list * string list
+  | Localise           of Lexing.position * ast

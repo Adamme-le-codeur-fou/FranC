@@ -99,6 +99,33 @@ let test_ecrire_lire () =
   ) in
   (check string) "lire reel" "wscanf(L\"%f\", &y);\n" resultat
 
+let contient_sous_chaine chaine sous_chaine =
+  let len_c = String.length chaine in
+  let len_s = String.length sous_chaine in
+  if len_s > len_c then false
+  else
+    let rec aux i =
+      if i > len_c - len_s then false
+      else if String.sub chaine i len_s = sous_chaine then true
+      else aux (i + 1)
+    in aux 0
+
+let test_erreur_variable_non_declaree () =
+  let leve_erreur = try
+    let _ = ecrire_expression [] (Mot "x") in false
+  with FranC.Erreurs.Erreur_type msg ->
+    contient_sous_chaine msg "x"
+  | _ -> false in
+  (check bool) "variable non declaree contient nom" true leve_erreur
+
+let test_erreur_type_reassignation () =
+  let leve_erreur = try
+    let _ = ecrire_assignation [("x", TypeEntier)] ("X", Reel("3,14")) in false
+  with FranC.Erreurs.Erreur_type msg ->
+    contient_sous_chaine msg "entier" && contient_sous_chaine msg "réel"
+  | _ -> false in
+  (check bool) "reassignation type contient les types" true leve_erreur
+
 let retourne_tests () =
   "Expressions", [
     test_case "Ecrire division"            `Quick test_ecrire_division;
@@ -108,5 +135,7 @@ let retourne_tests () =
     test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
     test_case "Taille tableau"             `Quick test_ecrire_taille_tableau;
     test_case "Printf formate"            `Quick test_ecrire_printf_formate;
-    test_case "Lire"                       `Quick test_ecrire_lire
+    test_case "Lire"                       `Quick test_ecrire_lire;
+    test_case "Erreur variable non declaree" `Quick test_erreur_variable_non_declaree;
+    test_case "Erreur type reassignation"    `Quick test_erreur_type_reassignation
   ]

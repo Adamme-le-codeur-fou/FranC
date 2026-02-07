@@ -3,9 +3,30 @@ open FranC.Ast
 
 let arbre_vide = Paragraphe []
 
+let rec supprimer_positions ast =
+  match ast with
+  | Localise (_, inner) -> supprimer_positions inner
+  | Paragraphe l -> Paragraphe (List.map supprimer_positions l)
+  | Condition (c, a, s) ->
+    Condition (supprimer_positions c,
+      List.map supprimer_positions a,
+      Option.map (List.map supprimer_positions) s)
+  | BoucleTantQue (c, corps) ->
+    BoucleTantQue (supprimer_positions c, List.map supprimer_positions corps)
+  | ForInclus (v, s, e, corps) ->
+    ForInclus (v, supprimer_positions s, supprimer_positions e, List.map supprimer_positions corps)
+  | ForExclus (v, s, e, corps) ->
+    ForExclus (v, supprimer_positions s, supprimer_positions e, List.map supprimer_positions corps)
+  | Recette (n, args, t, corps) ->
+    Recette (n, args, t, List.map supprimer_positions corps)
+  | Afficher e -> Afficher (supprimer_positions e)
+  | Assigne (m, e) -> Assigne (supprimer_positions m, supprimer_positions e)
+  | other -> other
+
 let construire_arbre chaine_caractere =
   let lexbuf = Lexing.from_string chaine_caractere in
-  FranC.Parser.main FranC.Lexer.decoupe lexbuf
+  let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
+  supprimer_positions arbre
 
 let test_arbre_vide () =
   let arbre = construire_arbre "" in

@@ -25,6 +25,7 @@ let rec utilise_tableaux ast =
     utilise_tableaux a || utilise_tableaux b
   | Increment (_, Some e) | Decrement (_, Some e) -> utilise_tableaux e
   | Appel_recette (_, args) -> List.exists utilise_tableaux args
+  | Localise (_, inner) -> utilise_tableaux inner
   | _ -> false
 
 let ecrire_includes avec_tableaux =
@@ -69,6 +70,7 @@ let ecrire_helpers_tableaux () =
 let rec ecrire_fonctions_pre_main ecrire_ast ast =
   match ast with
   | Recette(nom, arguments, type_function, corps) -> ecrire_function ecrire_ast nom arguments type_function corps
+  | Localise (_, inner) -> ecrire_fonctions_pre_main ecrire_ast inner
   | Paragraphe l -> List.iter (ecrire_fonctions_pre_main ecrire_ast) l
   | _ -> ()
 

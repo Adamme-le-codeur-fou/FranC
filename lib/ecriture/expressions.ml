@@ -3,9 +3,6 @@ open Ast
 open Ecrire
 open Portee
 
-exception PhraseInvalide
-exception MotInvalide
-
 let rec ecrire_expression_list portee arguments_list =
     match arguments_list with
     | [] -> ()
@@ -21,7 +18,8 @@ and ecrire_expression portee expr =
   | Chaine_caractere s -> ecrire "L\"%s\"" (normaliser_chaine s)
   | Mot m ->
         let m_minuscule = String.lowercase_ascii m in
-          ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise MotInvalide)
+          if variable_est_declaree portee m_minuscule then ecrire "%s" m_minuscule
+          else raise (Erreurs.Erreur_type (Printf.sprintf "la variable '%s' n'est pas déclarée dans cette portée" m_minuscule))
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
         ecrire_expression_list portee arguments;
@@ -40,12 +38,18 @@ and ecrire_expression portee expr =
   | Et                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "&&"
   | Ou                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "||"
   | AccesTableau (nom, index) ->
-    ecrire "%s->donnees[" (String.lowercase_ascii nom);
+    let nom_min = String.lowercase_ascii nom in
+    if not (variable_est_declaree portee nom_min) then
+      raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
+    ecrire "%s->donnees[" nom_min;
     ecrire_expression portee index;
     ecrire "]"
   | TailleTableau nom ->
-    ecrire "%s->taille" (String.lowercase_ascii nom)
-  | _ -> raise PhraseInvalide
+    let nom_min = String.lowercase_ascii nom in
+    if not (variable_est_declaree portee nom_min) then
+      raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
+    ecrire "%s->taille" nom_min
+  | _ -> raise (Erreurs.Erreur_type "expression non supportée dans ce contexte")
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =
   ecrire "(";
