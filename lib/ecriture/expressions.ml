@@ -39,6 +39,12 @@ and ecrire_expression portee expr =
   | Modulo            (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "%"
   | Et                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "&&"
   | Ou                (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "||"
+  | AccesTableau (nom, index) ->
+    ecrire "%s->donnees[" (String.lowercase_ascii nom);
+    ecrire_expression portee index;
+    ecrire "]"
+  | TailleTableau nom ->
+    ecrire "%s->taille" (String.lowercase_ascii nom)
   | _ -> raise PhraseInvalide
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =

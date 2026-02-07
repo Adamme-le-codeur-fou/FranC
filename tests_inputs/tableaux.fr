@@ -1,0 +1,10 @@
+N. B. : Test des tableaux dynamiques.
+
+Nombres devient un tableau contenant 10, 20, 30 et 40.
+Afficher l'element 0 de nombres.
+Modifier l'element 1 de nombres avec 99.
+Afficher l'element 1 de nombres.
+Afficher la taille de nombres.
+Ajouter 50 à nombres.
+Afficher la taille de nombres.
+Afficher l'element 4 de nombres.

@@ -9,5 +9,6 @@ let ecrire_function ecrire_ast nom arguments type_function corps =
   ecrire "%s(" nom;
   ecrire_variable_avec_type arguments;
   ecrire ") {\n";
-  let _ = List.fold_left ecrire_ast arguments corps in
+  let portee_finale = List.fold_left ecrire_ast arguments corps in
+  ecrire_liberation_tableaux arguments portee_finale;
   ecrire "}\n"

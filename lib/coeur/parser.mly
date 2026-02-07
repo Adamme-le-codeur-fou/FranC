@@ -3,6 +3,7 @@
 %}
 
 %token Assigne Afficher Permuter Avec
+%token Tableau_contenant Element Taille_de Ajouter Modifier
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %token Plus Fois Moins Division
 %token Et_Si Ou_Si Et
@@ -75,6 +76,9 @@ expression:
     | expression Et_Si expression { Et($1, $3) }
     | expression Ou_Si expression { Ou($1, $3) }
     | Resultat_de_recette Mot Avec_les_ingredients liste_expressions { Appel_recette($2, $4) }
+    | Tableau_contenant liste_expressions { Tableau($2) }
+    | Element expression De Mot { AccesTableau($4, $2) }
+    | Taille_de Mot { TailleTableau($2) }
 
 declaration:
     | mot_majuscule Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
@@ -85,6 +89,8 @@ declaration:
     | Decrementer Mot Ponctuation_fin_phrase { Decrement($2, None) }
     | Decrementer Mot De expression Ponctuation_fin_phrase { Decrement($2, Some $4) }
     | Renvoyer expression Ponctuation_fin_phrase { Renvoyer($2) }
+    | Modifier Element expression De Mot Avec expression Ponctuation_fin_phrase { ModificationTableau($5, $3, $7) }
+    | Ajouter expression A Mot Ponctuation_fin_phrase { AjouterTableau($4, $2) }
 
 conditionnelle:
   | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }

@@ -1,5 +1,6 @@
 exception Erreur_lexer of string
 exception Erreur_syntaxe of string
+exception Erreur_type of string
 
 let formater_position (pos : Lexing.position) =
   let ligne = pos.pos_lnum in

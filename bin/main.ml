@@ -18,6 +18,8 @@ let rec ecrire_ast portee ast =
   | Decrement     (variable, expression)                  -> ecrire_decrementer portee variable expression
   | Permuter      (variable1, variable2)                  -> ecrire_permuter portee variable1 variable2
   | Renvoyer      (expression)                            -> ecrire_renvoyer portee expression
+  | ModificationTableau (nom, index, valeur)              -> ecrire_modification_tableau portee nom index valeur
+  | AjouterTableau (nom, valeur)                          -> ecrire_ajouter_tableau portee nom valeur
   | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
   | Recette(_)                                            -> portee
   | _                                                     -> ecrire_expression portee ast; portee
@@ -25,7 +27,8 @@ let rec ecrire_ast portee ast =
 let affiche arbre canal_sortie nom_programme=
   change_canal canal_sortie;
   ecrire_debut ecrire_ast arbre nom_programme;
-  let _ = ecrire_ast [] arbre in
+  let portee_finale = ecrire_ast [] arbre in
+  ecrire_liberation_tableaux [] portee_finale;
   ecrire "return 0;\n}"
 
 let affiche_usage_et_quitte_erreur () =
@@ -69,6 +72,10 @@ let _ =
   | FranC.Types.IncompatibiliteDeType ->
     close_out canal_sortie;
     Printf.eprintf "Erreur : incompatibilité de type dans une expression.\n";
+    exit 1
+  | FranC.Erreurs.Erreur_type msg ->
+    close_out canal_sortie;
+    Printf.eprintf "Erreur : %s\n" msg;
     exit 1
   | FranC.Expressions.MotInvalide ->
     close_out canal_sortie;

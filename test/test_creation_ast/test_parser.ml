@@ -53,6 +53,21 @@ let test_division () =
   let arbre = construire_arbre "X devient 10 divise par 2." in
   (check bool) "division sans accent" true (arbre = Paragraphe [Assigne (Mot "X", Division(Entier("10"), Entier("2"))) ])
 
+let test_tableau () =
+  let arbre = construire_arbre "X devient un tableau contenant 1, 2 et 3." in
+  (check bool) "tableau litteral" true
+    (arbre = Paragraphe [Assigne (Mot "X", Tableau [Entier("1"); Entier("2"); Entier("3")])])
+
+let test_acces_tableau () =
+  let arbre = construire_arbre "Afficher l'element 0 de nombres." in
+  (check bool) "acces tableau" true
+    (arbre = Paragraphe [Afficher (AccesTableau ("nombres", Entier("0")))])
+
+let test_taille_tableau () =
+  let arbre = construire_arbre "Afficher la taille de nombres." in
+  (check bool) "taille tableau" true
+    (arbre = Paragraphe [Afficher (TailleTableau "nombres")])
+
 let retourne_tests () =
       "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
@@ -60,5 +75,8 @@ let retourne_tests () =
         test_case "Mot" `Quick test_mot;
         test_case "Division" `Quick test_division;
         test_case "Erreur lexer" `Quick test_erreur_lexer;
-        test_case "Erreur syntaxe" `Quick test_erreur_syntaxe
+        test_case "Erreur syntaxe" `Quick test_erreur_syntaxe;
+        test_case "Tableau" `Quick test_tableau;
+        test_case "Acces tableau" `Quick test_acces_tableau;
+        test_case "Taille tableau" `Quick test_taille_tableau
       ]

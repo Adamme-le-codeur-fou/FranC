@@ -1,14 +1,16 @@
 open Ast
 open Ecrire
 open Expressions
+open Declarations
 
 let ecrire_boucle ecrire_ast portee cond paragraphe =
   ecrire "while (";
   ecrire_expression portee cond;
   ecrire ") {\n";
-  let portee_apres_boucle = List.fold_left ecrire_ast portee paragraphe in
+  let portee_bloc = List.fold_left ecrire_ast portee paragraphe in
+  ecrire_liberation_tableaux portee portee_bloc;
   ecrire "}\n";
-  portee_apres_boucle
+  portee
 
 
 let ecrire_for ecrire_ast portee var start_expr end_expr inclusive paragraphe =
@@ -18,24 +20,25 @@ let ecrire_for ecrire_ast portee var start_expr end_expr inclusive paragraphe =
   ecrire (if inclusive then "<= " else "< ");
   ecrire_expression portee end_expr;
   ecrire "; %s++) {\n" (String.lowercase_ascii var);
-  let portee_apres_for = (String.lowercase_ascii var, TypeEntier) :: portee in
-  let _ = List.fold_left ecrire_ast portee_apres_for paragraphe in
+  let portee_avec_var = (String.lowercase_ascii var, TypeEntier) :: portee in
+  let portee_bloc = List.fold_left ecrire_ast portee_avec_var paragraphe in
+  ecrire_liberation_tableaux portee_avec_var portee_bloc;
   ecrire "}\n";
-  portee_apres_for
+  portee
 
 
 let ecrire_condition ecrire_ast portee cond alors_list sinon_opt =
   ecrire "if (";
   ecrire_expression portee cond;
   ecrire ") {\n";
-  let portee_apres_alors = List.fold_left ecrire_ast portee alors_list in
+  let portee_alors = List.fold_left ecrire_ast portee alors_list in
+  ecrire_liberation_tableaux portee portee_alors;
   ecrire "}\n";
   match sinon_opt with
   | Some sinon_list ->
     ecrire "else {\n";
-    let portee_apres_sinon =
-      List.fold_left ecrire_ast portee_apres_alors sinon_list
-    in
+    let portee_sinon = List.fold_left ecrire_ast portee sinon_list in
+    ecrire_liberation_tableaux portee portee_sinon;
     ecrire "}\n";
-    portee_apres_sinon
-  | None -> portee_apres_alors
+    portee
+  | None -> portee

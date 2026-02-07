@@ -9,6 +9,18 @@ let type_vers_string t =
      | TypeNeant -> "void *"
      | TypeReel -> "float "
      | TypeChaineCaractere -> "wchar_t *"
+     | TypeTableauEntier -> "TableauEntier *"
+     | TypeTableauReel -> "TableauReel *"
+
+let nom_type t =
+  match t with
+     | TypeEntier -> "entier"
+     | TypeBooleen -> "booléen"
+     | TypeNeant -> "néant"
+     | TypeReel -> "réel"
+     | TypeChaineCaractere -> "chaîne de caractères"
+     | TypeTableauEntier -> "tableau d'entiers"
+     | TypeTableauReel -> "tableau de réels"
 
 let rec type_variable portee nom_variable =
   match portee with
@@ -33,6 +45,13 @@ let rec type_de_expression portee expr =
   | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen
   | Modulo _ -> TypeEntier
   | Mot m -> let m_minuscule = String.lowercase_ascii m in List.assoc m_minuscule portee
+  | Tableau elements ->
+    if List.exists (fun e -> type_de_expression portee e = TypeReel) elements
+    then TypeTableauReel else TypeTableauEntier
+  | AccesTableau (nom, _) ->
+    let t = type_variable portee (String.lowercase_ascii nom) in
+    (match t with TypeTableauReel -> TypeReel | _ -> TypeEntier)
+  | TailleTableau _ -> TypeEntier
   | _ -> TypeNeant
 
 let verifier_type attendu obtenu =

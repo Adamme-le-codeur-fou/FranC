@@ -59,10 +59,26 @@ let test_ecrire_printf_types () =
   ) in
   (check string) "printf entier" "wprintf(L\"%d\\n\", x);\n" resultat
 
+let test_ecrire_acces_tableau () =
+  let portee = [("nombres", TypeTableauEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression portee (AccesTableau("nombres", Entier("0")))
+  ) in
+  (check string) "acces tableau" "nombres->donnees[0]" resultat
+
+let test_ecrire_taille_tableau () =
+  let portee = [("nombres", TypeTableauEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression portee (TailleTableau "nombres")
+  ) in
+  (check string) "taille tableau" "nombres->taille" resultat
+
 let retourne_tests () =
   "Expressions", [
     test_case "Ecrire division"            `Quick test_ecrire_division;
     test_case "Ecrire operations combinees" `Quick test_ecrire_operations_combinees;
     test_case "Assignation avec types"     `Quick test_ecrire_assignation_types;
-    test_case "Printf avec types"          `Quick test_ecrire_printf_types
+    test_case "Printf avec types"          `Quick test_ecrire_printf_types;
+    test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
+    test_case "Taille tableau"             `Quick test_ecrire_taille_tableau
   ]

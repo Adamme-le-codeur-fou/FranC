@@ -1,6 +1,6 @@
 exception PhraseInvalide
 
-type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant
+type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant | TypeTableauEntier | TypeTableauReel
 
 type ast =
   | Mot                of string
@@ -35,3 +35,8 @@ type ast =
   | Recette            of string * (string * type_expression) list * type_expression * ast list
   | Appel_recette      of string * ast list
   | Renvoyer           of ast
+  | Tableau            of ast list
+  | AccesTableau       of string * ast
+  | ModificationTableau of string * ast * ast
+  | TailleTableau      of string
+  | AjouterTableau     of string * ast

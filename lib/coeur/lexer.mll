@@ -58,6 +58,11 @@ rule decoupe =
     | ['o''O']"n incrémente" { Incrementer }
     | ['o''O']"n décrémente" { Decrementer }
     | "de" { De }
+    | "un tableau contenant" { Tableau_contenant }
+    | ['l''L']"'élément" | ['l''L']"'element" { Element }
+    | "la taille de" { Taille_de }
+    | "Ajouter" { Ajouter }
+    | "Modifier" { Modifier }
     | "Permuter" { Permuter }
     | "On définit une recette nommée" { Definir_recette }
     | "dont les ingrédients sont :" { Ingredients_recette }
