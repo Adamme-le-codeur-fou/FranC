@@ -45,6 +45,36 @@ let _ =
   let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
   let nom_programme = Filename.basename Sys.argv.(1) in
   let canal_sortie = open_out Sys.argv.(2) in
-  let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
-  affiche arbre canal_sortie nom_programme;
-  close_out canal_sortie
+  try
+    let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
+    affiche arbre canal_sortie nom_programme;
+    close_out canal_sortie
+  with
+  | FranC.Erreurs.Erreur_lexer msg ->
+    close_out canal_sortie;
+    Printf.eprintf "%s\n" msg;
+    exit 1
+  | Parsing.Parse_error ->
+    close_out canal_sortie;
+    let pos = lexbuf.Lexing.lex_curr_p in
+    let position = FranC.Erreurs.formater_position pos in
+    Printf.eprintf "%s\n"
+      (FranC.Erreurs.formater_erreur position
+        "phrase invalide, vérifiez la syntaxe de votre programme");
+    exit 1
+  | FranC.Types.VariableNonDeclaree var ->
+    close_out canal_sortie;
+    Printf.eprintf "Erreur : la variable '%s' n'a pas été déclarée.\n" var;
+    exit 1
+  | FranC.Types.IncompatibiliteDeType ->
+    close_out canal_sortie;
+    Printf.eprintf "Erreur : incompatibilité de type dans une expression.\n";
+    exit 1
+  | FranC.Expressions.MotInvalide ->
+    close_out canal_sortie;
+    Printf.eprintf "Erreur : mot invalide rencontré lors de la génération du code.\n";
+    exit 1
+  | e ->
+    close_out canal_sortie;
+    Printf.eprintf "Erreur inattendue : %s\n" (Printexc.to_string e);
+    exit 1

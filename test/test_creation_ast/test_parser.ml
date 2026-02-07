@@ -23,6 +23,30 @@ let test_mot () =
   let arbre = try construire_arbre "MotInvalide devient 0." with _ -> arbre_vide in
   (check bool) "mot invalide majuscule" true (arbre = arbre_vide)
 
+let contient_sous_chaine chaine sous_chaine =
+  let len_c = String.length chaine in
+  let len_s = String.length sous_chaine in
+  if len_s > len_c then false
+  else
+    let rec aux i =
+      if i > len_c - len_s then false
+      else if String.sub chaine i len_s = sous_chaine then true
+      else aux (i + 1)
+    in aux 0
+
+let test_erreur_lexer () =
+  let leve_erreur_lexer = try let _ = construire_arbre "X devient a _ b." in false
+    with FranC.Erreurs.Erreur_lexer _ -> true | _ -> false in
+  (check bool) "caractere inconnu leve Erreur_lexer" true leve_erreur_lexer;
+  let message = try let _ = construire_arbre "X devient a _ b." in ""
+    with FranC.Erreurs.Erreur_lexer msg -> msg | _ -> "" in
+  (check bool) "message contient position" true (contient_sous_chaine message "ligne")
+
+let test_erreur_syntaxe () =
+  let leve_erreur_syntaxe = try let _ = construire_arbre "X devient." in false
+    with Parsing.Parse_error -> true | _ -> false in
+  (check bool) "syntaxe invalide leve Parse_error" true leve_erreur_syntaxe
+
 let test_division () =
   let arbre = construire_arbre "X devient 10 divisé par 2." in
   (check bool) "division simple" true (arbre = Paragraphe [Assigne (Mot "X", Division(Entier("10"), Entier("2"))) ]);
@@ -34,5 +58,7 @@ let retourne_tests () =
         test_case "Arbre vide" `Quick test_arbre_vide;
         test_case "Assignation" `Quick test_assignation;
         test_case "Mot" `Quick test_mot;
-        test_case "Division" `Quick test_division
+        test_case "Division" `Quick test_division;
+        test_case "Erreur lexer" `Quick test_erreur_lexer;
+        test_case "Erreur syntaxe" `Quick test_erreur_syntaxe
       ]

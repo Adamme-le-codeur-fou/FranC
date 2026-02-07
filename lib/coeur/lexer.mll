@@ -1,5 +1,6 @@
 {
     open Parser
+    open Erreurs
 }
 
 let chiffre = ['0'-'9']
@@ -15,7 +16,8 @@ let mot_maj = alphabet_maj mot?
 
 rule decoupe =
     parse
-    | [' ''\n''\t']+ { decoupe lexbuf }
+    | '\n' { Lexing.new_line lexbuf; decoupe lexbuf }
+    | [' ''\t']+ { decoupe lexbuf }
     | ":" { Deux_points }
     | "-" { Tiret }
     | "," { Virgule }
@@ -74,9 +76,13 @@ rule decoupe =
     | ponctuation_fin_phrase as c { Ponctuation_fin_phrase c }
     | "Nota bene : " | "N. B. : " { commentaire lexbuf }
     | eof { EOF }
-    | _ as c { Printf.printf "Caractère inconnu '%c'\n" c; exit 1}
+    | _ as c {
+        let pos = Lexing.lexeme_start_p lexbuf in
+        raise (Erreur_lexer (formater_erreur (formater_position pos)
+          (Printf.sprintf "caractère inconnu '%c'" c)))
+      }
 
 and commentaire =
     parse
-    | "\n" { decoupe lexbuf }
+    | "\n" { Lexing.new_line lexbuf; decoupe lexbuf }
     | _ { commentaire lexbuf }
