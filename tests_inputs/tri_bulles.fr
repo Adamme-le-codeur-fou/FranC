@@ -1,0 +1,26 @@
+N. B. : Tri à bulles sur un tableau d'entiers.
+
+Nombres devient un tableau contenant 64, 25, 12, 22, 11 et 90.
+
+Afficher <Avant le tri :>.
+En itérant sur i allant de 0 à la taille de nombres on agit selon la séquence suivante :
+    Afficher l'element i de nombres.
+Ce qui termine la séquence.
+
+N. B. : Tri à bulles.
+N devient la taille de nombres.
+Borne devient n moins 1.
+En itérant sur i allant de 0 à borne on agit selon la séquence suivante :
+    En itérant sur j allant de 0 à borne on agit selon la séquence suivante :
+        Si l'element j de nombres est supérieur à l'element j plus 1 de nombres alors
+            Temp devient l'element j de nombres.
+            Modifier l'element j de nombres avec l'element j plus 1 de nombres.
+            Modifier l'element j plus 1 de nombres avec temp.
+        Fin de la condition.
+    Ce qui termine la séquence.
+Ce qui termine la séquence.
+
+Afficher <Après le tri :>.
+En itérant sur i allant de 0 à la taille de nombres on agit selon la séquence suivante :
+    Afficher l'element i de nombres.
+Ce qui termine la séquence.
