@@ -26,7 +26,7 @@ let rec type_de_expression portee expr =
   match expr with
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
-  | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) | Moins (expr_gauche, expr_droite) ->
+  | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) | Moins (expr_gauche, expr_droite) | Division (expr_gauche, expr_droite) ->
     if type_de_expression portee expr_gauche = TypeReel || type_de_expression portee expr_droite = TypeReel
       then TypeReel else TypeEntier
   | Egal _ | Different _ | Et _ | Ou _ | Inferieur _ | Inferieur_ou_egal _ | Superieur _ | Superieur_ou_egal _ -> TypeBooleen

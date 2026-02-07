@@ -27,6 +27,7 @@ rule decoupe =
     | "et" { Et }
     | "avec" { Avec }
     | "fois" | "multiplié par" { Fois }
+    | "divisé par" | "divise par" { Division }
     | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }
     | "par" { Par }
     | "prend la valeur" | "devient" { Assigne }

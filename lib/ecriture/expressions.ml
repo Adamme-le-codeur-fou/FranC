@@ -28,6 +28,7 @@ and ecrire_expression portee expr =
   | Plus              (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "+"
   | Moins             (e1, e2) -> ecrire_operateur_binaire portee e1 e2 "-"
   | Fois              (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "*"
+  | Division          (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "/"
   | Egal              (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "=="
   | Different         (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "!="
   | Inferieur         (p1, p2) -> ecrire_operateur_binaire portee p1 p2 "<"

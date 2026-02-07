@@ -23,9 +23,16 @@ let test_mot () =
   let arbre = try construire_arbre "MotInvalide devient 0." with _ -> arbre_vide in
   (check bool) "mot invalide majuscule" true (arbre = arbre_vide)
 
+let test_division () =
+  let arbre = construire_arbre "X devient 10 divisé par 2." in
+  (check bool) "division simple" true (arbre = Paragraphe [Assigne (Mot "X", Division(Entier("10"), Entier("2"))) ]);
+  let arbre = construire_arbre "X devient 10 divise par 2." in
+  (check bool) "division sans accent" true (arbre = Paragraphe [Assigne (Mot "X", Division(Entier("10"), Entier("2"))) ])
+
 let retourne_tests () =
-      "Parser", [ 
+      "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
         test_case "Assignation" `Quick test_assignation;
-        test_case "Mot" `Quick test_mot
+        test_case "Mot" `Quick test_mot;
+        test_case "Division" `Quick test_division
       ]

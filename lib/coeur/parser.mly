@@ -4,7 +4,7 @@
 
 %token Assigne Afficher Permuter Avec
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
-%token Plus Fois Moins 
+%token Plus Fois Moins Division
 %token Et_Si Ou_Si Et
 %token Parenthese_Gauche Parenthese_Droite
 %token Si Alors Sinon Fin_condition
@@ -28,7 +28,7 @@
 %nonassoc Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %nonassoc Plus Moins
 %nonassoc Reste_division_euclidienne_debut Par
-%nonassoc Fois
+%nonassoc Fois Division
 %left Parenthese_Gauche
 %left Si Alors Tant_que Agir
 %right Sinon
@@ -61,6 +61,7 @@ expression:
     | expression Plus expression { Plus($1, $3) }
     | expression Moins expression { Moins($1, $3) }
     | expression Fois expression { Fois($1, $3) }
+    | expression Division expression { Division($1, $3) }
     | expression Egal expression { Egal($1, $3) }
     | expression Different expression { Different($1, $3) }
     | expression Inferieur expression { Inferieur($1, $3) }

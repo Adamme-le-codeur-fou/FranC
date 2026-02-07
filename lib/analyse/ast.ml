@@ -18,6 +18,7 @@ type ast =
   | Superieur          of ast * ast
   | Superieur_ou_egal  of ast * ast
   | Fois               of ast * ast
+  | Division           of ast * ast
   | Modulo             of ast * ast
   | Assigne            of ast * ast
   | Afficher           of ast
