@@ -63,6 +63,7 @@ rule decoupe =
     | "la taille de" { Taille_de }
     | "Ajouter" { Ajouter }
     | "Modifier" { Modifier }
+    | "Lire" { Lire }
     | "Permuter" { Permuter }
     | "On définit une recette nommée" { Definir_recette }
     | "dont les ingrédients sont :" { Ingredients_recette }

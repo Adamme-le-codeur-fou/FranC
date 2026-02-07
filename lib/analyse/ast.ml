@@ -40,3 +40,4 @@ type ast =
   | ModificationTableau of string * ast * ast
   | TailleTableau      of string
   | AjouterTableau     of string * ast
+  | Lire               of string

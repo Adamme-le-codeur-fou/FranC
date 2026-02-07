@@ -122,6 +122,16 @@ let ecrire_renvoyer portee expression =
   ecrire ";\n";
   portee
 
+let ecrire_lire portee var =
+  let var_min = String.lowercase_ascii var in
+  let type_var = type_variable portee var_min in
+  (match type_var with
+  | TypeEntier -> ecrire "wscanf(L\"%%d\", &%s);\n" var_min
+  | TypeReel -> ecrire "wscanf(L\"%%f\", &%s);\n" var_min
+  | _ -> raise (Erreurs.Erreur_type
+      (Printf.sprintf "impossible de lire une valeur de type %s" (nom_type type_var))));
+  portee
+
 let ecrire_liberation_tableaux portee_base portee =
   List.iter (fun (nom, t) ->
     if not (variable_est_declaree portee_base nom) then

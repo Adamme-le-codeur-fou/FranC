@@ -3,7 +3,7 @@
 %}
 
 %token Assigne Afficher Permuter Avec
-%token Tableau_contenant Element Taille_de Ajouter Modifier
+%token Tableau_contenant Element Taille_de Ajouter Modifier Lire
 %token Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
 %token Plus Fois Moins Division
 %token Et_Si Ou_Si Et
@@ -91,6 +91,7 @@ declaration:
     | Renvoyer expression Ponctuation_fin_phrase { Renvoyer($2) }
     | Modifier Element expression De Mot Avec expression Ponctuation_fin_phrase { ModificationTableau($5, $3, $7) }
     | Ajouter expression A Mot Ponctuation_fin_phrase { AjouterTableau($4, $2) }
+    | Lire Mot Ponctuation_fin_phrase { Lire($2) }
 
 conditionnelle:
   | Si expression Alors paragraphe Fin_condition Ponctuation_fin_phrase { Condition($2, $4, None) }

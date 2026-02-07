@@ -20,6 +20,7 @@ let rec ecrire_ast portee ast =
   | Renvoyer      (expression)                            -> ecrire_renvoyer portee expression
   | ModificationTableau (nom, index, valeur)              -> ecrire_modification_tableau portee nom index valeur
   | AjouterTableau (nom, valeur)                          -> ecrire_ajouter_tableau portee nom valeur
+  | Lire var                                               -> ecrire_lire portee var
   | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
   | Recette(_)                                            -> portee
   | _                                                     -> ecrire_expression portee ast; portee

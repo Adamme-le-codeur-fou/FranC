@@ -73,6 +73,19 @@ let test_ecrire_taille_tableau () =
   ) in
   (check string) "taille tableau" "nombres->taille" resultat
 
+let test_ecrire_lire () =
+  let portee = [("x", TypeEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_lire portee "x" in ()
+  ) in
+  (check string) "lire entier" "wscanf(L\"%d\", &x);\n" resultat;
+
+  let portee = [("y", TypeReel)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_lire portee "y" in ()
+  ) in
+  (check string) "lire reel" "wscanf(L\"%f\", &y);\n" resultat
+
 let retourne_tests () =
   "Expressions", [
     test_case "Ecrire division"            `Quick test_ecrire_division;
@@ -80,5 +93,6 @@ let retourne_tests () =
     test_case "Assignation avec types"     `Quick test_ecrire_assignation_types;
     test_case "Printf avec types"          `Quick test_ecrire_printf_types;
     test_case "Acces tableau"              `Quick test_ecrire_acces_tableau;
-    test_case "Taille tableau"             `Quick test_ecrire_taille_tableau
+    test_case "Taille tableau"             `Quick test_ecrire_taille_tableau;
+    test_case "Lire"                       `Quick test_ecrire_lire
   ]

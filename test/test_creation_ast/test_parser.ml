@@ -68,6 +68,11 @@ let test_taille_tableau () =
   (check bool) "taille tableau" true
     (arbre = Paragraphe [Afficher (TailleTableau "nombres")])
 
+let test_lire () =
+  let arbre = construire_arbre "X devient 0. Lire x." in
+  (check bool) "lire variable" true
+    (arbre = Paragraphe [Assigne (Mot "X", Entier("0")); Lire "x"])
+
 let retourne_tests () =
       "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
@@ -78,5 +83,6 @@ let retourne_tests () =
         test_case "Erreur syntaxe" `Quick test_erreur_syntaxe;
         test_case "Tableau" `Quick test_tableau;
         test_case "Acces tableau" `Quick test_acces_tableau;
-        test_case "Taille tableau" `Quick test_taille_tableau
+        test_case "Taille tableau" `Quick test_taille_tableau;
+        test_case "Lire" `Quick test_lire
       ]
