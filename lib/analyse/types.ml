@@ -51,5 +51,6 @@ let rec type_de_expression portee expr =
     let t = type_variable portee (String.lowercase_ascii nom) in
     (match t with TypeTableauReel -> TypeReel | _ -> TypeEntier)
   | TailleTableau _ -> TypeEntier
+  | Appel_recette (nom, _) -> type_variable portee nom
   | _ -> TypeNeant
 

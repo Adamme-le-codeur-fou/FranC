@@ -31,7 +31,7 @@ let rec ecrire_ast portee ast =
   | AjouterTableau (nom, valeur)                          -> ecrire_ajouter_tableau portee nom valeur
   | Lire var                                               -> ecrire_lire portee var
   | Paragraphe    (liste)                                 -> List.fold_left ecrire_ast portee liste
-  | Recette(_)                                            -> portee
+  | Recette(nom, _, type_retour, _)                        -> (nom, type_retour) :: portee
   | _                                                     -> ecrire_expression portee ast; portee
 
 let affiche arbre canal_sortie nom_programme=

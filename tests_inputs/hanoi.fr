@@ -1,0 +1,17 @@
+N. B. : Résolution de la tour de Hanoï.
+
+On définit une recette nommée hanoi dont les ingrédients sont :
+ - un entier n
+ - un entier source
+ - un entier destination
+ - un entier auxiliaire
+et qui renvoie un entier :
+    Si n est supérieur à 0 alors
+        Temp devient le résultat de hanoi avec les ingrédients n moins 1, source, auxiliaire et destination.
+        Afficher <Déplacer disque de [source] vers [destination]>.
+        Temp devient le résultat de hanoi avec les ingrédients n moins 1, auxiliaire, destination et source.
+    Fin de la condition.
+    Renvoyer 0.
+Fin de la recette.
+
+Resultat devient le résultat de hanoi avec les ingrédients 3, 1, 3 et 2.
