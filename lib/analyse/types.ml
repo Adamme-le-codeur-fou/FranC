@@ -26,6 +26,7 @@ let rec type_de_expression portee expr =
   match expr with
   | Entier _ -> TypeEntier
   | Reel _ -> TypeReel
+  | Chaine_caractere _ -> TypeChaineCaractere
   | Plus (expr_gauche, expr_droite) | Fois (expr_gauche, expr_droite) | Moins (expr_gauche, expr_droite) | Division (expr_gauche, expr_droite) ->
     if type_de_expression portee expr_gauche = TypeReel || type_de_expression portee expr_droite = TypeReel
       then TypeReel else TypeEntier

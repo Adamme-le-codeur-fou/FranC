@@ -18,6 +18,7 @@ and ecrire_expression portee expr =
   match expr with
   | Entier n -> ecrire "%s" n
   | Reel r -> ecrire "%s" (remplacer_caractere ',' '.' r)
+  | Chaine_caractere s -> ecrire "L\"%s\"" (normaliser_chaine s)
   | Mot m ->
         let m_minuscule = String.lowercase_ascii m in
           ecrire "%s" (if variable_est_declaree portee m_minuscule then m_minuscule else raise MotInvalide)

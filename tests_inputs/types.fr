@@ -1,0 +1,12 @@
+N. B. : Test de l'inference de type.
+
+A devient 42.
+Pi devient 3,14.
+Message devient <Bonjour le monde>.
+
+Afficher a.
+Afficher pi.
+Afficher message.
+
+Somme devient a plus pi.
+Afficher somme.

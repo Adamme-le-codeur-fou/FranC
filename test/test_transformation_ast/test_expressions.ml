@@ -1,6 +1,7 @@
 open Alcotest
 open FranC.Ast
 open FranC.Expressions
+open FranC.Declarations
 open Capture_sortie
 
 let test_ecrire_division () =
@@ -29,8 +30,39 @@ let test_ecrire_operations_combinees () =
   let expected = "((10 / 2) + 1)" in
   (check string) "division dans addition" expected resultat
 
+let test_ecrire_assignation_types () =
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_assignation [] ("X", Reel("3,14")) in ()
+  ) in
+  (check string) "assignation reel" "float x = 3.14;\n" resultat;
+
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_assignation [] ("X", Chaine_caractere("Bonjour")) in ()
+  ) in
+  (check string) "assignation chaine" "wchar_t *x = L\"Bonjour\";\n" resultat;
+
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_assignation [] ("X", Entier("42")) in ()
+  ) in
+  (check string) "assignation entier" "int x = 42;\n" resultat
+
+let test_ecrire_printf_types () =
+  let portee = [("x", TypeReel)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_printf portee (Mot "x") in ()
+  ) in
+  (check string) "printf reel" "wprintf(L\"%f\\n\", x);\n" resultat;
+
+  let portee = [("x", TypeEntier)] in
+  let resultat = capture_sortie_avec(fun () ->
+    let _ = ecrire_printf portee (Mot "x") in ()
+  ) in
+  (check string) "printf entier" "wprintf(L\"%d\\n\", x);\n" resultat
+
 let retourne_tests () =
   "Expressions", [
     test_case "Ecrire division"            `Quick test_ecrire_division;
-    test_case "Ecrire operations combinees" `Quick test_ecrire_operations_combinees
+    test_case "Ecrire operations combinees" `Quick test_ecrire_operations_combinees;
+    test_case "Assignation avec types"     `Quick test_ecrire_assignation_types;
+    test_case "Printf avec types"          `Quick test_ecrire_printf_types
   ]

@@ -11,7 +11,7 @@ let ecrire_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
   let portee_maj =
     if variable_est_declaree portee var_minuscule then portee
-    else (var_minuscule, TypeEntier) :: portee
+    else (var_minuscule, type_de_expression portee expr) :: portee
   in
   if not (variable_est_declaree portee var_minuscule) then
     ecrire  "%s" (type_de_variable_vers_string portee_maj var_minuscule);
@@ -21,13 +21,20 @@ let ecrire_assignation portee (var, expr) =
   portee_maj
 
 
+let format_printf_pour_type t =
+  match t with
+  | TypeReel -> "%f"
+  | TypeChaineCaractere -> "%ls"
+  | _ -> "%d"
+
 let ecrire_printf portee e =
   (match e with
   | Entier n -> ecrire "wprintf(L\"%%d\\n\", %s);\n" n
   | Reel r -> ecrire "wprintf(L\"%%f\\n\", %s);\n" (remplacer_caractere ',' '.' r)
   | Chaine_caractere s -> ecrire "wprintf(L\"%s\\n\");\n" (normaliser_chaine s)
   | _ ->
-    ecrire "wprintf(L\"%%d\\n\", ";
+    let format = format_printf_pour_type (type_de_expression portee e) in
+    ecrire "wprintf(L\"%s\\n\", " format;
     ecrire_expression portee e;
     ecrire ");\n");
   portee
