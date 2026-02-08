@@ -2,7 +2,7 @@
 
 Langage de programmation français
 
-## Installation et Utilisation (Linux)
+## Installation et Utilisation
 
 ### Prérequis
 
@@ -10,6 +10,7 @@ Langage de programmation français
 - GCC (ou n'importe quel compilateur C)
 - Dune (système de build pour OCaml : `opam install dune`)
 - Alcotest (pour les tests unitaires : `opam install alcotest`)
+- Clang (optionnel, pour le backend LLVM IR)
 
 ### Compilation du projet
 
@@ -30,20 +31,25 @@ Langage de programmation français
 
 ### Exécution d'un programme FranC
 
-1. **Compiler un fichier FranC vers C puis vers un exécutable** :
-   ```bash
-    dune exec -- FranC votre_fichier.fr sortie.c
-    gcc -o sortie sortie.c
-   ```
+FranC propose deux backends : **C** et **LLVM IR**. Le choix se fait par l'extension du fichier de sortie.
 
-2. **Exécuter le programme compilé** :
-   ```bash
-    ./sortie
-   ```
+#### Backend C (`.c`)
+```bash
+dune exec -- FranC votre_fichier.fr sortie.c
+gcc -o sortie sortie.c -lm
+./sortie
+```
 
-# Dictionnaire de Référence pour le Langage FranC vers C
+#### Backend LLVM IR (`.ll`)
+```bash
+dune exec -- FranC votre_fichier.fr sortie.ll
+clang sortie.ll -o sortie -lm
+./sortie
+```
 
-Ce dictionnaire fournit des exemples de comment différentes constructions en FranC sont traduites en code C.
+# Dictionnaire de Référence pour le Langage FranC
+
+Ce dictionnaire fournit des exemples de comment différentes constructions en FranC sont traduites en code C (et LLVM IR).
 
 ## Règles des Variables
 
@@ -284,39 +290,46 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `Aleatoire` : Représente un nombre aléatoire entre deux bornes.
 - `PourChaque` : Représente une boucle foreach sur un tableau.
 
-## À Vérifier
+## Architecture
 
-- [x] Les erreurs de scope
+```
+lib/
+├── coeur/           Lexer (ocamllex) et Parser (ocamlyacc)
+├── analyse/         AST, types, erreurs
+├── ecriture/        Backend C
+└── ecriture_llvm/   Backend LLVM IR
+bin/
+└── main.ml          CLI (choix du backend par extension .c ou .ll)
+test/                Tests Alcotest (parser + codegen C)
+```
+
+Le backend est choisi automatiquement selon l'extension du fichier de sortie :
+- `.c` → génération de code C (wprintf, tableaux via struct Tableau)
+- `.ll` → génération de LLVM IR (printf, SSA, basic blocks, struct %Tableau)
+
+Les deux backends couvrent l'intégralité du langage FranC.
 
 ## TODO
 
-- [x] Ajouter le support pour les chaînes de caractères et les opérations associées.
-- [x] Ajouter la prise en charge des commentaires dans le code FranC.
-- [x] Implémenter les fonctions (recettes).
-- [x] Ajouter les opérateurs de comparaison complets (<, <=, >, >=).
-- [x] Ajouter les opérateurs logiques (et, ou).
-- [x] Ajouter les nombres réels.
-- [x] Ajouter l'incrémentation et la décrémentation.
-- [x] Ajouter le support pour les tableaux et les structures de données.
-- [x] Ajouter l'opérateur de division.
-- [x] Ajouter les messages d'erreur avec positions.
-- [x] Implémenter la portée par bloc.
-- [x] Ajouter la gestion automatique de la mémoire (tableaux).
-- [x] Ajouter l'entrée utilisateur (Lire).
-- [x] Ajouter l'interpolation de variables dans les chaînes (<Bonjour [x]>).
-- [x] Ajouter les nombres négatifs.
-- [x] Ajouter le foreach (Pour chaque) sur les tableaux.
-- [x] Ajouter les procédures (recettes sans retour) et Exécuter.
-- [x] Ajouter les booléens (vrai/faux).
-- [x] Tableaux génériques (void*) avec inférence de type.
-- [x] Associativité gauche pour les opérateurs arithmétiques.
-- [x] Fonctions mathématiques intégrées (racine, puissance, valeur absolue, aléatoire).
-- [ ] Ajouter les opérations sur les chaînes de caractères (concaténation, longueur, sous-chaîne).
-- [ ] Ajouter la négation logique (non / pas).
-- [ ] Ajouter le `sinon si` (else if) sans imbriquer les conditions.
-- [ ] Ajouter la boucle `répéter ... jusqu'à` (do-while).
-- [ ] Ajouter les constantes (valeur non modifiable après déclaration).
-- [ ] Ajouter les conversions de type (entier vers réel, réel vers entier).
-- [ ] Ajouter un système d'import de fichiers pour séparer le code en modules.
-- [ ] Améliorer les messages d'erreur avec des suggestions de correction.
-- [ ] Ajouter une vérification de type statique avant la génération de code.
+- [x] Chaînes de caractères et interpolation (`<Bonjour [x]>`)
+- [x] Commentaires (`N. B. :`)
+- [x] Fonctions (recettes) et procédures
+- [x] Opérateurs de comparaison, logiques, arithmétiques
+- [x] Nombres réels et négatifs
+- [x] Booléens (vrai/faux)
+- [x] Incrémentation / décrémentation
+- [x] Tableaux dynamiques génériques avec inférence de type
+- [x] Portée par bloc et gestion mémoire automatique
+- [x] Entrée utilisateur (Lire)
+- [x] Boucles (tant que, pour, pour chaque)
+- [x] Fonctions mathématiques (racine, puissance, valeur absolue, aléatoire)
+- [x] Backend LLVM IR complet
+- [ ] Opérations sur les chaînes (concaténation, longueur, sous-chaîne)
+- [ ] Négation logique (non / pas)
+- [ ] `sinon si` (else if) sans imbriquer les conditions
+- [ ] Boucle `répéter ... jusqu'à` (do-while)
+- [ ] Constantes (valeur non modifiable après déclaration)
+- [ ] Conversions de type explicites (entier vers réel, réel vers entier)
+- [ ] Système d'import de fichiers / modules
+- [ ] Messages d'erreur avec suggestions de correction
+- [ ] Vérification de type statique avant la génération de code

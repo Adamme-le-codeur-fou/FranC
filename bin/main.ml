@@ -49,11 +49,14 @@ let affiche_usage_et_quitte_erreur () =
 
 let verifie_arguments () =
   if Array.length Sys.argv <> 3 then affiche_usage_et_quitte_erreur ();
-  if not (Filename.check_suffix Sys.argv.(1) ".fr") then
-    begin
-      Printf.eprintf "Le fichier source doit avoir l'extension .fr\n";
-      affiche_usage_et_quitte_erreur ()
-    end
+  if not (Filename.check_suffix Sys.argv.(1) ".fr") then begin
+    Printf.eprintf "Le fichier source doit avoir l'extension .fr\n";
+    affiche_usage_et_quitte_erreur ()
+  end;
+  if not (Filename.check_suffix Sys.argv.(2) ".c" || Filename.check_suffix Sys.argv.(2) ".ll") then begin
+    Printf.eprintf "Le fichier de sortie doit avoir l'extension .c ou .ll\n";
+    affiche_usage_et_quitte_erreur ()
+  end
 
 let _ =
   verifie_arguments ();
@@ -67,7 +70,10 @@ let _ =
   in
   try
     let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
-    affiche arbre canal_sortie nom_programme;
+    if Filename.check_suffix Sys.argv.(2) ".ll" then
+      FranC.Llvm_programme.generer arbre canal_sortie nom_programme
+    else
+      affiche arbre canal_sortie nom_programme;
     close_out canal_sortie
   with
   | FranC.Erreurs.Erreur_lexer msg -> quitter_erreur msg
