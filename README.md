@@ -60,6 +60,7 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | un entier                     | `int`        | `A devient 10.`                          |
 | un réel                       | `float`      | `B devient 3,14.`                        |
 | une chaîne de caractères      | `wchar_t *`  | `Message devient <Bonjour>.`             |
+| booléen (vrai/faux)           | `int`        | `A devient vrai.`                        |
 
 ## Variables et Affectations
 
@@ -80,6 +81,25 @@ Ce dictionnaire fournit des exemples de comment différentes constructions en Fr
 | `G devient le reste de la division euclidienne de 5 par 3.` | `int G = 5 % 3;`            |
 | `H devient -5.`                                            | `int H = (-5);`             |
 | `I devient 10 plus -3.`                                    | `int I = (10 + (-3));`      |
+
+## Fonctions Mathématiques
+
+| FranC                                       | C                              | Type retour |
+| ------------------------------------------- | ------------------------------ | ----------- |
+| `la racine de x`                            | `sqrt(x)`                      | réel        |
+| `la racine carrée de x`                     | `sqrt(x)`                      | réel        |
+| `x puissance y`                             | `pow(x, y)`                    | réel        |
+| `la valeur absolue de x`                    | `abs(x)` ou `fabs(x)`         | même que x  |
+| `un nombre aléatoire entre x et y`          | `((rand() % (y-x+1)) + x)`    | entier      |
+
+Les includes `<math.h>` sont ajoutés automatiquement. Si le programme utilise `aléatoire`, `<time.h>` et `srand(time(NULL))` sont aussi inclus.
+
+## Booléens
+
+| FranC                          | C                         |
+| ------------------------------ | ------------------------- |
+| `A devient vrai.`             | `int A = 1;`              |
+| `B devient faux.`             | `int B = 0;`              |
 
 ## Comparaisons
 
@@ -155,7 +175,7 @@ La variable doit être déclarée avant. Types supportés : entier et réel.
 | `Ajouter 50 à nombres.`                            | `ajouter_element_entier(nombres, 50);`     |
 | `Afficher la taille de nombres.`                   | `wprintf(L"%d\n", nombres->taille);`       |
 
-Les tableaux sont gérés automatiquement (allocation et libération mémoire). Les helpers C nécessaires ne sont inclus dans le prélude que si le programme utilise des tableaux.
+Les tableaux sont génériques (`void*`) et supportent les types entier, réel, chaîne de caractères et booléen. L'inférence de type est automatique. Les helpers C (allocation, ajout, libération) ne sont inclus dans le prélude que si le programme utilise des tableaux.
 
 ## Fonctions (Recettes)
 
@@ -257,6 +277,11 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - `AjouterTableau` : Représente l'ajout d'un élément à un tableau.
 - `Lire` : Représente la lecture d'une entrée utilisateur.
 - `Negatif` : Représente un nombre négatif (unaire).
+- `Vrai`, `Faux` : Représentent les littéraux booléens.
+- `RacineCarre` : Représente la racine carrée d'une expression.
+- `Puissance` : Représente l'élévation à une puissance.
+- `ValeurAbsolue` : Représente la valeur absolue d'une expression.
+- `Aleatoire` : Représente un nombre aléatoire entre deux bornes.
 - `PourChaque` : Représente une boucle foreach sur un tableau.
 
 ## À Vérifier
@@ -282,11 +307,16 @@ La structure du Abstract Syntax Tree (AST) est définie comme suit :
 - [x] Ajouter les nombres négatifs.
 - [x] Ajouter le foreach (Pour chaque) sur les tableaux.
 - [x] Ajouter les procédures (recettes sans retour) et Exécuter.
-- [ ] Implémenter le typage haut niveau pour des structures de données complexes.
-- [ ] Développer des fonctions intégrées pour les opérations courantes (mathématiques, chaînes, etc.).
-- [ ] Améliorer le système d'erreur pour fournir des messages plus détaillés et des suggestions de correction.
-- [ ] Ajouter une fonctionnalité de vérification de type statique.
-- [ ] Créer un système de modules ou de packages pour permettre la réutilisation du code.
-- [ ] Étendre la documentation pour couvrir plus de cas d'utilisation et d'exemples.
-- [ ] Implémenter une interface graphique pour faciliter l'écriture et le test de code en FranC.
-- [ ] Ajouter les opérations sur les chaînes de caractères (concaténation, longueur, etc.).
+- [x] Ajouter les booléens (vrai/faux).
+- [x] Tableaux génériques (void*) avec inférence de type.
+- [x] Associativité gauche pour les opérateurs arithmétiques.
+- [x] Fonctions mathématiques intégrées (racine, puissance, valeur absolue, aléatoire).
+- [ ] Ajouter les opérations sur les chaînes de caractères (concaténation, longueur, sous-chaîne).
+- [ ] Ajouter la négation logique (non / pas).
+- [ ] Ajouter le `sinon si` (else if) sans imbriquer les conditions.
+- [ ] Ajouter la boucle `répéter ... jusqu'à` (do-while).
+- [ ] Ajouter les constantes (valeur non modifiable après déclaration).
+- [ ] Ajouter les conversions de type (entier vers réel, réel vers entier).
+- [ ] Ajouter un système d'import de fichiers pour séparer le code en modules.
+- [ ] Améliorer les messages d'erreur avec des suggestions de correction.
+- [ ] Ajouter une vérification de type statique avant la génération de code.
