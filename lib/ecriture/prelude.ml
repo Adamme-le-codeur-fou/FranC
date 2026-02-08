@@ -31,40 +31,26 @@ let rec utilise_tableaux ast =
 
 let ecrire_includes avec_tableaux =
   ecrire "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
-  if avec_tableaux then ecrire "#include <stdlib.h>\n"
+  if avec_tableaux then ecrire "#include <stdlib.h>\n#include <string.h>\n"
   else ecrire "\n"
 
 let ecrire_helpers_tableaux () =
-  ecrire "\ntypedef struct { int* donnees; int taille; int capacite; } TableauEntier;\n";
-  ecrire "typedef struct { float* donnees; int taille; int capacite; } TableauReel;\n";
-  ecrire "\nTableauEntier* nouveau_tableau_entier(int capacite) {\n";
-  ecrire "    TableauEntier* t = malloc(sizeof(TableauEntier));\n";
-  ecrire "    t->donnees = malloc(capacite * sizeof(int));\n";
+  ecrire "\ntypedef struct { void* donnees; int taille; int capacite; size_t taille_element; } Tableau;\n";
+  ecrire "\nTableau* nouveau_tableau(int capacite, size_t taille_element) {\n";
+  ecrire "    Tableau* t = malloc(sizeof(Tableau));\n";
+  ecrire "    t->donnees = malloc(capacite * taille_element);\n";
   ecrire "    t->taille = 0;\n";
   ecrire "    t->capacite = capacite;\n";
+  ecrire "    t->taille_element = taille_element;\n";
   ecrire "    return t;\n}\n";
-  ecrire "\nvoid ajouter_element_entier(TableauEntier* t, int valeur) {\n";
+  ecrire "\nvoid ajouter_element(Tableau* t, void* valeur) {\n";
   ecrire "    if (t->taille >= t->capacite) {\n";
   ecrire "        t->capacite *= 2;\n";
-  ecrire "        t->donnees = realloc(t->donnees, t->capacite * sizeof(int));\n";
+  ecrire "        t->donnees = realloc(t->donnees, t->capacite * t->taille_element);\n";
   ecrire "    }\n";
-  ecrire "    t->donnees[t->taille++] = valeur;\n}\n";
-  ecrire "\nTableauReel* nouveau_tableau_reel(int capacite) {\n";
-  ecrire "    TableauReel* t = malloc(sizeof(TableauReel));\n";
-  ecrire "    t->donnees = malloc(capacite * sizeof(float));\n";
-  ecrire "    t->taille = 0;\n";
-  ecrire "    t->capacite = capacite;\n";
-  ecrire "    return t;\n}\n";
-  ecrire "\nvoid ajouter_element_reel(TableauReel* t, float valeur) {\n";
-  ecrire "    if (t->taille >= t->capacite) {\n";
-  ecrire "        t->capacite *= 2;\n";
-  ecrire "        t->donnees = realloc(t->donnees, t->capacite * sizeof(float));\n";
-  ecrire "    }\n";
-  ecrire "    t->donnees[t->taille++] = valeur;\n}\n";
-  ecrire "\nvoid liberer_tableau_entier(TableauEntier* t) {\n";
-  ecrire "    free(t->donnees);\n";
-  ecrire "    free(t);\n}\n";
-  ecrire "\nvoid liberer_tableau_reel(TableauReel* t) {\n";
+  ecrire "    memcpy((char*)t->donnees + t->taille * t->taille_element, valeur, t->taille_element);\n";
+  ecrire "    t->taille++;\n}\n";
+  ecrire "\nvoid liberer_tableau(Tableau* t) {\n";
   ecrire "    free(t->donnees);\n";
   ecrire "    free(t);\n}\n"
 

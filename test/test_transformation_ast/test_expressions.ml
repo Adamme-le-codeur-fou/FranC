@@ -60,14 +60,14 @@ let test_ecrire_printf_types () =
   (check string) "printf entier" "wprintf(L\"%d\\n\", x);\n" resultat
 
 let test_ecrire_acces_tableau () =
-  let portee = [("nombres", TypeTableauEntier)] in
+  let portee = [("nombres", TypeTableau TypeEntier)] in
   let resultat = capture_sortie_avec(fun () ->
     ecrire_expression portee (AccesTableau("nombres", Entier("0")))
   ) in
-  (check string) "acces tableau" "nombres->donnees[0]" resultat
+  (check string) "acces tableau" "((int*)nombres->donnees)[0]" resultat
 
 let test_ecrire_taille_tableau () =
-  let portee = [("nombres", TypeTableauEntier)] in
+  let portee = [("nombres", TypeTableau TypeEntier)] in
   let resultat = capture_sortie_avec(fun () ->
     ecrire_expression portee (TailleTableau "nombres")
   ) in

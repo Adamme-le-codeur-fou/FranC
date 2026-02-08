@@ -6,16 +6,6 @@ open Portee
 open Types
 
 
-let nom_fonction_nouveau_tableau type_tab =
-  match type_tab with
-  | TypeTableauReel -> "nouveau_tableau_reel"
-  | _ -> "nouveau_tableau_entier"
-
-let nom_fonction_ajouter_element type_tab =
-  match type_tab with
-  | TypeTableauReel -> "ajouter_element_reel"
-  | _ -> "ajouter_element_entier"
-
 (* Fonction pour afficher une assignation *)
 let ecrire_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
@@ -34,14 +24,14 @@ let ecrire_assignation portee (var, expr) =
   (match expr with
   | Tableau elements ->
     let nb = List.length elements in
+    let type_elem = type_element_tableau type_expr in
     if not (variable_est_declaree portee var_minuscule) then
-      ecrire "%s" (type_de_variable_vers_string portee_maj var_minuscule);
-    ecrire "%s = %s(%d);\n" var_minuscule (nom_fonction_nouveau_tableau type_expr) nb;
+      ecrire "Tableau *";
+    ecrire "%s = nouveau_tableau(%d, %s);\n" var_minuscule nb (sizeof_c type_elem);
     List.iter (fun elem ->
-      ecrire "%s(" (nom_fonction_ajouter_element type_expr);
-      ecrire "%s, " var_minuscule;
+      ecrire "{ %s_tmp = " (type_vers_string type_elem);
       ecrire_expression portee_maj elem;
-      ecrire ");\n"
+      ecrire "; ajouter_element(%s, &_tmp); }\n" var_minuscule
     ) elements
   | _ ->
     if not (variable_est_declaree portee var_minuscule) then
@@ -120,8 +110,9 @@ let ecrire_permuter portee variable1 variable2 =
 
 let ecrire_modification_tableau portee nom index valeur =
   let nom_minuscule = String.lowercase_ascii nom in
-  let _ = type_variable portee nom_minuscule in
-  ecrire "%s->donnees[" nom_minuscule;
+  let type_tab = type_variable portee nom_minuscule in
+  let type_elem = type_element_tableau type_tab in
+  ecrire "((%s*)%s->donnees)[" (String.trim (type_vers_string type_elem)) nom_minuscule;
   ecrire_expression portee index;
   ecrire "] = ";
   ecrire_expression portee valeur;
@@ -131,9 +122,10 @@ let ecrire_modification_tableau portee nom index valeur =
 let ecrire_ajouter_tableau portee nom valeur =
   let nom_minuscule = String.lowercase_ascii nom in
   let type_tab = type_variable portee nom_minuscule in
-  ecrire "%s(%s, " (nom_fonction_ajouter_element type_tab) nom_minuscule;
+  let type_elem = type_element_tableau type_tab in
+  ecrire "{ %s_tmp = " (type_vers_string type_elem);
   ecrire_expression portee valeur;
-  ecrire ");\n";
+  ecrire "; ajouter_element(%s, &_tmp); }\n" nom_minuscule;
   portee
 
 let ecrire_renvoyer portee expression =
@@ -156,7 +148,6 @@ let ecrire_liberation_tableaux portee_base portee =
   List.iter (fun (nom, t) ->
     if not (variable_est_declaree portee_base nom) then
       match t with
-      | TypeTableauEntier -> ecrire "liberer_tableau_entier(%s);\n" nom
-      | TypeTableauReel -> ecrire "liberer_tableau_reel(%s);\n" nom
+      | TypeTableau _ -> ecrire "liberer_tableau(%s);\n" nom
       | _ -> ()
   ) portee

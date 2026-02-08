@@ -41,7 +41,9 @@ and ecrire_expression portee expr =
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
       raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
-    ecrire "%s->donnees[" nom_min;
+    let type_tab = Types.type_variable portee nom_min in
+    let type_elem = Types.type_element_tableau type_tab in
+    ecrire "((%s*)%s->donnees)[" (String.trim (Types.type_vers_string type_elem)) nom_min;
     ecrire_expression portee index;
     ecrire "]"
   | TailleTableau nom ->

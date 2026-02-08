@@ -1,4 +1,4 @@
-type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant | TypeTableauEntier | TypeTableauReel
+type type_expression = TypeEntier | TypeReel | TypeBooleen | TypeChaineCaractere | TypeNeant | TypeTableau of type_expression
 
 type ast =
   | Mot                of string
