@@ -29,9 +29,9 @@
 %nonassoc Et_Si
 %nonassoc Assigne
 %nonassoc Egal Different Inferieur Inferieur_ou_egal Superieur Superieur_ou_egal
-%nonassoc Plus Moins
-%nonassoc Reste_division_euclidienne_debut Par
-%nonassoc Fois Division
+%left Plus Moins
+%left Reste_division_euclidienne_debut Par
+%left Fois Division
 %nonassoc NEGATIF Avec_ingredient
 %left Parenthese_Gauche
 %left Si Alors Tant_que Agir

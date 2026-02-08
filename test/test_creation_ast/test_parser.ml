@@ -124,6 +124,14 @@ let test_booleens () =
   let arbre = construire_arbre "X devient faux." in
   (check bool) "faux" true (arbre = Paragraphe [Assigne (Mot "X", Faux)])
 
+let test_associativite () =
+  let arbre = construire_arbre "X devient 10 moins 3 moins 2." in
+  (check bool) "associativite moins" true
+    (arbre = Paragraphe [Assigne (Mot "X", Moins(Moins(Entier "10", Entier "3"), Entier "2"))]);
+  let arbre = construire_arbre "X devient 2 fois 3 fois 4." in
+  (check bool) "associativite fois" true
+    (arbre = Paragraphe [Assigne (Mot "X", Fois(Fois(Entier "2", Entier "3"), Entier "4"))])
+
 let test_pour_chaque () =
   let arbre = construire_arbre "Pour chaque element de nombres on agit selon la séquence suivante :\n  Afficher element.\nCe qui termine la séquence." in
   (check bool) "pour chaque" true
@@ -162,6 +170,7 @@ let retourne_tests () =
         test_case "Negatif" `Quick test_negatif;
         test_case "Chaine formatee" `Quick test_chaine_formatee;
         test_case "Booleens" `Quick test_booleens;
+        test_case "Associativite" `Quick test_associativite;
         test_case "Pour chaque" `Quick test_pour_chaque;
         test_case "Procedure" `Quick test_procedure;
         test_case "Procedure avec ingredients" `Quick test_procedure_avec_ingredients;
