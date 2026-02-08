@@ -155,6 +155,29 @@ let test_executer () =
   (check bool) "executer avec un ingredient" true
     (arbre = Paragraphe [Appel_recette ("doubler", [Entier "5"])])
 
+let test_racine () =
+  let arbre = construire_arbre "X devient la racine de 25." in
+  (check bool) "racine simple" true
+    (arbre = Paragraphe [Assigne (Mot "X", RacineCarre(Entier "25"))]);
+  let arbre = construire_arbre "X devient la racine carrée de 25." in
+  (check bool) "racine carree" true
+    (arbre = Paragraphe [Assigne (Mot "X", RacineCarre(Entier "25"))])
+
+let test_puissance () =
+  let arbre = construire_arbre "X devient 2 puissance 3." in
+  (check bool) "puissance" true
+    (arbre = Paragraphe [Assigne (Mot "X", Puissance(Entier "2", Entier "3"))])
+
+let test_valeur_absolue () =
+  let arbre = construire_arbre "X devient la valeur absolue de -5." in
+  (check bool) "valeur absolue" true
+    (arbre = Paragraphe [Assigne (Mot "X", ValeurAbsolue(Negatif(Entier "5")))])
+
+let test_aleatoire () =
+  let arbre = construire_arbre "X devient un nombre aléatoire entre 1 et 10." in
+  (check bool) "aleatoire" true
+    (arbre = Paragraphe [Assigne (Mot "X", Aleatoire(Entier "1", Entier "10"))])
+
 let retourne_tests () =
       "Parser", [
         test_case "Arbre vide" `Quick test_arbre_vide;
@@ -174,5 +197,9 @@ let retourne_tests () =
         test_case "Pour chaque" `Quick test_pour_chaque;
         test_case "Procedure" `Quick test_procedure;
         test_case "Procedure avec ingredients" `Quick test_procedure_avec_ingredients;
-        test_case "Executer" `Quick test_executer
+        test_case "Executer" `Quick test_executer;
+        test_case "Racine" `Quick test_racine;
+        test_case "Puissance" `Quick test_puissance;
+        test_case "Valeur absolue" `Quick test_valeur_absolue;
+        test_case "Aleatoire" `Quick test_aleatoire
       ]

@@ -2,37 +2,47 @@ open Ast
 open Fonctions
 open Ecrire
 
-let rec utilise_tableaux ast =
-  match ast with
-  | Tableau _ | AccesTableau _ | ModificationTableau _
-  | TailleTableau _ | AjouterTableau _ -> true
-  | Assigne (_, expr) -> utilise_tableaux expr
-  | Afficher expr -> utilise_tableaux expr
-  | Renvoyer expr -> utilise_tableaux expr
-  | Paragraphe l -> List.exists utilise_tableaux l
-  | Recette (_, _, _, corps) -> List.exists utilise_tableaux corps
+let rec existe_dans_ast predicat ast =
+  if predicat ast then true
+  else match ast with
+  | Assigne (_, expr) | Afficher expr | Renvoyer expr
+  | RacineCarre expr | ValeurAbsolue expr | Negatif expr -> existe_dans_ast predicat expr
+  | Paragraphe l | Tableau l -> List.exists (existe_dans_ast predicat) l
+  | Recette (_, _, _, corps) -> List.exists (existe_dans_ast predicat) corps
   | Condition (cond, alors, sinon) ->
-    utilise_tableaux cond || List.exists utilise_tableaux alors
-    || (match sinon with Some s -> List.exists utilise_tableaux s | None -> false)
+    existe_dans_ast predicat cond || List.exists (existe_dans_ast predicat) alors
+    || (match sinon with Some s -> List.exists (existe_dans_ast predicat) s | None -> false)
   | BoucleTantQue (cond, corps) ->
-    utilise_tableaux cond || List.exists utilise_tableaux corps
+    existe_dans_ast predicat cond || List.exists (existe_dans_ast predicat) corps
   | ForInclus (_, s, e, corps) | ForExclus (_, s, e, corps) ->
-    utilise_tableaux s || utilise_tableaux e || List.exists utilise_tableaux corps
-  | PourChaque _ -> true
+    existe_dans_ast predicat s || existe_dans_ast predicat e || List.exists (existe_dans_ast predicat) corps
+  | PourChaque (_, _, corps) -> List.exists (existe_dans_ast predicat) corps
   | Plus (a, b) | Moins (a, b) | Fois (a, b) | Division (a, b)
   | Egal (a, b) | Different (a, b) | Et (a, b) | Ou (a, b)
   | Inferieur (a, b) | Superieur (a, b) | Inferieur_ou_egal (a, b)
-  | Superieur_ou_egal (a, b) | Modulo (a, b) ->
-    utilise_tableaux a || utilise_tableaux b
-  | Increment (_, Some e) | Decrement (_, Some e) -> utilise_tableaux e
-  | Appel_recette (_, args) -> List.exists utilise_tableaux args
-  | Localise (_, inner) -> utilise_tableaux inner
+  | Superieur_ou_egal (a, b) | Modulo (a, b)
+  | Puissance (a, b) | Aleatoire (a, b) ->
+    existe_dans_ast predicat a || existe_dans_ast predicat b
+  | Increment (_, Some e) | Decrement (_, Some e) -> existe_dans_ast predicat e
+  | Appel_recette (_, args) -> List.exists (existe_dans_ast predicat) args
+  | Localise (_, inner) -> existe_dans_ast predicat inner
   | _ -> false
 
-let ecrire_includes avec_tableaux =
-  ecrire "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n";
+let utilise_tableaux = existe_dans_ast (function
+  | Tableau _ | AccesTableau _ | ModificationTableau _
+  | TailleTableau _ | AjouterTableau _ | PourChaque _ -> true
+  | _ -> false)
+
+let utilise_aleatoire = existe_dans_ast (function
+  | Aleatoire _ -> true
+  | _ -> false)
+
+let ecrire_includes avec_tableaux avec_aleatoire =
+  ecrire "#include <stdio.h>\n#include <wchar.h>\n#include <locale.h>\n#include <math.h>\n";
   if avec_tableaux then ecrire "#include <stdlib.h>\n#include <string.h>\n"
-  else ecrire "\n"
+  else if avec_aleatoire then ecrire "#include <stdlib.h>\n"
+  else ecrire "\n";
+  if avec_aleatoire then ecrire "#include <time.h>\n"
 
 let ecrire_helpers_tableaux () =
   ecrire "\ntypedef struct { void* donnees; int taille; int capacite; size_t taille_element; } Tableau;\n";
@@ -63,7 +73,10 @@ let rec ecrire_fonctions_pre_main ecrire_ast ast =
 
 let ecrire_debut ecrire_ast ast nom_programme =
   let avec_tableaux = utilise_tableaux ast in
-  ecrire_includes avec_tableaux;
+  let avec_aleatoire = utilise_aleatoire ast in
+  ecrire_includes avec_tableaux avec_aleatoire;
   if avec_tableaux then ecrire_helpers_tableaux ();
   ecrire_fonctions_pre_main ecrire_ast ast;
-  ecrire "\nint main(){\nsetlocale(LC_ALL, \"\");\nwprintf(L\"Programme : %s\\n\");\n" nom_programme
+  ecrire "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
+  if avec_aleatoire then ecrire "srand(time(NULL));\n";
+  ecrire "wprintf(L\"Programme : %s\\n\");\n" nom_programme

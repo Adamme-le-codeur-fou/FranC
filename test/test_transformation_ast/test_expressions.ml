@@ -148,6 +148,36 @@ let test_erreur_type_reassignation () =
   | _ -> false in
   (check bool) "reassignation type contient les types" true leve_erreur
 
+let test_ecrire_racine () =
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (RacineCarre(Entier("25")))
+  ) in
+  (check string) "racine" "sqrt(25)" resultat
+
+let test_ecrire_puissance () =
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (Puissance(Entier("2"), Entier("3")))
+  ) in
+  (check string) "puissance" "pow(2, 3)" resultat
+
+let test_ecrire_valeur_absolue () =
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (ValeurAbsolue(Negatif(Entier("5"))))
+  ) in
+  (check string) "valeur absolue entier" "abs((-5))" resultat;
+
+  let portee = [("x", TypeReel)] in
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression portee (ValeurAbsolue(Mot("x")))
+  ) in
+  (check string) "valeur absolue reel" "fabs(x)" resultat
+
+let test_ecrire_aleatoire () =
+  let resultat = capture_sortie_avec(fun () ->
+    ecrire_expression [] (Aleatoire(Entier("1"), Entier("10")))
+  ) in
+  (check string) "aleatoire" "((rand() % (10 - 1 + 1)) + 1)" resultat
+
 let retourne_tests () =
   "Expressions", [
     test_case "Ecrire division"            `Quick test_ecrire_division;
@@ -161,5 +191,9 @@ let retourne_tests () =
     test_case "Printf formate"            `Quick test_ecrire_printf_formate;
     test_case "Lire"                       `Quick test_ecrire_lire;
     test_case "Erreur variable non declaree" `Quick test_erreur_variable_non_declaree;
-    test_case "Erreur type reassignation"    `Quick test_erreur_type_reassignation
+    test_case "Erreur type reassignation"    `Quick test_erreur_type_reassignation;
+    test_case "Racine"                       `Quick test_ecrire_racine;
+    test_case "Puissance"                    `Quick test_ecrire_puissance;
+    test_case "Valeur absolue"               `Quick test_ecrire_valeur_absolue;
+    test_case "Aleatoire"                    `Quick test_ecrire_aleatoire
   ]

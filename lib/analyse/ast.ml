@@ -43,5 +43,9 @@ type ast =
   | Negatif            of ast
   | Vrai
   | Faux
+  | RacineCarre    of ast
+  | Puissance      of ast * ast
+  | ValeurAbsolue  of ast
+  | Aleatoire      of ast * ast
   | PourChaque         of string * string * ast list
   | Localise           of Lexing.position * ast

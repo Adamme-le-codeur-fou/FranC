@@ -57,6 +57,29 @@ and ecrire_expression portee expr =
     ecrire ")"
   | Vrai -> ecrire "1"
   | Faux -> ecrire "0"
+  | RacineCarre e ->
+    ecrire "sqrt(";
+    ecrire_expression portee e;
+    ecrire ")"
+  | Puissance (a, b) ->
+    ecrire "pow(";
+    ecrire_expression portee a;
+    ecrire ", ";
+    ecrire_expression portee b;
+    ecrire ")"
+  | ValeurAbsolue e ->
+    let t = Types.type_de_expression portee e in
+    ecrire "%s(" (if t = TypeReel then "fabs" else "abs");
+    ecrire_expression portee e;
+    ecrire ")"
+  | Aleatoire (a, b) ->
+    ecrire "%s" "((rand() % (";
+    ecrire_expression portee b;
+    ecrire " - ";
+    ecrire_expression portee a;
+    ecrire " + 1)) + ";
+    ecrire_expression portee a;
+    ecrire ")"
   | _ -> raise (Erreurs.Erreur_type "expression non supportée dans ce contexte")
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =

@@ -66,5 +66,8 @@ let rec type_de_expression portee expr =
   | Appel_recette (nom, _) -> type_variable portee nom
   | Negatif e -> type_de_expression portee e
   | Vrai | Faux -> TypeBooleen
+  | RacineCarre _ | Puissance _ -> TypeReel
+  | ValeurAbsolue e -> type_de_expression portee e
+  | Aleatoire _ -> TypeEntier
   | _ -> TypeNeant
 

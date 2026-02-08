@@ -84,6 +84,10 @@ rule decoupe =
     | "Lire" { Lire }
     | "vrai" { Vrai }
     | "faux" { Faux }
+    | ['l''L']"a racine de" | ['l''L']"a racine carrée de" | ['l''L']"a racine carree de" { Racine }
+    | "puissance" { Puissance_token }
+    | ['l''L']"a valeur absolue de" { Valeur_absolue }
+    | ['u''U']"n nombre aléatoire entre" | ['u''U']"n nombre aleatoire entre" { Aleatoire_entre }
     | ['p''P']"our chaque" { Pour_chaque }
     | ['e''E']"xécuter" | ['e''E']"xecuter" { Executer }
     | "avec l'ingrédient" | "avec l'ingredient" { Avec_ingredient }

@@ -18,6 +18,7 @@
 %token Pour_chaque Executer
 %token Type_entier Type_reel Type_chaine_caractere
 %token Deux_points Tiret Virgule NEGATIF Vrai Faux
+%token Racine Puissance_token Valeur_absolue Aleatoire_entre
 %token <string> Mot Mot_majuscule Chaine_caractere
 %token <string list * string list> Chaine_formatee
 %token <char> Ponctuation_fin_phrase
@@ -32,6 +33,7 @@
 %left Plus Moins
 %left Reste_division_euclidienne_debut Par
 %left Fois Division
+%right Puissance_token
 %nonassoc NEGATIF Avec_ingredient
 %left Parenthese_Gauche
 %left Si Alors Tant_que Agir
@@ -87,6 +89,10 @@ expression:
     | Tiret expression %prec NEGATIF { Negatif($2) }
     | Vrai { Vrai }
     | Faux { Faux }
+    | Racine expression %prec NEGATIF { RacineCarre($2) }
+    | expression Puissance_token expression { Puissance($1, $3) }
+    | Valeur_absolue expression %prec NEGATIF { ValeurAbsolue($2) }
+    | Aleatoire_entre expression Et expression { Aleatoire($2, $4) }
 
 declaration:
     | mot_majuscule Assigne expression Ponctuation_fin_phrase { Assigne($1, $3) }
