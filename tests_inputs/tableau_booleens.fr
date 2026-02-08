@@ -1,0 +1,9 @@
+Flags devient un tableau contenant vrai, faux et vrai.
+
+Pour chaque flag de flags on agit selon la séquence suivante :
+  Si flag est égal à vrai alors
+    Afficher <actif>.
+  Sinon
+    Afficher <inactif>.
+  Fin de la condition.
+Ce qui termine la séquence.

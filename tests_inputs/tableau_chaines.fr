@@ -1,0 +1,5 @@
+Noms devient un tableau contenant <Alice>, <Bob> et <Charlie>.
+
+Pour chaque nom de noms on agit selon la séquence suivante :
+  Afficher <Bonjour [nom]>.
+Ce qui termine la séquence.

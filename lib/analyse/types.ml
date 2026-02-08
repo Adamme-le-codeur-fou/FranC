@@ -37,6 +37,7 @@ let type_element_tableau t =
 let sizeof_c t =
   match t with
   | TypeReel -> "sizeof(float)"
+  | TypeChaineCaractere -> "sizeof(wchar_t*)"
   | _ -> "sizeof(int)"
 
 let rec type_de_expression portee expr =
@@ -51,8 +52,12 @@ let rec type_de_expression portee expr =
   | Modulo _ -> TypeEntier
   | Mot m -> type_variable portee (String.lowercase_ascii m)
   | Tableau elements ->
-    let type_elem = if List.exists (fun e -> type_de_expression portee e = TypeReel) elements
-      then TypeReel else TypeEntier in
+    let types = List.map (fun e -> type_de_expression portee e) elements in
+    let type_elem =
+      if List.exists (fun t -> t = TypeChaineCaractere) types then TypeChaineCaractere
+      else if List.exists (fun t -> t = TypeReel) types then TypeReel
+      else if List.exists (fun t -> t = TypeBooleen) types then TypeBooleen
+      else TypeEntier in
     TypeTableau type_elem
   | AccesTableau (nom, _) ->
     let t = type_variable portee (String.lowercase_ascii nom) in
