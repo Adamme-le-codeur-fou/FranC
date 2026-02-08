@@ -81,7 +81,7 @@ let rec ecrire_variable_avec_type arguments_list =
     match arguments_list with
     | [] -> ()
     | (argument_nom, argument_type)::q ->
-        ecrire "%s %s%s" (type_vers_string argument_type) argument_nom (if q = [] then "" else ", ");
+        ecrire "%s%s%s" (type_vers_string argument_type) argument_nom (if q = [] then "" else ", ");
         ecrire_variable_avec_type q
 
 let ecrire_xcrementer portee var expression signe =
@@ -112,7 +112,7 @@ let ecrire_modification_tableau portee nom index valeur =
   let nom_minuscule = String.lowercase_ascii nom in
   let type_tab = type_variable portee nom_minuscule in
   let type_elem = type_element_tableau type_tab in
-  ecrire "((%s*)%s->donnees)[" (String.trim (type_vers_string type_elem)) nom_minuscule;
+  ecrire "((%s*)%s->donnees)[" (type_c type_elem) nom_minuscule;
   ecrire_expression portee index;
   ecrire "] = ";
   ecrire_expression portee valeur;
@@ -151,3 +151,8 @@ let ecrire_liberation_tableaux portee_base portee =
       | TypeTableau _ -> ecrire "liberer_tableau(%s);\n" nom
       | _ -> ()
   ) portee
+
+let ecrire_bloc ecrire_ast portee_base corps =
+  let portee_finale = List.fold_left ecrire_ast portee_base corps in
+  ecrire_liberation_tableaux portee_base portee_finale;
+  ecrire "}\n"

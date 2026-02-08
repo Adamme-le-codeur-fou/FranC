@@ -60,35 +60,24 @@ let _ =
   let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
   let nom_programme = Filename.basename Sys.argv.(1) in
   let canal_sortie = open_out Sys.argv.(2) in
+  let quitter_erreur msg =
+    close_out canal_sortie;
+    Printf.eprintf "%s\n" msg;
+    exit 1
+  in
   try
     let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
     affiche arbre canal_sortie nom_programme;
     close_out canal_sortie
   with
-  | FranC.Erreurs.Erreur_lexer msg ->
-    close_out canal_sortie;
-    Printf.eprintf "%s\n" msg;
-    exit 1
+  | FranC.Erreurs.Erreur_lexer msg -> quitter_erreur msg
   | Parsing.Parse_error ->
-    close_out canal_sortie;
-    let pos = lexbuf.Lexing.lex_curr_p in
-    let position = FranC.Erreurs.formater_position pos in
-    Printf.eprintf "%s\n"
-      (FranC.Erreurs.formater_erreur position
-        "phrase invalide, vérifiez la syntaxe de votre programme");
-    exit 1
+    quitter_erreur (FranC.Erreurs.formater_erreur
+      (FranC.Erreurs.formater_position lexbuf.Lexing.lex_curr_p)
+      "phrase invalide, vérifiez la syntaxe de votre programme")
   | FranC.Types.VariableNonDeclaree var ->
-    close_out canal_sortie;
-    let msg = Printf.sprintf
-      "la variable '%s' n'a pas été déclarée. Vérifiez qu'elle a bien été initialisée (exemple : %s devient ...)"
-      var (String.capitalize_ascii var) in
-    Printf.eprintf "%s\n" (formater_erreur_avec_position msg);
-    exit 1
-  | FranC.Erreurs.Erreur_type msg ->
-    close_out canal_sortie;
-    Printf.eprintf "%s\n" (formater_erreur_avec_position msg);
-    exit 1
-  | e ->
-    close_out canal_sortie;
-    Printf.eprintf "%s\n" (formater_erreur_avec_position (Printf.sprintf "erreur inattendue : %s" (Printexc.to_string e)));
-    exit 1
+    quitter_erreur (formater_erreur_avec_position
+      (Printf.sprintf "la variable '%s' n'a pas été déclarée. Vérifiez qu'elle a bien été initialisée (exemple : %s devient ...)"
+        var (String.capitalize_ascii var)))
+  | FranC.Erreurs.Erreur_type msg -> quitter_erreur (formater_erreur_avec_position msg)
+  | e -> quitter_erreur (formater_erreur_avec_position (Printf.sprintf "erreur inattendue : %s" (Printexc.to_string e)))

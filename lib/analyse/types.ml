@@ -31,6 +31,8 @@ let type_de_variable_vers_string portee var_name =
   type_vers_string (type_variable portee var_name)
 
 
+let type_c t = String.trim (type_vers_string t)
+
 let type_element_tableau t =
   match t with TypeTableau inner -> inner | _ -> TypeEntier
 

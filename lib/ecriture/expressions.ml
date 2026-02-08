@@ -19,7 +19,7 @@ and ecrire_expression portee expr =
   | Mot m ->
         let m_minuscule = String.lowercase_ascii m in
           if variable_est_declaree portee m_minuscule then ecrire "%s" m_minuscule
-          else raise (Erreurs.Erreur_type (Printf.sprintf "la variable '%s' n'est pas déclarée dans cette portée" m_minuscule))
+          else raise (Erreurs.erreur_non_declare m_minuscule)
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
         ecrire_expression_list portee arguments;
@@ -40,16 +40,16 @@ and ecrire_expression portee expr =
   | AccesTableau (nom, index) ->
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
-      raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
+      raise (Erreurs.erreur_non_declare nom_min);
     let type_tab = Types.type_variable portee nom_min in
     let type_elem = Types.type_element_tableau type_tab in
-    ecrire "((%s*)%s->donnees)[" (String.trim (Types.type_vers_string type_elem)) nom_min;
+    ecrire "((%s*)%s->donnees)[" (Types.type_c type_elem) nom_min;
     ecrire_expression portee index;
     ecrire "]"
   | TailleTableau nom ->
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
-      raise (Erreurs.Erreur_type (Printf.sprintf "le tableau '%s' n'est pas déclaré dans cette portée" nom_min));
+      raise (Erreurs.erreur_non_declare nom_min);
     ecrire "%s->taille" nom_min
   | Negatif e ->
     ecrire "(-";
