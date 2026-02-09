@@ -1,26 +1,10 @@
 {
     open Parser
     open Erreurs
-
-    let analyser_chaine str =
-      if not (String.contains str '[') then
-        Chaine_caractere(str)
-      else
-        let len = String.length str in
-        let rec aux i texte_courant textes vars =
-          if i >= len then
-            (List.rev (texte_courant :: textes), List.rev vars)
-          else if str.[i] = '[' then
-            let j = String.index_from str (i + 1) ']' in
-            let var = String.sub str (i + 1) (j - i - 1) in
-            aux (j + 1) "" (texte_courant :: textes) (var :: vars)
-          else
-            aux (i + 1) (texte_courant ^ String.make 1 str.[i]) textes vars
-        in
-        let (textes, vars) = aux 0 "" [] [] in
-        Chaine_formatee(textes, vars)
 }
 
+let debut_chaine = '<'
+let fin_chaine = '>'
 let chiffre = ['0'-'9']
 let nombre = chiffre+
 let alphabet_min =  ['a'-'z']
@@ -103,7 +87,7 @@ rule decoupe =
     | "un entier" { Type_entier }
     | "un réel" { Type_reel }
     | "une chaîne de caractères" { Type_chaine_caractere }
-    | '<' ([^'>']* as str) '>' { analyser_chaine str }
+    | debut_chaine { analyser_chaine [] [] "" lexbuf }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }
     | mot_maj as mot_maj { Mot_majuscule mot_maj } 
@@ -120,3 +104,18 @@ and commentaire =
     parse
     | "\n" { Lexing.new_line lexbuf; decoupe lexbuf }
     | _ { commentaire lexbuf }
+
+and analyser_chaine variables textes texte_courant = 
+    parse
+    | '[' ('[' as crochet) | ']' (']' as crochet) { analyser_chaine variables textes (texte_courant ^ String.make 1 crochet) lexbuf }
+    | '[' ([^'['']'] [^']']* as variable) ']'     { analyser_chaine (variable::variables) (texte_courant::textes) "" lexbuf }
+    | fin_chaine {
+      if List.is_empty variables
+        then Chaine_caractere(texte_courant)
+        else Chaine_formatee(List.rev (texte_courant::textes), List.rev variables)
+      }
+    | eof {
+      let pos = Lexing.lexeme_start_p lexbuf in
+        raise (Erreur_lexer (formater_erreur (formater_position pos) "Fin de chaîne inattendue. Pensez à fermer votre chaîne."))
+      }
+    | _ as caractere { analyser_chaine variables textes (texte_courant ^ String.make 1 caractere) lexbuf }

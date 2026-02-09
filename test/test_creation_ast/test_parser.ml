@@ -116,7 +116,10 @@ let test_chaine_formatee () =
     (arbre = Paragraphe [Afficher (ChaineFormatee([""; " plus "; " egale "; ""], ["x"; "y"; "z"]))]);
   let arbre = construire_arbre "Afficher <Pas de variable>." in
   (check bool) "chaine sans interpolation" true
-    (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))])
+    (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))]);
+  let arbre = construire_arbre "Afficher <[[x]] plus [[y]]>." in
+  (check bool) "chaine avec crochets echappés" true
+    (arbre = Paragraphe [Afficher (Chaine_caractere("[x] plus [y]"))])
 
 let test_booleens () =
   let arbre = construire_arbre "X devient vrai." in
