@@ -1,5 +1,14 @@
 N. B. : Le programme suivant calcule le plus grand commun diviseur de 48 et 18 en utilisant l'algorithme d'Euclide.
 
-    A devient 48. B devient 18. Tant que b est différent de 0 alors
-Temporaire devient b. B devient le reste de la division euclidienne de 
-a par b. A devient temporaire. Ce qui conclut la boucle. Afficher a.
+
+Premier devient 48. Deuxieme devient 18.
+Afficher <Entrez le premier nombre : >. Lire premier.
+Afficher <Entrez le deuxième nombre : >. Lire deuxieme.
+
+A devient premier. B devient deuxieme.
+
+    Tant que b est différent de 0 alors Temporaire devient b.
+B devient le reste de la division euclidienne de a par b.
+A devient temporaire. Ce qui conclut la boucle.
+
+Afficher <Le plus grand commun diviseur de [premier] et [deuxieme] est : [a].>.

@@ -73,8 +73,8 @@ rule decoupe =
     | "non compris" { Non_compris }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
-    | ['o''O']"n incrémente" { Incrementer }
-    | ['o''O']"n décrémente" { Decrementer }
+    | ['o''O']"n incrémente" | ['i''I']"ncrémenter" { Incrementer }
+    | ['o''O']"n décrémente" | ['d''D']"ncrémenter" { Decrementer }
     | "de" { De }
     | "un tableau contenant" { Tableau_contenant }
     | ['l''L']"'élément" | ['l''L']"'element" { Element }

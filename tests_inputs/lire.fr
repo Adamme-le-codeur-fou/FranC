@@ -1,6 +1,6 @@
 N. B. : Test de la lecture utilisateur.
 
 X devient 0.
-Afficher <Entrez un nombre :>.
+Afficher <Entrez un nombre : >.
 Lire x.
-Afficher x.
+Afficher <Nombre entré : [x].>.

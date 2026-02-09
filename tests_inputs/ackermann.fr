@@ -9,5 +9,5 @@ et qui renvoie un entier :
     Fin de la condition.
 Fin de la recette.
 
-Afficher <Ackermann(3, 4) :>.
-Afficher le résultat de ackermann avec les ingrédients 3 et 4.
+Resultat devient le résultat de ackermann avec les ingrédients 3 et 4.
+Afficher <Ackermann(3, 4) : [resultat].>.

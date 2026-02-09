@@ -2,9 +2,7 @@ N. B. : Test de l'operateur de division.
 
 A devient 10. B devient 3.
 C devient a divisé par b.
-Afficher <10 divisé par 3 :>.
-Afficher c.
+Afficher <10 divisé par 3 : [c].>.
 
 D devient 100. E devient d divisé par 4.
-Afficher <100 divisé par 4 :>.
-Afficher e.
+Afficher <100 divisé par 4 : [e].>.
