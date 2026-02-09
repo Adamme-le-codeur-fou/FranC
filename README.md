@@ -118,6 +118,8 @@ Les includes `<math.h>` sont ajoutés automatiquement. Si le programme utilise `
 | `E devient a est supérieur à b.`         | `int E = (a > b);`  |
 | `F devient a est supérieur ou égal à b.` | `int F = (a >= b);` |
 
+Les versions féminines sont aussi supportées (`égale`, `différente`, `inférieure`, `supérieure`).
+
 ## Opérateurs Logiques
 
 | FranC                          | C                         |
@@ -150,8 +152,9 @@ Les includes `<math.h>` sont ajoutés automatiquement. Si le programme utilise `
 | `Afficher <Bonjour>.`                    | `wprintf(L"Bonjour\n");`                        |
 | `Afficher <La valeur est [x]>.`          | `wprintf(L"La valeur est %d\n", x);`            |
 | `Afficher <[nom] a [age] ans>.`          | `wprintf(L"%ls a %d ans\n", nom, age);`         |
+| `Afficher <[[Entre crochets]]>`          | `wprintf(L"[Entre crochets]\n");`               |
 
-Les chaînes formatées utilisent `[variable]` pour interpoler des variables. Le format (`%d`, `%f`, `%ls`) est déterminé automatiquement selon le type.
+Les chaînes formatées utilisent `[variable]` pour interpoler des variables. Le format (`%d`, `%f`, `%ls`) est déterminé automatiquement selon le type. Les doubles crochets `[[` et `]]` permettent d'échapper au formatage et d'afficher des crochets littéraux.
 
 ## Entrée Utilisateur
 

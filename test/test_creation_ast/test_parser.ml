@@ -114,6 +114,9 @@ let test_chaine_formatee () =
   let arbre = construire_arbre "Afficher <[x] plus [y] egale [z]>." in
   (check bool) "chaine formatee multiple" true
     (arbre = Paragraphe [Afficher (ChaineFormatee([""; " plus "; " egale "; ""], ["x"; "y"; "z"]))]);
+  let arbre = construire_arbre "Afficher <[[[x]]] [[plus]] [y] [[ = [z]]]>." in
+  (check bool) "chaine formatee avec crochets echappés" true
+    (arbre = Paragraphe [Afficher (ChaineFormatee(["["; "] [plus] "; " [ = "; "]"], ["x"; "y"; "z"]))]);
   let arbre = construire_arbre "Afficher <Pas de variable>." in
   (check bool) "chaine sans interpolation" true
     (arbre = Paragraphe [Afficher (Chaine_caractere("Pas de variable"))]);
