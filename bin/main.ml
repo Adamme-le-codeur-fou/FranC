@@ -44,7 +44,7 @@ let affiche arbre canal_sortie nom_programme=
   ecrire "return 0;\n}"
 
 let affiche_usage_et_quitte_erreur () =
-  Printf.eprintf "Usage: %s <source .fr file> <output .c file>\n" (Filename.basename Sys.argv.(0));
+  Printf.eprintf "Utilisation : %s <fichier source .fr> <fichier de sortie .c ou .ll>\n" (Filename.basename Sys.argv.(0));
   exit 1
 
 let verifie_arguments () =
