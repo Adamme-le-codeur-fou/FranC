@@ -31,6 +31,7 @@ let lettre_speciales_maj = ['\x90''\xD4''\x80''\xB7''\xEB'] (* É, È, Ç, À, �
 let ponctuation_fin_phrase = ['.''?''!'','';']
 let mot = alphabet_min+ ('''+ alphabet+)*
 let mot_maj = alphabet_maj mot?
+let feminin = 'e'?
 
 rule decoupe =
     parse
@@ -46,17 +47,17 @@ rule decoupe =
     | "ou si" { Ou_Si }
     | "et" { Et }
     | "avec" { Avec }
-    | "fois" | "multiplié par" { Fois }
-    | "divisé par" | "divise par" { Division }
+    | "fois" | "multiplié"feminin" par" { Fois }
+    | "divisé"feminin" par" | "divise par" { Division }
     | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }
     | "par" { Par }
     | "prend la valeur" | "devient" { Assigne }
-    | "vaut" | "égal" | "est égal à" { Egal }
-    | "est différent de" | "n'est pas égal à" { Different }
-    | "est inferieur à" | "plus petit que" { Inferieur }
-    | "est inférieur ou égal à" | "plus petit ou égal à" { Inferieur_ou_egal }
-    | "est supérieur à" | "plus grand que" { Superieur }
-    | "est supérieur ou égal à" | "plus grand ou égal à" { Superieur_ou_egal }
+    | "vaut" | "égal"feminin | "est égal"feminin" à" { Egal }
+    | "est différent"feminin" de" | "n'est pas égal"feminin" à" { Different }
+    | "est inferieur"feminin" à" | "plus petit"feminin" que" { Inferieur }
+    | "est inférieur"feminin" ou égal à" | "plus petit ou égal à" { Inferieur_ou_egal }
+    | "est supérieur"feminin" à" | "plus grand"feminin" que" { Superieur }
+    | "est supérieur"feminin" ou égal à" | "plus grand"feminin" ou égal à" { Superieur_ou_egal }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }
@@ -69,8 +70,8 @@ rule decoupe =
     | ['e''E']"n itérant sur" { Iterer }
     | "allant de" { Allant_de }
     | "à" { A }
-    | "compris" { Compris }
-    | "non compris" { Non_compris }
+    | "compris"feminin { Compris }
+    | "non compris"feminin { Non_compris }
     | "on agit selon la séquence suivante :" { Agir }
     | "Ce qui termine la séquence" { Termine_sequence }
     | ['o''O']"n incrémente" | ['i''I']"ncrémenter" { Incrementer }
