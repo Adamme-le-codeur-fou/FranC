@@ -54,10 +54,10 @@ rule decoupe =
     | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal"feminin | "est égal"feminin" à" { Egal }
     | "est différent"feminin" de" | "n'est pas égal"feminin" à" { Different }
-    | "est inferieur"feminin" à" | "plus petit"feminin" que" { Inferieur }
-    | "est inférieur"feminin" ou égal à" | "plus petit ou égal à" { Inferieur_ou_egal }
+    | "est inférieur"feminin" à" | "plus petit"feminin" que" { Inferieur }
+    | "est inférieur"feminin" ou égal"feminin" à" | "plus petit"feminin" ou égal"feminin" à" { Inferieur_ou_egal }
     | "est supérieur"feminin" à" | "plus grand"feminin" que" { Superieur }
-    | "est supérieur"feminin" ou égal à" | "plus grand"feminin" ou égal à" { Superieur_ou_egal }
+    | "est supérieur"feminin" ou égal"feminin" à" | "plus grand"feminin" ou égal"feminin" à" { Superieur_ou_egal }
     | ['a''A']"fficher" { Afficher }
     | '(' { Parenthese_Gauche }
     | ')' { Parenthese_Droite }

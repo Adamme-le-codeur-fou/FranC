@@ -1,0 +1,22 @@
+Maximum devient 10. Essais devient 3.
+
+Afficher <Je pense à un nombre entre 0 et [maximum] compris. Essaye de le deviner en [essais] essais.>.
+Secret devient un nombre aléatoire entre 0 et maximum.
+Afficher <C'est parti !>.
+
+Nombre devient 0. Iteration devient 1. Fin devient faux.
+Tant que iteration est inférieure ou égale à essais et si fin est égal à faux alors
+    Afficher <Essai [iteration] :>.
+    Lire nombre.
+    Si nombre est égal à secret alors
+        Afficher <Bravo ! Tu as trouvé le nombre en [iteration] essais !>.
+        Fin devient vrai.
+    Sinon si iteration est supérieure ou égale à essais alors
+        Afficher <Perdu ! Pourtant c'est pas si dur... Le nombre était [secret].>.
+        Sinon si nombre est inférieur à secret alors
+            Afficher <C'est pas ça ! Indice : c'est plus grand.>.
+            Sinon Afficher <C'est pas ça ! Indice : c'est plus petit.>. Fin de la condition. 
+        Fin de la condition. 
+    Fin de la condition.
+    Incrémenter iteration.
+Ce qui conclut la boucle.
