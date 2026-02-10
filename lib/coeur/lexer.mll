@@ -33,7 +33,7 @@ rule decoupe =
     | "avec" { Avec }
     | "fois" | "multiplié"feminin" par" { Fois }
     | "divisé"feminin" par" | "divise par" { Division }
-    | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne_debut }
+    | "le reste de la division euclidienne de" | "modulo" { Reste_division_euclidienne }
     | "par" { Par }
     | "prend la valeur" | "devient" { Assigne }
     | "vaut" | "égal"feminin | "est égal"feminin" à" { Egal }
