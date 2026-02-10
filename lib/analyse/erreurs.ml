@@ -12,10 +12,10 @@ let fonction_non_declaree nom =
     (Printf.sprintf "La fonction '%s' n'a pas été déclarée. Vérifiez que vous avez bien défini la fonction avant de l'appeler."
       nom)
 
-let types_incompatibles type_attendu type_reel =
+let pas_un_tableau nom_variable =
   Erreur_type
-    (Printf.sprintf "Types incompatibles : impossible d'utiliser le type [%s] en tant que [%s]."
-      type_reel type_attendu)
+    (Printf.sprintf "La variable '%s' n'est pas un tableau. Vérifiez que vous avez bien déclaré la variable comme un tableau."
+      nom_variable)
 
 let assignation_incompatible nom_variable type_variable type_expression =
   Erreur_type

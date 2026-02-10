@@ -28,7 +28,7 @@ let ecrire_pour_chaque ecrire_ast portee element_var array_name corps =
   let type_tab = type_variable portee array_min in
   let type_element = match type_tab with
     | TypeTableau inner -> inner
-    | _ -> raise (Erreurs.types_incompatibles "tableau" (nom_type type_tab))
+    | _ -> raise (Erreurs.pas_un_tableau array_name)
   in
   let idx_var = Printf.sprintf "_idx_%s" array_min in
   ecrire "for (int %s = 0; %s < %s->taille; %s++) {\n" idx_var idx_var array_min idx_var;

@@ -2,6 +2,7 @@ open String_outils
 open Ast
 open Ecrire
 open Portee
+open Types
 
 let rec ecrire_expression_list portee arguments_list =
     match arguments_list with
@@ -41,16 +42,19 @@ and ecrire_expression portee expr =
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
       raise (Erreurs.variable_non_declaree nom_min);
-    let type_tab = Types.type_variable portee nom_min in
-    let type_elem = Types.type_element_tableau type_tab in
-    ecrire "((%s*)%s->donnees)[" (Types.type_c type_elem) nom_min;
+    let type_tab = type_variable portee nom_min in
+    let type_elem = type_element_tableau type_tab in
+    ecrire "((%s*)%s->donnees)[" (type_c type_elem) nom_min;
     ecrire_expression portee index;
     ecrire "]"
   | TailleTableau nom ->
     let nom_min = String.lowercase_ascii nom in
-    if not (variable_est_declaree portee nom_min) then
-      raise (Erreurs.variable_non_declaree nom_min);
-    ecrire "%s->taille" nom_min
+    if not (variable_est_declaree portee nom_min)
+        then raise (Erreurs.variable_non_declaree nom_min);
+    let type_tab = type_variable portee nom_min in
+    begin match type_tab with
+    | TypeTableau _ -> ecrire "%s->taille" nom_min
+    | _ -> raise (Erreurs.pas_un_tableau nom_min) end
   | Negatif e ->
     ecrire "(-";
     ecrire_expression portee e;
@@ -68,7 +72,7 @@ and ecrire_expression portee expr =
     ecrire_expression portee b;
     ecrire ")"
   | ValeurAbsolue e ->
-    let t = Types.type_de_expression portee e in
+    let t = type_de_expression portee e in
     ecrire "%s(" (if t = TypeReel then "fabs" else "abs");
     ecrire_expression portee e;
     ecrire ")"
