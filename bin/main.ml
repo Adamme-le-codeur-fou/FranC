@@ -4,13 +4,9 @@ open FranC.Expressions
 open FranC.Boucles
 open FranC.Declarations
 open FranC.Prelude
+open FranC.Erreurs
 
 let position_courante = ref None
-
-let formater_erreur_avec_position msg =
-  match !position_courante with
-  | Some pos -> FranC.Erreurs.formater_erreur (FranC.Erreurs.formater_position pos) msg
-  | None -> Printf.sprintf "Erreur : %s" msg
 
 let rec ecrire_ast portee ast =
   match ast with
@@ -58,16 +54,21 @@ let verifie_arguments () =
     affiche_usage_et_quitte_erreur ()
   end
 
+let quitter_erreur msg =
+    close_out !FranC.Ecrire.canal_sortie;
+    Printf.eprintf "%s\n" msg;
+    exit 1
+
+let formater_erreur_avec_position msg =
+  match !position_courante with
+  | Some pos -> formater_erreur (formater_position pos) msg
+  | None -> Printf.sprintf "Erreur : %s" msg
+
 let _ =
   verifie_arguments ();
   let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
   let nom_programme = Filename.basename Sys.argv.(1) in
   let canal_sortie = open_out Sys.argv.(2) in
-  let quitter_erreur msg =
-    close_out canal_sortie;
-    Printf.eprintf "%s\n" msg;
-    exit 1
-  in
   try
     let arbre = FranC.Parser.main FranC.Lexer.decoupe lexbuf in
     if Filename.check_suffix Sys.argv.(2) ".ll" then
@@ -76,14 +77,11 @@ let _ =
       affiche arbre canal_sortie nom_programme;
     close_out canal_sortie
   with
-  | FranC.Erreurs.Erreur_lexer msg -> quitter_erreur msg
+  | Erreur_lexer msg ->
+      quitter_erreur msg
   | Parsing.Parse_error ->
-    quitter_erreur (FranC.Erreurs.formater_erreur
-      (FranC.Erreurs.formater_position lexbuf.Lexing.lex_curr_p)
-      "phrase invalide, vérifiez la syntaxe de votre programme")
-  | FranC.Types.VariableNonDeclaree var ->
-    quitter_erreur (formater_erreur_avec_position
-      (Printf.sprintf "la variable '%s' n'a pas été déclarée. Vérifiez qu'elle a bien été initialisée (exemple : %s devient ...)"
-        var (String.capitalize_ascii var)))
-  | FranC.Erreurs.Erreur_type msg -> quitter_erreur (formater_erreur_avec_position msg)
-  | e -> quitter_erreur (formater_erreur_avec_position (Printf.sprintf "erreur inattendue : %s" (Printexc.to_string e)))
+      quitter_erreur (formater_erreur (formater_position lexbuf.Lexing.lex_curr_p) "phrase invalide, vérifiez la syntaxe de votre programme")
+  | Erreur_type msg ->
+      quitter_erreur (formater_erreur_avec_position msg)
+  | e ->
+      quitter_erreur (formater_erreur_avec_position (Printf.sprintf "erreur inattendue : %s" (Printexc.to_string e)))

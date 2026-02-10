@@ -55,7 +55,7 @@ let enregistrer_chaine ctx s =
 
 let trouver_variable ctx nom =
   let rec aux = function
-    | [] -> raise (Erreurs.Erreur_type (Printf.sprintf "la variable '%s' n'est pas déclarée" nom))
+    | [] -> raise (Erreurs.variable_non_declaree nom)
     | (n, t, p) :: _ when n = nom -> (t, p)
     | _ :: q -> aux q
   in
@@ -75,7 +75,7 @@ let enregistrer_fonction ctx nom types_params type_retour =
 
 let trouver_fonction ctx nom =
   let rec aux = function
-    | [] -> raise (Erreurs.Erreur_type (Printf.sprintf "la fonction '%s' n'est pas déclarée" nom))
+    | [] -> raise (Erreurs.fonction_non_declaree nom)
     | (n, params, ret) :: _ when n = nom -> (params, ret)
     | _ :: q -> aux q
   in

@@ -19,7 +19,7 @@ and ecrire_expression portee expr =
   | Mot m ->
         let m_minuscule = String.lowercase_ascii m in
           if variable_est_declaree portee m_minuscule then ecrire "%s" m_minuscule
-          else raise (Erreurs.erreur_non_declare m_minuscule)
+          else raise (Erreurs.variable_non_declaree m_minuscule)
   | Appel_recette (fonction_nom, arguments) ->
         ecrire "%s(" fonction_nom;
         ecrire_expression_list portee arguments;
@@ -40,7 +40,7 @@ and ecrire_expression portee expr =
   | AccesTableau (nom, index) ->
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
-      raise (Erreurs.erreur_non_declare nom_min);
+      raise (Erreurs.variable_non_declaree nom_min);
     let type_tab = Types.type_variable portee nom_min in
     let type_elem = Types.type_element_tableau type_tab in
     ecrire "((%s*)%s->donnees)[" (Types.type_c type_elem) nom_min;
@@ -49,7 +49,7 @@ and ecrire_expression portee expr =
   | TailleTableau nom ->
     let nom_min = String.lowercase_ascii nom in
     if not (variable_est_declaree portee nom_min) then
-      raise (Erreurs.erreur_non_declare nom_min);
+      raise (Erreurs.variable_non_declaree nom_min);
     ecrire "%s->taille" nom_min
   | Negatif e ->
     ecrire "(-";
@@ -80,7 +80,7 @@ and ecrire_expression portee expr =
     ecrire " + 1)) + ";
     ecrire_expression portee a;
     ecrire ")"
-  | _ -> raise (Erreurs.Erreur_type "expression non supportée dans ce contexte")
+  | _ -> raise Erreurs.expression_non_supportee
 
 and ecrire_operateur_binaire portee expr_a exbr_b operateur =
   ecrire "(";

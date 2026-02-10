@@ -47,7 +47,7 @@
 
 // ========== Main ==========
 main:
-  | EOF            {Paragraphe([])}
+  | EOF            { Paragraphe([]) }
   | paragraphe EOF { Paragraphe($1) }
 
 instruction:
@@ -129,32 +129,32 @@ mot_majuscule: Mot_majuscule { Mot($1) }
 
 // ========== Declarations ==========
 declaration:
-  | mot_majuscule Assigne expression Ponctuation_fin_phrase
-        { Assigne($1, $3) }
-  | Afficher expression Ponctuation_fin_phrase
-        { Afficher($2) }
-  | Permuter Mot Avec Mot Ponctuation_fin_phrase
-        { Permuter($2, $4) }
-  | Incrementer Mot Ponctuation_fin_phrase
-        { Increment($2, None) }
-  | Incrementer Mot De expression Ponctuation_fin_phrase
-        { Increment($2, Some $4) }
-  | Decrementer Mot Ponctuation_fin_phrase
-        { Decrement($2, None) }
-  | Decrementer Mot De expression Ponctuation_fin_phrase
-        { Decrement($2, Some $4) }
-  | Renvoyer expression Ponctuation_fin_phrase
-        { Renvoyer($2) }
-  | Modifier Element expression De Mot Avec expression Ponctuation_fin_phrase
-        { ModificationTableau($5, $3, $7) }
-  | Ajouter expression A Mot Ponctuation_fin_phrase
-        { AjouterTableau($4, $2) }
   | Lire Mot Ponctuation_fin_phrase
         { Lire($2) }
   | Executer Mot Ponctuation_fin_phrase
         { Appel_recette($2, []) }
+  | Decrementer Mot Ponctuation_fin_phrase
+        { Decrement($2, None) }
+  | Incrementer Mot Ponctuation_fin_phrase
+        { Increment($2, None) }
+  | Renvoyer expression Ponctuation_fin_phrase
+        { Renvoyer($2) }
+  | Afficher expression Ponctuation_fin_phrase
+        { Afficher($2) }
+  | Permuter Mot Avec Mot Ponctuation_fin_phrase
+        { Permuter($2, $4) }
+  | Ajouter expression A Mot Ponctuation_fin_phrase
+        { AjouterTableau($4, $2) }
+  | Incrementer Mot De expression Ponctuation_fin_phrase
+        { Increment($2, Some $4) }
+  | Decrementer Mot De expression Ponctuation_fin_phrase
+        { Decrement($2, Some $4) }
+  | mot_majuscule Assigne expression Ponctuation_fin_phrase
+        { Assigne($1, $3) }
   | Executer Mot Avec_ingredient expression Ponctuation_fin_phrase
         { Appel_recette($2, [$4]) }
+  | Modifier Element expression De Mot Avec expression Ponctuation_fin_phrase
+        { ModificationTableau($5, $3, $7) }
   | Executer Mot Avec_les_ingredients liste_expressions Ponctuation_fin_phrase
         { Appel_recette($2, $4) }
 
@@ -176,12 +176,12 @@ boucle :
 boucle_tant_que : Tant_que expression Alors paragraphe Fin_boucle Ponctuation_fin_phrase { BoucleTantQue($2, $4) }
 
 boucle_pour:
+  | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
+        { ForExclus($2, $4, $6, $8) }
   | Iterer Mot Allant_de expression A expression Compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForInclus($2, $4, $6, $9) }
   | Iterer Mot Allant_de expression A expression Non_compris Agir paragraphe Termine_sequence Ponctuation_fin_phrase
         { ForExclus($2, $4, $6, $9) }
-  | Iterer Mot Allant_de expression A expression Agir paragraphe Termine_sequence Ponctuation_fin_phrase
-        { ForExclus($2, $4, $6, $8) }
 
 boucle_pour_chaque:
   | Pour_chaque Mot De Mot Agir paragraphe Termine_sequence Ponctuation_fin_phrase { PourChaque($2, $4, $6) }
@@ -190,14 +190,14 @@ boucle_pour_chaque:
 
 // ========== Recettes ==========
 recette:
-  | Definir_recette Mot Ingredients_recette liste_ingredients Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
-      { Recette($2, $4, $6, $8) }
-  | Definir_recette Mot Ingredients_recette liste_ingredients Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
-      { Recette($2, $4, TypeNeant, $6) }
-  | Definir_recette Mot Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
-      { Recette($2, [], $4, $6) }
   | Definir_recette Mot Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
       { Recette($2, [], TypeNeant, $4) }
+  | Definir_recette Mot Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, [], $4, $6) }
+  | Definir_recette Mot Ingredients_recette liste_ingredients Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, $4, TypeNeant, $6) }
+  | Definir_recette Mot Ingredients_recette liste_ingredients Type_retour_Recette types Deux_points paragraphe Fin_recette Ponctuation_fin_phrase
+      { Recette($2, $4, $6, $8) }
 
 liste_ingredients:
   | Tiret types Mot liste_ingredients { ( $3, $2 ) :: $4 }

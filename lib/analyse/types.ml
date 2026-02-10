@@ -21,20 +21,20 @@ let rec nom_type t =
 
 let rec type_variable portee nom_variable =
   match portee with
-  | [] -> raise (VariableNonDeclaree nom_variable)
+  | [] -> raise (Erreurs.variable_non_declaree nom_variable)
   | (nom, variable_type) :: queue ->
     if nom = nom_variable then variable_type
     else type_variable queue nom_variable
 
-
 let type_de_variable_vers_string portee var_name =
   type_vers_string (type_variable portee var_name)
-
 
 let type_c t = String.trim (type_vers_string t)
 
 let type_element_tableau t =
-  match t with TypeTableau inner -> inner | _ -> TypeEntier
+  match t with 
+  | TypeTableau inner -> inner
+  | _ -> TypeEntier
 
 let sizeof_c t =
   match t with

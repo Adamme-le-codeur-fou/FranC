@@ -1,8 +1,35 @@
 exception Erreur_lexer of string
 exception Erreur_type of string
 
-let erreur_non_declare nom =
-  Erreur_type (Printf.sprintf "la variable '%s' n'est pas déclarée dans cette portée" nom)
+
+let variable_non_declaree nom =
+  Erreur_type
+    (Printf.sprintf "La variable '%s' n'a pas été déclarée. Vérifiez qu'elle a bien été initialisée (exemple : %s devient ...)."
+      nom (String.capitalize_ascii nom))
+
+let fonction_non_declaree nom =
+  Erreur_type
+    (Printf.sprintf "La fonction '%s' n'a pas été déclarée. Vérifiez que vous avez bien défini la fonction avant de l'appeler."
+      nom)
+
+let types_incompatibles type_attendu type_reel =
+  Erreur_type
+    (Printf.sprintf "Types incompatibles : impossible d'utiliser le type [%s] en tant que [%s]."
+      type_reel type_attendu)
+
+let assignation_incompatible nom_variable type_variable type_expression =
+  Erreur_type
+    (Printf.sprintf "Assignation incompatible : la variable '%s' est de type [%s] et ne peut pas recevoir une valeur de type [%s]."
+      nom_variable type_variable type_expression)
+
+let variable_lue_incompatible type_variable =
+  Erreur_type
+    (Printf.sprintf "Lecture impossible : les valeurs de type [%s] ne peuvent pas être lues."
+      type_variable)
+  
+let expression_non_supportee =
+  Erreur_type
+    "Expression non supportée dans ce contexte. Vérifiez que vous utilisez les bonnes expressions au bon endroit."
 
 let formater_position (pos : Lexing.position) =
   let ligne = pos.pos_lnum in

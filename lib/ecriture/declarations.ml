@@ -14,9 +14,7 @@ let ecrire_assignation portee (var, expr) =
     if variable_est_declaree portee var_minuscule then begin
       let type_existant = type_variable portee var_minuscule in
       if type_existant <> type_expr then
-        raise (Erreurs.Erreur_type
-          (Printf.sprintf "la variable '%s' est de type %s et ne peut pas recevoir une valeur de type %s"
-            var_minuscule (nom_type type_existant) (nom_type type_expr)));
+        raise (Erreurs.assignation_incompatible var_minuscule (nom_type type_existant) (nom_type type_expr));
       portee
     end
     else (var_minuscule, type_expr) :: portee
@@ -140,8 +138,7 @@ let ecrire_lire portee var =
   (match type_var with
   | TypeEntier -> ecrire "wscanf(L\"%%d\", &%s);\n" var_min
   | TypeReel -> ecrire "wscanf(L\"%%f\", &%s);\n" var_min
-  | _ -> raise (Erreurs.Erreur_type
-      (Printf.sprintf "impossible de lire une valeur de type %s (seuls les types entier et réel sont supportés)" (nom_type type_var))));
+  | _ -> raise (Erreurs.variable_lue_incompatible (nom_type type_var)));
   portee
 
 let ecrire_liberation_tableaux portee_base portee =

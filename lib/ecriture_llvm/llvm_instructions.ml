@@ -76,7 +76,7 @@ let ecrire_lire ctx var =
   let fmt = match typ with
     | TypeEntier -> "%d"
     | TypeReel -> "%lf"
-    | _ -> raise (Erreurs.Erreur_type "Lire ne supporte que les types entier et réel")
+    | _ -> raise (Erreurs.variable_lue_incompatible (type_llvm typ))
   in
   let (nom, len) = enregistrer_chaine ctx fmt in
   let fmt_ptr = nom_frais ctx in
