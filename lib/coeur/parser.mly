@@ -16,7 +16,7 @@
 %token EOF Tabulation
 %token Definir_recette Ingredients_recette Type_retour_Recette Fin_recette Renvoyer Resultat_de_recette Avec_les_ingredients Avec_ingredient
 %token Pour_chaque Executer
-%token Type_entier Type_reel Type_chaine_caractere
+%token Type_entier Type_reel Type_chaine_caractere Type_tableau
 %token Deux_points Tiret Virgule NEGATIF Vrai Faux
 %token Racine Puissance_token Valeur_absolue Aleatoire_entre
 %token <string> Mot Mot_majuscule Chaine_caractere
@@ -66,6 +66,7 @@ paragraphe:
 types:
   | Type_entier           { TypeEntier }
   | Type_reel             { TypeReel }
+  | Type_tableau types    { TypeTableau($2) }
   | Type_chaine_caractere { TypeChaineCaractere }
 
 

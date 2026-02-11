@@ -24,11 +24,10 @@ rule decoupe =
     | ":" { Deux_points }
     | "-" { Tiret }
     | "," { Virgule }
-    | nombre ',' nombre as d { Reel d }
     | "plus" { Plus }
     | "moins" { Moins }
-    | "et si" { Et_Si }
-    | "ou si" { Ou_Si }
+    | "et si" | "et que" { Et_Si }
+    | "ou si" | "ou que" { Ou_Si }
     | "et" { Et }
     | "avec" { Avec }
     | "fois" | "multiplié"feminin" par" { Fois }
@@ -84,9 +83,11 @@ rule decoupe =
     | ['r''R']"envoyer" { Renvoyer }
     | "le résultat de" | "le résultat de la recette" { Resultat_de_recette }
     | "avec les ingrédients" { Avec_les_ingredients }
-    | "un entier" { Type_entier }
-    | "un réel" { Type_reel }
-    | "une chaîne de caractères" { Type_chaine_caractere }
+    | "un tableau" | "de tableaux" { Type_tableau }
+    | "un entier" | "d'entiers" { Type_entier }
+    | "un réel" | "de réels" { Type_reel }
+    | "une chaîne de caractères" | "de chaînes de caractères" { Type_chaine_caractere }
+    | nombre ',' nombre as d { Reel d }
     | debut_chaine { analyser_chaine [] [] "" lexbuf }
     | nombre as d { Entier d }
     | mot as mot { Mot mot }

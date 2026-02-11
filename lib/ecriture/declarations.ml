@@ -6,7 +6,6 @@ open Portee
 open Types
 
 
-(* Fonction pour afficher une assignation *)
 let ecrire_assignation portee (var, expr) =
   let var_minuscule = String.lowercase_ascii var in
   let type_expr = type_de_expression portee expr in

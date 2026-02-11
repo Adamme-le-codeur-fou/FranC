@@ -4,7 +4,6 @@ open Declarations
 open Types
 
 
-(* Fonction pour afficher une boucle 'tant que' *)
 let ecrire_function ecrire_ast nom arguments type_function corps =
   let type_str = if type_function = TypeNeant then "void " else type_vers_string type_function in
   ecrire "\n%s" type_str;
