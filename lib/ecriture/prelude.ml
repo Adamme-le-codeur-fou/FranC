@@ -79,4 +79,5 @@ let ecrire_debut ecrire_ast ast nom_programme =
   ecrire_fonctions_pre_main ecrire_ast ast;
   ecrire "\nint main(){\nsetlocale(LC_ALL, \"\");\n";
   if avec_aleatoire then ecrire "srand(time(NULL));\n";
-  ecrire "wprintf(L\"Programme : %s\\n\");\n" nom_programme
+  ecrire_texte_fond_france "Programme : %s" nom_programme;
+  ecrire "wprintf(L\"\\n\");\n"
